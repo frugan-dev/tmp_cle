@@ -2,24 +2,22 @@
 /* wscms/newsletter/module.class.php v.1.0.0. 20/06/2016 */
 
 class Module {
-	private $action;
 	public $error;
 	public $message;
 	public $messages;
 	
-	public function __construct($action,$table) 	{
-		$this->action = $action;
+	public function __construct(private $action,$table) 	{
 		$this->appTable = $table;
 		$this->error = 0;	
 		$this->message ='';
-		$this->messages = array();		
+		$this->messages = [];		
 		}
 		
 	public function getNewsletter($table,$id=0){
 		$obj = '';
 		
 		/* prende la newsletter indicata */
-		Sql::initQuery($table,array('*'),array($id),'active = 1 AND id = ?');
+		Sql::initQuery($table,['*'],[$id],'active = 1 AND id = ?');
 		$obj = Sql::getRecord();
 		if (Core::$resultOp->error == 0) {
 			/* se è ancora nullo prende il primo */
@@ -45,7 +43,7 @@ class Module {
 	public function getTemplatesArray($templatesFolder) 
 	{
 		//echo $templatesFolder;
-		$arr = array();
+		$arr = [];
 		if ($handle = opendir($templatesFolder)){
 			while ($file = readdir($handle)) {
 				if (!is_dir(PATH_UPLOAD_DIR.$templatesFolder.$file)) {

@@ -11,15 +11,15 @@
 $App->params = new stdClass();
 $App->params->label = "Staff";
 /* prende i dati del modulo */
-Sql::initQuery(DB_TABLE_PREFIX.'modules',array('name','label','help_small','help'),array('team'),'name = ?');
+Sql::initQuery(DB_TABLE_PREFIX.'modules',['name','label','help_small','help'],['team'],'name = ?');
 $obj = Sql::getRecord();
 if (Core::$resultOp->error == 0 && isset($obj) && count((array)$obj) > 1) $App->params = $obj;
 
-$App->params->tables = array();
-$App->params->fields = array();
-$App->params->uploadPaths = array();
-$App->params->uploadDirs = array();
-$App->params->orderTypes = array();
+$App->params->tables = [];
+$App->params->fields = [];
+$App->params->uploadPaths = [];
+$App->params->uploadDirs = [];
+$App->params->orderTypes = [];
 
 $App->params->codeVersion = ' 4.0.0.';
 $App->params->pageTitle = $App->params->label;

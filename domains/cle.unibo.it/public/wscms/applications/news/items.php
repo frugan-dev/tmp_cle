@@ -15,11 +15,11 @@ if(isset($_POST['id_cat'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleSi
 if (Core::$request->method == 'listItem' && $App->id > 0) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'id_cat',$App->id);
 
 /* gestione sessione -> id_cat */	
-$App->id_cat = (isset($_MY_SESSION_VARS[$App->sessionName]['id_cat']) ? $_MY_SESSION_VARS[$App->sessionName]['id_cat'] : 0);
+$App->id_cat = ($_MY_SESSION_VARS[$App->sessionName]['id_cat'] ?? 0);
 
 if($App->params->categories == 1){
-	Sql::initQuery($App->tableCate,array('id','title_it'),array());
-	Sql::setOptions(array('fieldTokeyObj'=>'id'));
+	Sql::initQuery($App->tableCate,['id','title_it'],[]);
+	Sql::setOptions(['fieldTokeyObj'=>'id']);
 	$App->categoriesData = Sql::getRecords();
 	if (Core::$resultOp->error > 0) {echo Core::$resultOp->message; die;}
 	if (!is_array($App->categoriesData) || (is_array($App->categoriesData) && count($App->categoriesData) == 0)) {
@@ -34,7 +34,7 @@ switch(Core::$request->method) {
 	case 'activeItem':
 	case 'disactiveItem':
 		//Sql::setDebugMode(1);
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tables['news'],$App->id,array('label'=>$_lang['voce'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tables['news'],$App->id,['label'=>$_lang['voce'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');	
 	break;
@@ -44,7 +44,7 @@ switch(Core::$request->method) {
 			$delete = true;	
 			/* controlla se ha immagini associate */
 			if($App->params->item_images == 1) {
-				Sql::initQuery($App->tableIimg,array('id'),array($App->id),'id_owner = ?');
+				Sql::initQuery($App->tableIimg,['id'],[$App->id],'id_owner = ?');
 				$count = Sql::countRecord();
 				if($count > 0) {
 					Core::$resultOp->error = 2;
@@ -54,7 +54,7 @@ switch(Core::$request->method) {
 				}				
 			/* controlla se ha files associati */
 			if($App->params->item_files == 1) {
-				Sql::initQuery($App->tableIfil,array('id'),array($App->id),'id_owner = ?');
+				Sql::initQuery($App->tableIfil,['id'],[$App->id],'id_owner = ?');
 				$count = Sql::countRecord();
 				if($count > 0) {
 					Core::$resultOp->error = 2;
@@ -65,16 +65,16 @@ switch(Core::$request->method) {
 				
 			if ($delete == true && Core::$resultOp->error == 0) {					
 				$App->itemOld = new stdClass;
-				Sql::initQuery($App->tableItem,array('filename'),array($App->id),'id = ?');
+				Sql::initQuery($App->tableItem,['filename'],[$App->id],'id = ?');
 			   $App->itemOld = Sql::getRecord();
 				if (Core::$resultOp->error == 0) {
-					Sql::initQuery($App->tableItem,array('id'),array($App->id),'id = ?');
+					Sql::initQuery($App->tableItem,['id'],[$App->id],'id = ?');
 					Sql::deleteRecord();
 					if (Core::$resultOp->error == 0) {
 						if (isset($App->itemOld->filename) && file_exists($App->itemUploadPathDir.$App->itemOld->filename)) {
 							@unlink($App->itemUploadPathDir.$App->itemOld->filename);			
 							}
-						Core::$resultOp->message = ucfirst($App->labels['item']['item']).' cancellat'.$App->labels['item']['itemSex'].'!';		
+						Core::$resultOp->message = ucfirst((string) $App->labels['item']['item']).' cancellat'.$App->labels['item']['itemSex'].'!';		
 						}
 					}
 				}
@@ -106,7 +106,7 @@ switch(Core::$request->method) {
 
 
 			/* preleva il filename dal form */	  
-			ToolsUpload::setFilenameFormat(array('jpg','png'));
+			ToolsUpload::setFilenameFormat(['jpg','png']);
 	   	ToolsUpload::getFilenameFromForm();
 	   	$_POST['filename'] = ToolsUpload::getFilenameMd5();
 	   	$_POST['org_filename'] = ToolsUpload::getOrgFilename();
@@ -132,7 +132,7 @@ switch(Core::$request->method) {
 			$App->viewMethod = 'formNew';
 			} else {
 				$App->viewMethod = 'list';
-				Core::$resultOp->message = ucfirst($App->labels['item']['item']).' inserit'.$App->labels['item']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['item']['item']).' inserit'.$App->labels['item']['itemSex'].'!';				
 				}		
 	break;
 
@@ -164,11 +164,11 @@ switch(Core::$request->method) {
 			//ToolsStrings::dump($_POST); die();   
 
 			/* preleva filename vecchio */
-			Sql::initQuery($App->tableItem,array('filename','org_filename'),array($App->id),'id = ?');
+			Sql::initQuery($App->tableItem,['filename','org_filename'],[$App->id],'id = ?');
 			$App->itemOld = Sql::getRecord();
 			if (Core::$resultOp->error == 0) {							
 				/* preleva il filename dal form */	  
-				ToolsUpload::setFilenameFormat(array('jpg','png'));	
+				ToolsUpload::setFilenameFormat(['jpg','png']);	
 		   		ToolsUpload::getFilenameFromForm();	   			   	
 		   		if (Core::$resultOp->error == 0) {	
 		   		$_POST['filename'] = ToolsUpload::getFilenameMd5();
@@ -211,7 +211,7 @@ switch(Core::$request->method) {
 			} else {
 				if (isset($_POST['submitForm'])) {	
 					$App->viewMethod = 'list';
-					Core::$resultOp->message = ucfirst($App->labels['item']['item']).' modificat'.$App->labels['item']['itemSex'].'!';								
+					Core::$resultOp->message = ucfirst((string) $App->labels['item']['item']).' modificat'.$App->labels['item']['itemSex'].'!';								
 					} else {						
 						if (isset($_POST['id'])) {
 							$App->id = $_POST['id'];
@@ -233,7 +233,7 @@ switch(Core::$request->method) {
 
 	case 'messageItem':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';
 	break;
 
@@ -263,7 +263,7 @@ switch((string)$App->viewMethod) {
 	
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->tableItem,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tableItem,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();		
 		if (Core::$resultOp->error == 1) Utilities::setItemDataObjWithPost($App->item,$App->fieldsItem);
 		if (!isset($App->item->datatimeins)) $App->item->datatimeins = $App->nowDateTime;
@@ -278,19 +278,19 @@ switch((string)$App->viewMethod) {
 		$App->items = new stdClass;
 		$App->item = new stdClass;	
 		$App->item->datatimeins = Config::$nowDateTimeIso;					
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);				
-		$qryFields = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);				
+		$qryFields = [];
 		$qryFields[] = 'ite.*';		
 		
 		$qryFields[] = "(SELECT COUNT(fil.id) FROM ".$App->params->tables['item resources']." AS fil WHERE fil.id_owner = ite.id AND resource_type = 2) AS files";		
 
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		$and = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsItem,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsItem,'');
 			}	
 		if ($App->id_cat > 0) {
 			$clause .= "id_cat = ?";

@@ -1,6 +1,6 @@
 <?php
 /* template default configuration.php v.3.5.4. 26/06/2019 */
-$optMainMenu = array(
+$optMainMenu = [
 	'divIsMain'=>0,
 	'ulMain'=>'<div class="nav-item">',
 	'ulSubMenu'=>'<ul class="dropdown-menu" aria-labelledby="%LEVEL%-dropdown">',
@@ -18,10 +18,10 @@ $optMainMenu = array(
 	'pagesModule'=>'',
 	'classactive'=> ' active',
 	'textactive' => ' <span class="sr-only">(current)</span>'
-);
+];
 
 
-$optMainMenuDiv = array(
+$optMainMenuDiv = [
 	'ulIsMain'=>0,
 
 	'ulDefault' => '<ul aria-labelledby="navbarDropdownMenuLink%PARENT%" class="dropdown-menu">',
@@ -57,9 +57,9 @@ $optMainMenuDiv = array(
 
 	'classactive'=> ' active',
 	'textactive' => ' <span class="sr-only">(current)</span>'
-);
+];
 
-$optMenuPagesDiv = array(
+$optMenuPagesDiv = [
 	'ulIsMain'=>0,
 
 	'ulDefault' => '<ul aria-labelledby="navbarDropdownMenuLink%PARENT%" class="dropdown-menu">',
@@ -95,13 +95,13 @@ $optMenuPagesDiv = array(
 
 	'classactive'=> ' active',
 	'textactive' => ' <span class="sr-only">(current)</span>'
-);
+];
 
 
 
 
 
-$optMenuPages = array(
+$optMenuPages = [
 	'ulIsMain'=>0,
 	'ulMain'=>'<ul id="L%LEVEL%-S%SONS%">',
 	'ulSubMenu'=>'<ul class="dropdown-menu" aria-labelledby="%LEVEL%-dropdown">',
@@ -117,9 +117,9 @@ $optMenuPages = array(
 	'urldefault'=>'#!',
 	'valueUrlDefault'=>'%ID%/%SEOCLEAN%',
 	'pagesModule'=>''
-	);
+	];
 	
-$optMenuCategories = array(
+$optMenuCategories = [
 	'ulIsMain'=>0,
 	'ulMain'=>'<ul id="L%LEVEL%-S%SONS%">',
 	'ulSubMenu'=>'<ul class="dropdown-menu" aria-labelledby="%LEVEL%-dropdown">',
@@ -135,21 +135,21 @@ $optMenuCategories = array(
 	'urldefault'=>'#!',
 	'valueUrlDefault'=>'products/%ID%/%SEOCLEAN%',
 	'pagesModule'=>''
-	);
+	];
 	
-$templateLanguagesBar = array(
+$templateLanguagesBar = [
 	'container'=>'<ul class="dropdown-menu mb-0 dropdown-lingue" role="menu">%LINKS%</ul>',
 	'links'=>'<li class=""><a title="%TITLE%" href="%URL%">%TITLE%</a></li>',
 	'links active'=>'<li class=""><a class="active" title="%TITLE%" href="%URL%">%TITLE%</a></li>',
-	);
+	];
 		
-$templateBreadcrumbsBar = array(
+$templateBreadcrumbsBar = [
 	'container'=>'<ul class="dropdown-menu mb-0 dropdown-lingue" role="menu">%LINKS%</ul>',
 	'links home'=>'<li class="breadcrumb-item"><i class="fa fa-home pr-2"></i><a class="link-dark" href="%URL%" title="%TITLE%">%TITLE%</a></li>',
 	'nolinks'=>'<li class="breadcrumb-item">%TITLE%</li>',
 	'links'=>'<li class="breadcrumb-item"><a class="link-dark" href="%URL%" title="%TITLE%">%TITLE%</a></li>',
 	'links active'=>'<li class="breadcrumb-item active">%TITLE%</li>'
-	);
+	];
 	
 	
 $templateMessagesBar = '<div class="container"><div class="row"><div class="col-12"><div class="alert%CLASS%">%CONTENT%</div></div></div></div>';

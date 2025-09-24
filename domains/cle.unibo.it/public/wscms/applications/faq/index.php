@@ -22,7 +22,7 @@ $App->pageTitle = $App->params->pageTitle;
 $App->id = intval(Core::$request->param);
 if (isset($_POST['id'])) $App->id = intval($_POST['id']);
 
-switch(substr(Core::$request->method,-4,4)) {	
+switch(substr((string) Core::$request->method,-4,4)) {	
 	case 'Conf':
 		$Module = new Module(Core::$request->action,$App->params->tables['item']);
 		include_once(PATH.$App->pathApplications.Core::$request->action."/config.php");

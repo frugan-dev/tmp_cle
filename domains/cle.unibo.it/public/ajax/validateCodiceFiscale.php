@@ -27,7 +27,7 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 /* avvio sessione */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
@@ -38,9 +38,9 @@ if ( isset($_REQUEST['value']) && $_REQUEST['value'] != '' ) $value = $_REQUEST[
 if ( isset($_REQUEST['country']) && $_REQUEST['country'] != '' ) $country = $_REQUEST['country'];
 
 $data['result'] = '1';
-$data['message'] = preg_replace('/%ITEM%/',Config::$langVars['partita IVA'],Config::$langVars['Il valore per il campo %ITEM% è già presente nel nostro database!']);
+$data['message'] = preg_replace('/%ITEM%/',(string) Config::$langVars['partita IVA'],(string) Config::$langVars['Il valore per il campo %ITEM% è già presente nel nostro database!']);
 if ($value != '') {         
-    list( $data['result'],$data['message'] ) = Form::validateCF($value,$country);
+    [$data['result'], $data['message']] = Form::validateCF($value,$country);
 }
 echo json_encode($data);
 ?>

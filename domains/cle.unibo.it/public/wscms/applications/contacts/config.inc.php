@@ -4,19 +4,19 @@
 $App->params = new stdClass();
 $App->params->label = "Contatti";
 /* prende i dati del modulo */
-Sql::initQuery(DB_TABLE_PREFIX.'modules',array('label','help_small','help'),array('contacts'),'name = ?');
+Sql::initQuery(DB_TABLE_PREFIX.'modules',['label','help_small','help'],['contacts'],'name = ?');
 $obj = Sql::getRecord();
 if (Core::$resultOp->error == 0 && isset($obj) && count((array)$obj) > 1) $App->params = $obj;
 
 /* configurazione */
 $App->params->applicationName = Core::$request->action;
 
-$App->params->databases = array();
-$App->params->tables = array();
-$App->params->fields = array();
-$App->params->uploadPathDirs = array();
-$App->params->uploadDirs = array();
-$App->params->ordersType = array();
+$App->params->databases = [];
+$App->params->tables = [];
+$App->params->fields = [];
+$App->params->uploadPathDirs = [];
+$App->params->uploadDirs = [];
+$App->params->ordersType = [];
 
 $App->params->codeVersion = ' 3.5.4.';
 $App->params->pageTitle = $App->params->label;

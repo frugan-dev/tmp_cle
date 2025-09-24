@@ -11,7 +11,7 @@ class Module {
 		$this->appTable = $table;
 		$this->error = 0;
 		$this->message = '';
-		$this->messages = array();
+		$this->messages = [];
 		}
 	
 	public function getAvatarData($id,$_lang) {
@@ -20,7 +20,7 @@ class Module {
 		$avatar_info = '';		
 		if ($id > 0) {
 			$oldItem = new stdClass;		
-			Sql::initQuery($this->appTable,array('avatar','avatar_info'),array($id),'id = ?');	
+			Sql::initQuery($this->appTable,['avatar','avatar_info'],[$id],'id = ?');	
 			$oldItem = Sql::getRecord();
 			$avatar = '';
 			$avatar_info = '';
@@ -29,7 +29,7 @@ class Module {
 			}		
 		if (isset($_FILES['avatar']) && is_uploaded_file($_FILES['avatar']['tmp_name']) && $_FILES['avatar']['size'] > 0) {	
 			if ($_FILES['avatar']['error'] == 0 ) {         
-            $array_avatarInfo = array();
+            $array_avatarInfo = [];
             $max_size = 40000;
             $result = @is_uploaded_file($_FILES['avatar']['tmp_name']);
             if (!$result) {
@@ -40,7 +40,7 @@ class Module {
                   $size = $_FILES['avatar']['size'];
                   if ($size > $max_size) {
                      $this->message = $_lang['Il file indicato è troppo grande! Dimensioni massime %DIMENSIONS% Kilobyte. Se il file precedente è presente è stato mantenuto il file precedente!'];
-							$this->message = preg_replace('/%DIMENSIONS%/',($max_size / 1000),$this->message);       				
+							$this->message = preg_replace('/%DIMENSIONS%/',($max_size / 1000),(string) $this->message);       				
            				$this->error = 0;
            				$this->errorType = 2;
            				$App = new stdClass;			         	
@@ -57,11 +57,11 @@ class Module {
                $this->error = 1;
              	}	            
          }
-		return array($avatar,$avatar_info);
+		return [$avatar,$avatar_info];
 		}
 				
 	public function getUserTemplatesArray() {
-		$arr = array();
+		$arr = [];
 		if ($handle = opendir('templates/')){
 			while ($file = readdir($handle)) {
 				if (is_dir('templates/'.$file)) {

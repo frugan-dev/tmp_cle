@@ -8,7 +8,7 @@
  * wscms/homeinfobox/items.php v.4.0.0. 15/12/2021
 */
 
-if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>''));
+if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'']);
 
 if (isset($_POST['itemsforpage']) && isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) && $_MY_SESSION_VARS[$App->sessionName]['ifp'] != $_POST['itemsforpage']) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'ifp',$_POST['itemsforpage']);
 if (isset($_POST['searchFromTable']) && isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != $_POST['searchFromTable']) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'srcTab',$_POST['searchFromTable']);
@@ -16,19 +16,19 @@ if (isset($_POST['searchFromTable']) && isset($_MY_SESSION_VARS[$App->sessionNam
 switch(Core::$request->method) {
 	
 	case 'moreOrderingTeam':
-		Utilities::increaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['team'],'orderingType'=>$App->params->orderTypes['team'],'parent'=>0,'parentField'=>'','label'=>ucfirst(Config::$langVars['voce']).' '.Config::$langVars['spostata']));
+		Utilities::increaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['team'],'orderingType'=>$App->params->orderTypes['team'],'parent'=>0,'parentField'=>'','label'=>ucfirst((string) Config::$langVars['voce']).' '.Config::$langVars['spostata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTeam');	
 	break;
 	case 'lessOrderingTeam':
-		Utilities::decreaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['team'],'orderingType'=>$App->params->orderTypes['team'],'parent'=>0,'parentField'=>'','label'=>ucfirst(Config::$langVars['voce']).' '.Config::$langVars['spostata']));
+		Utilities::decreaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['team'],'orderingType'=>$App->params->orderTypes['team'],'parent'=>0,'parentField'=>'','label'=>ucfirst((string) Config::$langVars['voce']).' '.Config::$langVars['spostata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTeam');		
 	break;
 
 	case 'activeTeam':
 	case 'disactiveTeam':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tables['team'],$App->id,array('label'=>Config::$langVars['voce'],'attivata'=>Config::$langVars['attivato'],'disattivata'=>Config::$langVars['disattivato']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tables['team'],$App->id,['label'=>Config::$langVars['voce'],'attivata'=>Config::$langVars['attivato'],'disattivata'=>Config::$langVars['disattivato']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTeam');	
 	break;
@@ -36,11 +36,11 @@ switch(Core::$request->method) {
 	case 'deleteTeam':		
 		if ($App->id == 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/404'); }						
 		$App->itemOld = new stdClass;
-		Sql::initQuery($App->params->tables['team'],array('filename'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['team'],['filename'],[$App->id],'id = ?');
 		$App->itemOld = Sql::getRecord();	
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 		
-		Sql::initQuery($App->params->tables['team'],array('id'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['team'],['id'],[$App->id],'id = ?');
 		Sql::deleteRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 		
@@ -48,7 +48,7 @@ switch(Core::$request->method) {
 			@unlink($App->params->uploadPaths['team'].$App->itemOld->filename);			
 		}
 						
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['voce'],Config::$langVars['%ITEM% cancellato'])).'!';	
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% cancellato'])).'!';	
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTeam');			
 	break;
 
@@ -57,7 +57,7 @@ switch(Core::$request->method) {
 		$App->item = new stdClass;		
 		$App->item->active = 1;
 		$App->item->ordering = 0;
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['voce'],Config::$langVars['inserisci %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['inserisci %ITEM%']);
 		$App->viewMethod = 'form';
 		$App->methodForm = 'insertTeam';
 	break;
@@ -84,7 +84,7 @@ switch(Core::$request->method) {
    		$uploadFilename = $_POST['filename'];	   	
 		
 
-		Form::parsePostByFields($App->params->fields['team'],$_lang,array());
+		Form::parsePostByFields($App->params->fields['team'],$_lang,[]);
 		if (Core::$resultOp->error > 0) {
 			$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/newTeam');
@@ -99,17 +99,17 @@ switch(Core::$request->method) {
 			move_uploaded_file($tempFilename,$App->params->uploadPaths['team'].$uploadFilename) or die('Errore caricamento file');   						
 		}
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['voce'],$_lang['%ITEM% inserito']).'!');
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) $_lang['%ITEM% inserito']).'!');
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTeam');	
 		die();
 			
 	break;
 	
 	case 'modifyTeam':				
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['modifica %ITEM%'],Config::$langVars['voce']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['modifica %ITEM%'],(string) Config::$langVars['voce']);
 		$App->viewMethod = 'formMod';
 		$App->item = new stdClass;
-		Sql::initQuery($App->params->tables['team'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['team'],['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		$App->viewMethod = 'form';
 		$App->methodForm = 'updateTeam';	
@@ -124,7 +124,7 @@ switch(Core::$request->method) {
 
 		// requpero i vecchi dati
 		$App->oldItem = new stdClass;
-		Sql::initQuery($App->params->tables['team'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['team'],['*'],[$App->id],'id = ?');
 		$App->oldItem = Sql::getRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); die(); }	
 
@@ -155,7 +155,7 @@ switch(Core::$request->method) {
 	   	}	 
 		
 
-		Form::parsePostByFields($App->params->fields['team'],Config::$langVars,array());
+		Form::parsePostByFields($App->params->fields['team'],Config::$langVars,[]);
 		if (Core::$resultOp->error > 0) { 
 			echo $_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyTeam/'.$App->id);
@@ -174,7 +174,7 @@ switch(Core::$request->method) {
 			}	   			
 		}
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['voce'],Config::$langVars['%ITEM% modificato'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% modificato'])).'!';
 		if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyTeam/'.$App->id);
 		} else {
@@ -191,17 +191,17 @@ switch(Core::$request->method) {
 	case 'listTeam':
 	default:
 		$App->item = new stdClass;						
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
 
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
-		$qryFields = array('ite.*');
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
+		$qryFields = ['ite.*'];
 			
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		$and = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['team'],'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['team'],'');
 			}	
 		if (isset($sessClause) && $sessClause != '') $clause .= $and.'('.$sessClause.')';
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {
@@ -214,13 +214,13 @@ switch(Core::$request->method) {
 		Sql::setOrder('ordering '.$App->params->orderTypes['team']);
 		if (Core::$resultOp->error <> 1) $obj = Sql::getRecords();
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {	
 				$field = 'role_'.$_lang['user'];	
 				$value->role = $value->$field;	
 				$field = 'content_'.$_lang['user'];	
-				$value->content = ToolsStrings::getStringFromTotNumberChar($value->$field,array('numchars'=>100,'suffix'=>'...'));
+				$value->content = ToolsStrings::getStringFromTotNumberChar($value->$field,['numchars'=>100,'suffix'=>'...']);
 				$arr[] = $value;
 			}
 		}
@@ -228,11 +228,11 @@ switch(Core::$request->method) {
 		
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = Config::$langVars['Mostra da %START%  a %END% di %ITEM% elementi'];
-		$App->paginationTitle = preg_replace('/%START%/',$App->pagination->firstPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',$App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',$App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
 		
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['voci'],$_lang['lista %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['voci'],(string) $_lang['lista %ITEM%']);
 		$App->viewMethod = 'list';	
 	break;
 }

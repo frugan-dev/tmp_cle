@@ -37,7 +37,7 @@
 							<div class="tables_filter text-right">
 								<label>
 									Search:
-									<input name="searchFromTable" value="<?php if(isset($this->mySessionVars[$this->App->sessionName]['srcTab']) && $this->mySessionVars[$this->App->sessionName]['srcTab'] != '') echo htmlspecialchars($this->mySessionVars[$this->App->sessionName]['srcTab'],ENT_QUOTES,'UTF-8'); ?>" class="form-control input-sm" type="search" onchange="this.form.submit();">
+									<input name="searchFromTable" value="<?php if(isset($this->mySessionVars[$this->App->sessionName]['srcTab']) && $this->mySessionVars[$this->App->sessionName]['srcTab'] != '') echo htmlspecialchars((string) $this->mySessionVars[$this->App->sessionName]['srcTab'],ENT_QUOTES,'UTF-8'); ?>" class="form-control input-sm" type="search" onchange="this.form.submit();">
 								</label>
 							</div>
 						</div>
@@ -61,7 +61,7 @@
 										<?php if($this->mySessionVars['usr']['root'] === 1): ?>	
 											<td><?php echo $value->id; ?></td>
 										<?php endif; ?>	
-										<td><?php echo htmlspecialchars($value->title_it,ENT_QUOTES,'UTF-8'); ?></td>
+										<td><?php echo htmlspecialchars((string) $value->title_it,ENT_QUOTES,'UTF-8'); ?></td>
 										<td><a href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/listItem/<?php echo $value->id; ?>" title="Vai al contenuto della cartella"><i class="fa fa-tags fa-fw"></i> - <?php echo $value->numitems; ?></a></td>
 									
 										<td class="actions">

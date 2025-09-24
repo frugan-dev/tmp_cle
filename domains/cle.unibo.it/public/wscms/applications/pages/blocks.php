@@ -8,13 +8,13 @@ if (isset($_POST['id_owner'])) $_MY_SESSION_VARS = $my_session->addSessionsModul
 if (Core::$request->method == 'listIblo' && $App->id > 0) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'id_owner',$App->id);
 
 /* gestione sessione -> id_owner */	
-$App->id_owner = (isset($_MY_SESSION_VARS[$App->sessionName]['id_owner']) ? $_MY_SESSION_VARS[$App->sessionName]['id_owner'] : 0);
+$App->id_owner = ($_MY_SESSION_VARS[$App->sessionName]['id_owner'] ?? 0);
 
 //echo $App->id_owner;
 
 if ($App->id_owner > 0) {
-	Sql::initQuery($App->params->tables['item'],array('*'),array($App->id_owner),'id = ?');
-	Sql::setOptions(array('fieldTokeyObj'=>'id'));
+	Sql::initQuery($App->params->tables['item'],['*'],[$App->id_owner],'id = ?');
+	Sql::setOptions(['fieldTokeyObj'=>'id']);
 	$App->ownerData = Sql::getRecord();
 	if (Core::$resultOp->error > 0) {echo Core::$resultOp->message; die;}
 	$field = 'title_'.$_lang['user'];	
@@ -33,13 +33,13 @@ switch(Core::$request->method) {
 	
 	case 'moreOrderingIblo':
 		if ($App->id == 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/404'); }
-		Utilities::increaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['iblo'],'orderingType'=>$App->params->orderTypes['item'],'parent'=>1,'parentField'=>'id_owner','label'=>ucfirst($_lang['blocco']).' '.$_lang['spostato']));
+		Utilities::increaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['iblo'],'orderingType'=>$App->params->orderTypes['item'],'parent'=>1,'parentField'=>'id_owner','label'=>ucfirst((string) $_lang['blocco']).' '.$_lang['spostato']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listIblo');
 	break;
 	case 'lessOrderingIblo':
 		if ($App->id == 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/404'); }
-		Utilities::decreaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['iblo'],'orderingType'=>$App->params->orderTypes['item'],'parent'=>1,'parentField'=>'id_owner','label'=>ucfirst($_lang['blocco']).' '.$_lang['spostato']));
+		Utilities::decreaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['iblo'],'orderingType'=>$App->params->orderTypes['item'],'parent'=>1,'parentField'=>'id_owner','label'=>ucfirst((string) $_lang['blocco']).' '.$_lang['spostato']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listIblo');
 	break;
@@ -47,7 +47,7 @@ switch(Core::$request->method) {
 	case 'activeIblo':
 	case 'disactiveIblo':
 		if ($App->id == 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/404'); }
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tables['iblo'],$App->id,array('label'=>$_lang['blocco'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tables['iblo'],$App->id,['label'=>$_lang['blocco'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listIblo');	
 	break;
@@ -57,44 +57,44 @@ switch(Core::$request->method) {
 			
 			
 		/* controlla se ha immagini associate */
-		Sql::initQuery($App->params->tables['resources'],array('id'),array($App->id),'id_owner = ? AND resource_type = 1');
+		Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 1');
 		$count = Sql::countRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); }
 		if ($count > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['immagini'],Core::$langVars['Ci sono ancora %ITEM% associate!']));
+			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['immagini'],(string) Core::$langVars['Ci sono ancora %ITEM% associate!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listIblo');
 		}				
 		/* controlla se ha files associati */			
-		Sql::initQuery($App->params->tables['resources'],array('id'),array($App->id),'id_owner = ? AND resource_type = 2');
+		Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 2');
 		$count = Sql::countRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); }
 		if ($count > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['files'],Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['files'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listIblo');
 		}
 			
 		/* controlla se ha immagini gallerie associate */
-		Sql::initQuery($App->params->tables['resources'],array('id'),array($App->id),'id_owner = ? AND resource_type = 3');
+		Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 3');
 		$count = Sql::countRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); }
 		if ($count > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['gallerie'],Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['gallerie'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listIblo');
 		}	
 								
 		$App->itemOld = new stdClass;
-		Sql::initQuery($App->params->tables['iblo'],array('filename'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['iblo'],['filename'],[$App->id],'id = ?');
 		$App->itemOld = Sql::getRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); }
 		
-		Sql::initQuery($App->params->tables['iblo'],array('id'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['iblo'],['id'],[$App->id],'id = ?');
 		Sql::deleteRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); }
 
 		if (isset($App->itemOld->filename) && file_exists($App->params->uploadPaths['iblo'].$App->itemOld->filename)) {
 			@unlink($App->params->uploadPaths['iblo'].$App->itemOld->filename);			
 		}
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['blocco'],Core::$langVars['%ITEM% cancellato'])).'!';	
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['blocco'],(string) Core::$langVars['%ITEM% cancellato'])).'!';	
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listIblo');	
 	break;
 	
@@ -105,7 +105,7 @@ switch(Core::$request->method) {
 		$App->item->updated = Config::$nowDateTimeIso;
 		$App->item->filenameRequired = false;
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['iblo']);
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['blocco'],Config::$langVars['inserisci %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['blocco'],(string) Config::$langVars['inserisci %ITEM%']);
 		$App->methodForm = 'insertIblo';
 		$App->viewMethod = 'form';	
 	break;
@@ -130,7 +130,7 @@ switch(Core::$request->method) {
 		}
 
 		/* parsa i post in base ai campi */
-		Form::parsePostByFields($App->params->fields['iblo'],$_lang,array());
+		Form::parsePostByFields($App->params->fields['iblo'],$_lang,[]);
 		if (Core::$resultOp->error > 0) { 
 			echo $_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/newIblo');
@@ -148,18 +148,18 @@ switch(Core::$request->method) {
 			move_uploaded_file(ToolsUpload::getTempFilename(),$App->params->uploadPaths['iblo'].$_POST['filename']) or die('Errore caricamento file');
 	  	}
 		
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['blocco'],Config::$langVars['%ITEM% inserito'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['blocco'],(string) Config::$langVars['%ITEM% inserito'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listIblo');
 
 	break;
 
 	case 'modifyIblo':	
 		$App->item = new stdClass;	
-		Sql::initQuery($App->params->tables['iblo'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['iblo'],['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['iblo']);
 		$App->item->filenameRequired = (isset($App->item->filename) && $App->item->filename != '' ? false : false);
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['modifica %ITEM%'],Config::$langVars['blocco']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['modifica %ITEM%'],(string) Config::$langVars['blocco']);
 		$App->methodForm = 'updateIblo';
 		$App->viewMethod = 'form';	
 	break;
@@ -173,7 +173,7 @@ switch(Core::$request->method) {
 
 		$App->itemOld = new stdClass;
 		/* preleva Ibloname vecchio */
-		Sql::initQuery($App->params->tables['iblo'],array('filename','org_filename'),array($App->id),'id = ?');	
+		Sql::initQuery($App->params->tables['iblo'],['filename','org_filename'],[$App->id],'id = ?');	
 		$App->itemOld = Sql::getRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }  
 
@@ -196,7 +196,7 @@ switch(Core::$request->method) {
 		}	
 
 		/* parsa i post in base ai campi */
-		Form::parsePostByFields($App->params->fields['iblo'],$_lang,array());
+		Form::parsePostByFields($App->params->fields['iblo'],$_lang,[]);
 		if (Core::$resultOp->error > 0) { 
 			$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyIblo');
@@ -215,7 +215,7 @@ switch(Core::$request->method) {
 		}	
 
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['blocco'],Core::$langVars['%ITEM% modificato'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['blocco'],(string) Core::$langVars['%ITEM% modificato'])).'!';
 		if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyIblo/'.$App->id);
 		} else {
@@ -244,8 +244,8 @@ switch(Core::$request->method) {
 		//Config::$debugMode = 1;
 
 		$App->items = new stdClass;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
 		$qryFields[] = 'ite.*';	
 
 		//$qryFields[] = "(SELECT COUNT(img.id) FROM ".$App->params->tables['resources']." AS img WHERE img.id_owner = ite.id AND resource_type = 1) AS images";
@@ -253,11 +253,11 @@ switch(Core::$request->method) {
 		//$qryFields[] = "(SELECT COUNT(gal.id) FROM ".$App->params->tables['resources']." AS gal WHERE gal.id_owner = ite.id AND resource_type = 3) AS gallery";		
 		//$qryFields[] = "(SELECT COUNT(vid.id) FROM ".$App->params->tables['resources']." AS vid WHERE vid.id_owner = ite.id AND resource_type = 4) AS videos";	
 
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['iblo'],'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['iblo'],'');
 			}	
 		if ($App->id_owner > 0) {
 			$clause .= "id_owner = ?";
@@ -276,7 +276,7 @@ switch(Core::$request->method) {
 		if (Core::$resultOp->error <> 1) $obj = Sql::getRecords();
 		
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (isset($obj) && is_array($obj) && is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {	
 				$field = 'title_'.$_lang['user'];	
@@ -290,9 +290,9 @@ switch(Core::$request->method) {
 
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);	
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
-		$App->paginationTitle = preg_replace('/%START%/',$App->pagination->firstPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',$App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',$App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
 		
 		$App->pageSubTitle = Config::$langVars['lista dei blocchi contenuto associati ad una pagina'];	
 		$App->viewMethod = 'list';

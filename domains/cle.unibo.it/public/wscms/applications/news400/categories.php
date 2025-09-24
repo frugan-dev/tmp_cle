@@ -8,13 +8,13 @@ if (Core::$request->method == 'listCate' && $App->id > 0) $_MY_SESSION_VARS = $m
 
 /* GESTIONE TAG */
 $App->tags = new stdClass;	
-Sql::initQuery($App->params->tables['tags'],array('*'),array(),'');
-Sql::setOptions(array('fieldTokeyObj'=>'id'));
+Sql::initQuery($App->params->tables['tags'],['*'],[],'');
+Sql::setOptions(['fieldTokeyObj'=>'id']);
 Sql::setOrder('ordering ASC');
 $obj = Sql::getRecords();
 if (Core::$resultOp->error > 0) {echo Core::$resultOp->message; die;}
 /* sistemo i dati */
-$arr = array();
+$arr = [];
 if (is_array($obj) && is_array($obj) && count($obj) > 0) {
 	foreach ($obj AS $key=>$value) {	
 		$field = 'title_'.$_lang['user'];	
@@ -26,17 +26,17 @@ $App->tags = $arr;
 
 switch(Core::$request->method) {
 	case 'moreOrderingCate':
-		Utilities::increaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['cate'],'orderingType'=>$App->params->ordersType['cate'],'parent'=>0,'parentField'=>'id_cat','label'=>ucfirst($_lang['categoria']).' '.$_lang['spostata']));
+		Utilities::increaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['cate'],'orderingType'=>$App->params->ordersType['cate'],'parent'=>0,'parentField'=>'id_cat','label'=>ucfirst((string) $_lang['categoria']).' '.$_lang['spostata']]);
 		$App->viewMethod = 'list';	
 	break;
 	case 'lessOrderingCate':
-		Utilities::decreaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['cate'],'orderingType'=>$App->params->ordersType['cate'],'parent'=>0,'parentField'=>'id_cat','label'=>ucfirst($_lang['categoria']).' '.$_lang['spostata']));
+		Utilities::decreaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['cate'],'orderingType'=>$App->params->ordersType['cate'],'parent'=>0,'parentField'=>'id_cat','label'=>ucfirst((string) $_lang['categoria']).' '.$_lang['spostata']]);
 		$App->viewMethod = 'list';		
 	break;
 
 	case 'activeCate':
 	case 'disactiveCate':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tables['cate'],$App->id,array('label'=>$_lang['categoria'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tables['cate'],$App->id,['label'=>$_lang['categoria'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']]);
 		$App->viewMethod = 'list';		
 	break;
 	
@@ -45,26 +45,26 @@ switch(Core::$request->method) {
 			$delete = true;	
 			
 			/* controlla se ha voci associate */
-			Sql::initQuery($App->params->tables['item'],array('id'),array($App->id),'id_cat = ?');
+			Sql::initQuery($App->params->tables['item'],['id'],[$App->id],'id_cat = ?');
 			$count = Sql::countRecord();
 			if ($count > 0) {
 				Core::$resultOp->error = 2;
-				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',$_lang['voci'],$_lang['Ci sono ancora %ITEM% associate!']));	
+				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['voci'],(string) $_lang['Ci sono ancora %ITEM% associate!']));	
 				$delete = false;	
 				}
 		
 			if ($delete == true && Core::$resultOp->error == 0) {		
 				$App->itemOld = new stdClass;
-				Sql::initQuery($App->params->tables['cate'],array('filename'),array($App->id),'id = ?');
+				Sql::initQuery($App->params->tables['cate'],['filename'],[$App->id],'id = ?');
 				$App->itemOld = Sql::getRecord();
 				if (Core::$resultOp->error == 0) {
-					Sql::initQuery($App->params->tables['cate'],array('id'),array($App->id),'id = ?');
+					Sql::initQuery($App->params->tables['cate'],['id'],[$App->id],'id = ?');
 					Sql::deleteRecord();
 					if (Core::$resultOp->error == 0) {	
 						if (isset($App->itemOld->filename) && file_exists($App->params->uploadPaths['cate'].$App->itemOld->filename)) {
 							@unlink($App->params->uploadPaths['cate'].$App->itemOld->filename);			
 							}				
-						Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',$_lang['categoria'],$_lang['%ITEM% cancellata'])).'!';	
+						Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['categoria'],(string) $_lang['%ITEM% cancellata'])).'!';	
 						}
 					}
 				}
@@ -73,7 +73,7 @@ switch(Core::$request->method) {
 	break;
 	
 	case 'newCate':
-		$App->pageSubTitle = preg_replace('/%ITEM%/',$_lang['categoria'],$_lang['inserisci %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['categoria'],(string) $_lang['inserisci %ITEM%']);
 		$App->viewMethod = 'formNew';	
 	break;
 	
@@ -102,7 +102,7 @@ switch(Core::$request->method) {
 	   	if (Core::$resultOp->error == 0) {
 	   		
 	   		/* parsa i post in base ai campi */
-				Form::parsePostByFields($App->params->fields['cate'],$_lang,array());
+				Form::parsePostByFields($App->params->fields['cate'],$_lang,[]);
 				if (Core::$resultOp->error == 0) {							
 					Sql::insertRawlyPost($App->params->fields['cate'],$App->params->tables['cate']);
 					if(Core::$resultOp->error == 0) {
@@ -118,16 +118,12 @@ switch(Core::$request->method) {
 		} else {					
 			Core::$resultOp->error = 1;
 		}		
-		list($id,$App->viewMethod,$App->pageSubTitle,Core::$resultOp->message) = Form::getInsertRecordFromPostResults(0,Core::$resultOp,'',
-			array(		
-				'label inserted'=>preg_replace('/%ITEM%/',$_lang['categoria'],$_lang['%ITEM% inserita']),
-				'label insert'=>preg_replace('/%ITEM%/',$_lang['categoria'],$_lang['inserisci %ITEM%'])	
-			)
+		[$id, $App->viewMethod, $App->pageSubTitle, Core::$resultOp->message] = Form::getInsertRecordFromPostResults(0,Core::$resultOp,''
 		);
 	break;
 
 	case 'modifyCate':				
-		$App->pageSubTitle = preg_replace('/%ITEM%/',$_lang['categoria'],$_lang['modifica %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['categoria'],(string) $_lang['modifica %ITEM%']);
 		$App->viewMethod = 'formMod';
 	break;
 	
@@ -149,7 +145,7 @@ switch(Core::$request->method) {
 			/* end tagsId */	
 
 	   	/* preleva filename vecchio */
-			Sql::initQuery($App->params->tables['cate'],array('filename','org_filename'),array($App->id),'id = ?');
+			Sql::initQuery($App->params->tables['cate'],['filename','org_filename'],[$App->id],'id = ?');
 			$App->itemOld = Sql::getRecord();
 			if (Core::$resultOp->error == 0) {							
 				/* preleva il filename dal form */	  
@@ -172,7 +168,7 @@ switch(Core::$request->method) {
 			   		}
 			   			   
 			   	/* parsa i post in base ai campi */
-					Form::parsePostByFields($App->params->fields['cate'],$_lang,array());
+					Form::parsePostByFields($App->params->fields['cate'],$_lang,[]);
 					if (Core::$resultOp->error == 0) {							
 						Sql::updateRawlyPost($App->params->fields['cate'],$App->params->tables['cate'],'id',$App->id);
 						if (Core::$resultOp->error == 0) {
@@ -191,13 +187,7 @@ switch(Core::$request->method) {
 		} else {					
 			Core::$resultOp->error = 1;
 		}		
-		list($id,$App->viewMethod,$App->pageSubTitle,Core::$resultOp->message) = Form::getUpdateRecordFromPostResults($App->id,Core::$resultOp,'',
-			array(
-				'label modified'=>preg_replace('/%ITEM%/',$_lang['categoria'],$_lang['%ITEM% modificata']),
-				'label modify'=>preg_replace('/%ITEM%/',$_lang['categoria'],$_lang['modifica %ITEM%']),
-				'label insert'=>preg_replace('/%ITEM%/',$_lang['categoria'],$_lang['inserisci %ITEM%']),
-				'label modify applied'=>$_lang['modifiche applicate']
-			)
+		[$id, $App->viewMethod, $App->pageSubTitle, Core::$resultOp->message] = Form::getUpdateRecordFromPostResults($App->id,Core::$resultOp,''
 		);	
 	break;
 	
@@ -208,7 +198,7 @@ switch(Core::$request->method) {
 
 	case 'messageCate':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';
 	break;
 
@@ -227,7 +217,7 @@ switch(Core::$request->method) {
 switch((string)$App->viewMethod) {
 	case 'formNew':
 		$App->item = new stdClass;		
-		$App->itemTags = array();
+		$App->itemTags = [];
 		$App->item->active = 1;
 		$App->item->ordering = 0;
 		$App->item->created = $App->nowDateTime;
@@ -239,10 +229,10 @@ switch((string)$App->viewMethod) {
 	
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->params->tables['cate'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['cate'],['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
-		$App->itemTags = array();
-		if ($App->item->id_tags != '') $App->itemTags = explode(',',$App->item->id_tags);			
+		$App->itemTags = [];
+		if ($App->item->id_tags != '') $App->itemTags = explode(',',(string) $App->item->id_tags);			
 		if (Core::$resultOp->error == 1) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['cate']);
 		$App->templateApp = 'formCategory.html';
 		$App->methodForm = 'updateCate';	
@@ -252,16 +242,16 @@ switch((string)$App->viewMethod) {
 	case 'list':
 		$App->items = new stdClass;
 		$App->item = new stdClass;						
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);				
-		$qryFields = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);				
+		$qryFields = [];
 		$qryFields[] = "cat.*,(SELECT COUNT(ite.id) FROM ".$App->params->tables['item']." AS ite WHERE ite.id_cat = cat.id) AS items";	
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		$and = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['cate'],'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['cate'],'');
 			}	
 		if (isset($sessClause) && $sessClause != '') $clause .= $and.'('.$sessClause.')';
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {
@@ -275,7 +265,7 @@ switch((string)$App->viewMethod) {
 		//Sql::setOrder('datatimeins '.$App->params->ordersType['prod']);
 		if (Core::$resultOp->error <> 1) $obj = Sql::getRecords();
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (is_array($obj) && is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {	
 				$field = 'title_'.$_lang['user'];	
@@ -287,11 +277,11 @@ switch((string)$App->viewMethod) {
 		
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
-		$App->paginationTitle = preg_replace('/%START%/',$App->pagination->firstPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',$App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',$App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
 
-		$App->pageSubTitle = preg_replace('/%ITEM%/',$_lang['categorie'],$_lang['lista delle %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['categorie'],(string) $_lang['lista delle %ITEM%']);
 		$App->templateApp = 'listCategories.html';	
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.$App->pathApplications.Core::$request->action.'/templates/'.$App->templateUser.'/js/listCategories.js"></script>';
 	break;	

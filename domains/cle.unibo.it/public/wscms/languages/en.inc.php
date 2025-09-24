@@ -15,8 +15,8 @@ $_lang['data format string'] = "%DAY%th, %STRINGMONTH% %YEAR%";
 $_lang['charset'] = 'en-EN';
 $_lang['charset date'] = 'en_EN';
 
-$_lang['lista giorni'] = array('N.D.','lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica');
-$_lang['lista mesi'] = array('N.D.','january','february','march','april','may','june','july','august','september','october','november','december');
+$_lang['lista giorni'] = ['N.D.','lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica'];
+$_lang['lista mesi'] = ['N.D.','january','february','march','april','may','june','july','august','september','october','november','december'];
 
 $_lang['lingue'] = "languages";
 $_lang['lingua'] = "language";
@@ -132,8 +132,8 @@ $_lang['ordine abb'] = 'ord.';
 $_lang['ordine'] = 'order';
 
 
-$_lang['page-type'] = array('default'=>'Default','label'=>'label','url'=>'url','module-link'=>'link to module');
-$_lang['menu-type'] = array('default'=>'Default','label'=>'label','url'=>'Url','module-link'=>'Link to module','module-menu'=>'Menu-generated menu');
+$_lang['page-type'] = ['default'=>'Default','label'=>'label','url'=>'url','module-link'=>'link to module'];
+$_lang['menu-type'] = ['default'=>'Default','label'=>'label','url'=>'Url','module-link'=>'Link to module','module-menu'=>'Menu-generated menu'];
 $_lang['tipi di moduli menu gestiti'] = 'managed menu form types';
 $_lang['tipi di moduli menu gestiti info'] = '* <i>Listed menus can only be available if their modules are installed and active.</i>';
 
@@ -378,7 +378,7 @@ $_lang['testo errore mail'] = "It was not possible to send emails due to a serve
 $_lang['Nessuna voce trovata!'] = 'No entries found!';
 $_lang['indirizzo email NON valido'] = 'INVALID email address';
 
-$_lang = array_merge($_lang,array(
+$_lang = array_merge($_lang,[
 
     'altro comune' => 'other municipality',
     'cap' => 'Zip code',
@@ -492,5 +492,5 @@ $_lang = array_merge($_lang,array(
     'cookie tecnici' => 'technical cookies',
     'cookie di terze parti' => 'third party cookies'
     
-));
+]);
 ?>

@@ -40,23 +40,23 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 /* avvio sessione */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
 
 $App->params->tables['products'] = DB_TABLE_PREFIX.'products';
 
-$productsArray = array();
+$productsArray = [];
 $q = $_POST['q']; //This is the textbox value
 if ($q != '') {
-    Sql::initQuery($App->params->tables['products'],array('id,title'),array('%'.$q.'%'),'title LIKE ? AND active = 1');
+    Sql::initQuery($App->params->tables['products'],['id,title'],['%'.$q.'%'],'title LIKE ? AND active = 1');
     $pdoObject = Sql::getPdoObjRecords();
     while ($row = $pdoObject->fetch()) {
-            $productsArray[] = array(
+            $productsArray[] = [
                 'title'=>$row->title,
                 'id'=>$row->id
-            );
+            ];
     }		
 }
 echo json_encode($productsArray);

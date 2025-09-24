@@ -12,7 +12,7 @@ class Utilities extends Core
 	static $treeResult = '';
 	static $level = 0;
 	private static $pagination;
-	private static $arrayTitle = array(); /* gestione titoli parent sub categorie */
+	private static $arrayTitle = []; /* gestione titoli parent sub categorie */
 
 	public function __construct()
 	{
@@ -21,7 +21,7 @@ class Utilities extends Core
 
 	public static function getTitlesPage($moduledata,$pagedata,$lang,$opt) 
 	{
-		$optDef = array('titleField'=>'title');	
+		$optDef = ['titleField'=>'title'];	
 		$opt = array_merge($optDef,$opt);
 		$titles[$opt['titleField']] = '';
 		$titles[$opt['titleField'].'Seo'] = '';
@@ -29,11 +29,11 @@ class Utilities extends Core
 		$titles[$opt['titleField'].'Alt'] = '';
 		$titles[$opt['titleField'].'Alt1'] = '';
 		if (is_object($pagedata)) {
-			$titles[$opt['titleField']] = Multilanguage::getLocaleObjectValue($pagedata,$opt['titleField'].'_',$lang,array());
-			$titles[$opt['titleField'].'Seo'] = Multilanguage::getLocaleObjectValue($pagedata,$opt['titleField'].'_seo_',$lang,array());
-			$titles[$opt['titleField'].'Meta'] = Multilanguage::getLocaleObjectValue($pagedata,'meta_'.$opt['titleField'].'_',$lang,array());
-			$titles[$opt['titleField'].'Alt'] = Multilanguage::getLocaleObjectValue($pagedata,$opt['titleField'].'_alt_',$lang,array());
-			$titles[$opt['titleField'].'Alt1'] = Multilanguage::getLocaleObjectValue($pagedata,$opt['titleField'].'_alt1_',$lang,array());
+			$titles[$opt['titleField']] = Multilanguage::getLocaleObjectValue($pagedata,$opt['titleField'].'_',$lang,[]);
+			$titles[$opt['titleField'].'Seo'] = Multilanguage::getLocaleObjectValue($pagedata,$opt['titleField'].'_seo_',$lang,[]);
+			$titles[$opt['titleField'].'Meta'] = Multilanguage::getLocaleObjectValue($pagedata,'meta_'.$opt['titleField'].'_',$lang,[]);
+			$titles[$opt['titleField'].'Alt'] = Multilanguage::getLocaleObjectValue($pagedata,$opt['titleField'].'_alt_',$lang,[]);
+			$titles[$opt['titleField'].'Alt1'] = Multilanguage::getLocaleObjectValue($pagedata,$opt['titleField'].'_alt1_',$lang,[]);
 			}	
 			
 		if ($titles[$opt['titleField']] == '') $titles[$opt['titleField']] = $moduledata;
@@ -47,19 +47,19 @@ class Utilities extends Core
 	public static function getUnivocalAlias($alias,$opt) 
 	{
 		//Config::$debugMode = 1;
-		$optDef = array('fieldrif'=>'alias','exclude id'=>'','table'=>'','default alias'=>'');	
+		$optDef = ['fieldrif'=>'alias','exclude id'=>'','table'=>'','default alias'=>''];	
 		$opt = array_merge($optDef,$opt);
 		/* imposta default */
 		if ($alias == '') $alias = $opt['default alias'];
 		/* controlla se esiste gia un alias */
 		if ($opt['table'] != '') {
 			$clause = 'alias = ?';
-			$fieldValues = array($alias);
+			$fieldValues = [$alias];
 			if ($opt['exclude id'] != '') {
 				$clause .= ' AND id <> ?';
 				$fieldValues[] = intval($opt['exclude id']);
 			}
-			Sql::initQuery($opt['table'],array('id'),$fieldValues,$clause);
+			Sql::initQuery($opt['table'],['id'],$fieldValues,$clause);
 			$count = Sql::countRecord();
 			if ($count > 0) {
 				/* trovato corrispondenza */
@@ -67,7 +67,7 @@ class Utilities extends Core
 			}
 		}	
 		/* filtra alias */
-		$alias = SanitizeStrings::urlslug($alias,array());
+		$alias = SanitizeStrings::urlslug($alias,[]);
 		return $alias;
 	}
 
@@ -79,18 +79,18 @@ class Utilities extends Core
 		foreach (Config::$globalSettings['languages'] as $l) {
 			$url = Multilanguage::getLanguageUrl(Core::$request->action, Core::$request->method, Core::$request->param, Core::$request->params, $l);
 			if ($l == $sessionuser) {
-				$lk = preg_replace('/%URL%/', $url, $template['links active']);
+				$lk = preg_replace('/%URL%/', (string) $url, (string) $template['links active']);
 			} else {
-				$lk = preg_replace('/%URL%/', $url, $template['links']);
+				$lk = preg_replace('/%URL%/', (string) $url, (string) $template['links']);
 			}
-			$lk = preg_replace('/%TITLE%/', strtoupper(Config::$langVars['lista lingue'][$l]), $lk);
+			$lk = preg_replace('/%TITLE%/', strtoupper((string) Config::$langVars['lista lingue'][$l]), $lk);
 			$links .= $lk;
 		}
-		$html = preg_replace('/%LINKS%/', $links, $html);
+		$html = preg_replace('/%LINKS%/', $links, (string) $html);
 		return $html;
 	}
 
-	public static function generateBreadcrumbsTree($array, $lang, $opt = array())
+	public static function generateBreadcrumbsTree($array, $lang, $opt = [])
 	{
 		
 		
@@ -99,7 +99,7 @@ class Utilities extends Core
 
 		//ToolsStrings::dump($opt['template']);die();
 		
-		$optDef = array('template' => '','middleurl'=>false);
+		$optDef = ['template' => '','middleurl'=>false];
 		$opt = array_merge($optDef, $opt);
 		$str = '';
 		$links = '';
@@ -119,30 +119,30 @@ class Utilities extends Core
 						$links .= $opt['template']['nolinks'];
 					}
 				}
-				if (isset($value['title'])) $links = preg_replace('/%TITLE%/', $value['title'], $links);
-				if (isset($value['url'])) $links = preg_replace('/%URL%/', $value['url'], $links);
+				if (isset($value['title'])) $links = preg_replace('/%TITLE%/', (string) $value['title'], $links);
+				if (isset($value['url'])) $links = preg_replace('/%URL%/', (string) $value['url'], (string) $links);
 			}
 
-			$str = preg_replace('/%LINKS%/', $links, $str);
-			$str = preg_replace('/%TITLEPAGE%/', $value['title'], $str);
+			$str = preg_replace('/%LINKS%/', (string) $links, (string) $str);
+			$str = preg_replace('/%TITLEPAGE%/', (string) $value['title'], $str);
 		}
 
 		//echo $str;die();
 		return $str;
 	}
 
-	public static function getHTMLMessagesCore($obj, $opz = array())
+	public static function getHTMLMessagesCore($obj, $opz = [])
 	{
-		$opzDef = array(
+		$opzDef = [
 			'template' => '<div class="container"><div class="row"><div class="col-12"><div class="alert%CLASS%">%CONTENT%</div></div></div></div>',
 			'class danger' => ' alert-danger fade in',
 			'class success' => ' alert-success fade in',
 			'class warning' => ' alert-warning fade in',
 			'class default' => 'white'
-		);
+		];
 		$opz = array_merge($opzDef, $opz);
 		$html = '';
-		list($show, $error, $type, $content) = self::getMessagesCore($obj);
+		[$show, $error, $type, $content] = self::getMessagesCore($obj);
 		if ($content != '') {
 			$html = $opz['template'];
 			$alert = $opz['class default'];
@@ -150,8 +150,8 @@ class Utilities extends Core
 			if ($error == 0) $alert = $opz['class success'];
 			if ($error == 2) $alert = $opz['class warning'];
 
-			$html = preg_replace('/%CLASS%/', $alert, $html);
-			$html = preg_replace('/%CONTENT%/', $content, $html);
+			$html = preg_replace('/%CLASS%/', (string) $alert, (string) $html);
+			$html = preg_replace('/%CONTENT%/', (string) $content, $html);
 		}
 		return $html;
 	}
@@ -171,7 +171,7 @@ class Utilities extends Core
 			$content .= implode('<br>', $obj->messages);
 			$show = true;
 		}
-		return array($show, $error, $type, $content);
+		return [$show, $error, $type, $content];
 	}
 
 	public static function getPagination($page = 1, $itemsTotal = 1, $itemsForPage = 1)
@@ -183,8 +183,8 @@ class Utilities extends Core
 		$totalpage = 1;
 		$previous = 1;
 		$next = 1;
-		$pagePrevious = array();
-		$pageNext = array();
+		$pagePrevious = [];
+		$pageNext = [];
 		$firstPartItem = 1;
 		$lastPartItem = 1;
 
@@ -275,68 +275,68 @@ class Utilities extends Core
 
 	public static function decreaseFieldOrdering($id, $lang, $opt)
 	{
-		$optDef = array('addclauseparent' => '', 'addclauseparentvalues' => array(), 'idFieldRif' => 'id', 'parent' => 0, 'parentField' => 'parent', 'orderingFieldRif' => 'ordering', 'orderingType' => 'DESC', 'label' => $lang['voce'] . ' ' . $lang['spostata'], 'table' => '');
+		$optDef = ['addclauseparent' => '', 'addclauseparentvalues' => [], 'idFieldRif' => 'id', 'parent' => 0, 'parentField' => 'parent', 'orderingFieldRif' => 'ordering', 'orderingType' => 'DESC', 'label' => $lang['voce'] . ' ' . $lang['spostata'], 'table' => ''];
 		$opt = array_merge($optDef, $opt);
 		$orderingFieldRif = $opt['orderingFieldRif'];
 		$parentField = $opt['parentField'];
 		/* recupera l'orinamento */
 		/* imposta i campi di riferimento */
-		$field = array($opt['orderingFieldRif']);
+		$field = [$opt['orderingFieldRif']];
 		if ($opt['parent'] == 1) {
-			$field = array($opt['parentField'], $opt['orderingFieldRif']);
+			$field = [$opt['parentField'], $opt['orderingFieldRif']];
 		}
 		/* prende l'ordinamento memorizzato */
-		Sql::initQuery($opt['table'], $field, array($id), $opt['idFieldRif'] . ' = ?');
+		Sql::initQuery($opt['table'], $field, [$id], $opt['idFieldRif'] . ' = ?');
 		$itemData = Sql::getRecord();
 		if (self::$resultOp->error == 0) {
 			if (isset($itemData->$orderingFieldRif) && $itemData->$orderingFieldRif > 0) {
 				/* controlla che si siano valori inferiori */
 				/* imposta i campi di riferimento */
 				$where = $opt['orderingFieldRif'] . ' < ?';
-				$fieldsValues = array($itemData->$orderingFieldRif);
+				$fieldsValues = [$itemData->$orderingFieldRif];
 				if ($opt['parent'] == 1) {
-					$fieldsValues = array($itemData->$orderingFieldRif, $itemData->$parentField);
+					$fieldsValues = [$itemData->$orderingFieldRif, $itemData->$parentField];
 					if (count($opt['addclauseparentvalues']) > 0) $fieldsValues = array_merge($fieldsValues, $opt['addclauseparentvalues']);
 					$where .= ' AND ' . $opt['parentField'] . ' = ?';
 					if ($opt['addclauseparent'] != '') $where .= ' AND ' . $opt['addclauseparent'];
 				}
-				$count = Sql::initQuery($opt['table'], array($id), $fieldsValues, $where);
+				$count = Sql::initQuery($opt['table'], [$id], $fieldsValues, $where);
 				if (self::$resultOp->type == 0) {
 					$count = Sql::countRecord();
 					if ($count > 0) {
 						$where = $opt['orderingFieldRif'] . ' = ?';
-						$fieldsValues = array($itemData->$orderingFieldRif - 1);
+						$fieldsValues = [$itemData->$orderingFieldRif - 1];
 						if ($opt['parent'] == 1) {
-							$fieldsValues = array($itemData->$orderingFieldRif - 1, $itemData->$parentField);
+							$fieldsValues = [$itemData->$orderingFieldRif - 1, $itemData->$parentField];
 							if (count($opt['addclauseparentvalues']) > 0) $fieldsValues = array_merge($fieldsValues, $opt['addclauseparentvalues']);
 							$where .= ' AND ' . $opt['parentField'] . ' = ?';
 							if ($opt['addclauseparent'] != '') $where .= ' AND ' . $opt['addclauseparent'];
 						}
 						/* controlla se c'e un ordine inferiore */
-						$count = Sql::initQuery($opt['table'], array($id), $fieldsValues, $where);
+						$count = Sql::initQuery($opt['table'], [$id], $fieldsValues, $where);
 						$count = Sql::countRecord();
 						if (self::$resultOp->type == 0) {
 							if ($count > 0) {
 								$where = $opt['orderingFieldRif'] . ' = ?';
-								$fieldsValues = array($itemData->$orderingFieldRif, $itemData->$orderingFieldRif - 1);
+								$fieldsValues = [$itemData->$orderingFieldRif, $itemData->$orderingFieldRif - 1];
 								if ($opt['parent'] == 1) {
-									$fieldsValues = array($itemData->$orderingFieldRif, $itemData->$orderingFieldRif - 1, $itemData->$parentField);
+									$fieldsValues = [$itemData->$orderingFieldRif, $itemData->$orderingFieldRif - 1, $itemData->$parentField];
 									if (count($opt['addclauseparentvalues']) > 0) $fieldsValues = array_merge($fieldsValues, $opt['addclauseparentvalues']);
 									$where .= ' AND ' . $opt['parentField'] . ' = ?';
 									if ($opt['addclauseparent'] != '') $where .= ' AND ' . $opt['addclauseparent'];
 								}
-								Sql::initQuery($opt['table'], array($opt['orderingFieldRif']), $fieldsValues, $where);
+								Sql::initQuery($opt['table'], [$opt['orderingFieldRif']], $fieldsValues, $where);
 								Sql::updateRecord();
 							}
 							$where = $opt['idFieldRif'] . ' = ?';
-							$fieldsValues = array($itemData->$orderingFieldRif - 1, $id);
+							$fieldsValues = [$itemData->$orderingFieldRif - 1, $id];
 							if ($opt['parent'] == 1) {
-								$fieldsValues = array($itemData->$orderingFieldRif - 1, $id, $itemData->$parentField);
+								$fieldsValues = [$itemData->$orderingFieldRif - 1, $id, $itemData->$parentField];
 								if (count($opt['addclauseparentvalues']) > 0) $fieldsValues = array_merge($fieldsValues, $opt['addclauseparentvalues']);
 								$where .= ' AND ' . $opt['parentField'] . ' = ?';
 								if ($opt['addclauseparent'] != '') $where .= ' AND ' . $opt['addclauseparent'];
 							}
-							Sql::initQuery($opt['table'], array($opt['orderingFieldRif']), $fieldsValues, $where);
+							Sql::initQuery($opt['table'], [$opt['orderingFieldRif']], $fieldsValues, $where);
 							Sql::updateRecord();
 							if (self::$resultOp->type == 0) {
 								self::$resultOp->message =  ($opt['orderingType'] == 'DESC' ? $opt['label'] . ' ' . $lang['giu'] . '!' : $opt['label'] . ' ' . $lang['su'] . '!');
@@ -370,69 +370,69 @@ class Utilities extends Core
 
 	public static function increaseFieldOrdering($id, $lang, $opt)
 	{
-		$optDef = array('addclauseparent' => '', 'addclauseparentvalues' => array(), 'idFieldRif' => 'id', 'parent' => 0, 'parentField' => 'parent', 'orderingFieldRif' => 'ordering', 'orderingType' => 'DESC', 'label' => $lang['voce'] . ' ' . $lang['spostata'], 'table' => '');
+		$optDef = ['addclauseparent' => '', 'addclauseparentvalues' => [], 'idFieldRif' => 'id', 'parent' => 0, 'parentField' => 'parent', 'orderingFieldRif' => 'ordering', 'orderingType' => 'DESC', 'label' => $lang['voce'] . ' ' . $lang['spostata'], 'table' => ''];
 		$opt = array_merge($optDef, $opt);
 		$orderingFieldRif = $opt['orderingFieldRif'];
 		$parentField = $opt['parentField'];
 		/* recupera l'orinamento */
 		/* imposta i campi di riferimento */
-		$field = array($opt['orderingFieldRif']);
+		$field = [$opt['orderingFieldRif']];
 		if ($opt['parent'] == 1) {
-			$field = array($opt['parentField'], $opt['orderingFieldRif']);
+			$field = [$opt['parentField'], $opt['orderingFieldRif']];
 		}
 		/* prende l'ordinamento memorizzato */
-		Sql::initQuery($opt['table'], $field, array($id), $opt['idFieldRif'] . ' = ?');
+		Sql::initQuery($opt['table'], $field, [$id], $opt['idFieldRif'] . ' = ?');
 		$itemData = Sql::getRecord();
 		if (self::$resultOp->error == 0) {
 			if (isset($itemData->$orderingFieldRif) && $itemData->$orderingFieldRif > 0) {
 				/* controlla che si siano valori superiori */
 				/* imposta i campi di riferimento */
 				$where = $opt['orderingFieldRif'] . ' > ?';
-				$fieldsValues = array($itemData->$orderingFieldRif);
+				$fieldsValues = [$itemData->$orderingFieldRif];
 				if ($opt['parent'] == 1) {
-					$fieldsValues = array($itemData->$orderingFieldRif, $itemData->$parentField);
+					$fieldsValues = [$itemData->$orderingFieldRif, $itemData->$parentField];
 					if (count($opt['addclauseparentvalues']) > 0) $fieldsValues = array_merge($fieldsValues, $opt['addclauseparentvalues']);
 					$where .= ' AND ' . $parentField . ' = ?';
 					if ($opt['addclauseparent'] != '') $where .= ' AND ' . $opt['addclauseparent'];
 				}
-				$count = Sql::initQuery($opt['table'], array($id), $fieldsValues, $where);
+				$count = Sql::initQuery($opt['table'], [$id], $fieldsValues, $where);
 				if (self::$resultOp->type == 0) {
 					$count = Sql::countRecord();
 					if ($count > 0) {
 						/* controlla se c'e un ordine superiore */
 						$where = $opt['orderingFieldRif'] . ' = ?';
-						$fieldsValues = array($itemData->$orderingFieldRif + 1);
+						$fieldsValues = [$itemData->$orderingFieldRif + 1];
 						if ($opt['parent'] == 1) {
-							$fieldsValues = array($itemData->$orderingFieldRif + 1, $itemData->$parentField);
+							$fieldsValues = [$itemData->$orderingFieldRif + 1, $itemData->$parentField];
 							if (count($opt['addclauseparentvalues']) > 0) $fieldsValues = array_merge($fieldsValues, $opt['addclauseparentvalues']);
 							$where .= ' AND ' . $parentField . ' = ?';
 							if ($opt['addclauseparent'] != '') $where .= ' AND ' . $opt['addclauseparent'];
 						}
 						/* controlla se c'e un ordine superiore */
-						$count = Sql::initQuery($opt['table'], array($id), $fieldsValues, $where);
+						$count = Sql::initQuery($opt['table'], [$id], $fieldsValues, $where);
 						$count = Sql::countRecord();
 						if (self::$resultOp->type == 0) {
 							if ($count > 0) {
 								$where = $opt['orderingFieldRif'] . ' = ?';
-								$fieldsValues = array($itemData->$orderingFieldRif, $itemData->$orderingFieldRif + 1);
+								$fieldsValues = [$itemData->$orderingFieldRif, $itemData->$orderingFieldRif + 1];
 								if ($opt['parent'] == 1) {
-									$fieldsValues = array($itemData->$orderingFieldRif, $itemData->$orderingFieldRif + 1, $itemData->$parentField);
+									$fieldsValues = [$itemData->$orderingFieldRif, $itemData->$orderingFieldRif + 1, $itemData->$parentField];
 									if (count($opt['addclauseparentvalues']) > 0) $fieldsValues = array_merge($fieldsValues, $opt['addclauseparentvalues']);
 									$where .= ' AND ' . $opt['parentField'] . ' = ?';
 									if ($opt['addclauseparent'] != '') $where .= ' AND ' . $opt['addclauseparent'];
 								}
-								Sql::initQuery($opt['table'], array($opt['orderingFieldRif']), $fieldsValues, $where);
+								Sql::initQuery($opt['table'], [$opt['orderingFieldRif']], $fieldsValues, $where);
 								Sql::updateRecord();
 							}
 							$where = $opt['idFieldRif'] . ' = ?';
-							$fieldsValues = array($itemData->$orderingFieldRif + 1, $id);
+							$fieldsValues = [$itemData->$orderingFieldRif + 1, $id];
 							if ($opt['parent'] == 1) {
-								$fieldsValues = array($itemData->$orderingFieldRif + 1, $id, $itemData->$parentField);
+								$fieldsValues = [$itemData->$orderingFieldRif + 1, $id, $itemData->$parentField];
 								if (count($opt['addclauseparentvalues']) > 0) $fieldsValues = array_merge($fieldsValues, $opt['addclauseparentvalues']);
 								$where .= ' AND ' . $opt['parentField'] . ' = ?';
 								if ($opt['addclauseparent'] != '') $where .= ' AND ' . $opt['addclauseparent'];
 							}
-							Sql::initQuery($opt['table'], array($opt['orderingFieldRif']), $fieldsValues, $where);
+							Sql::initQuery($opt['table'], [$opt['orderingFieldRif']], $fieldsValues, $where);
 							Sql::updateRecord();
 							if (self::$resultOp->type == 0) {
 								self::$resultOp->message = ($opt['orderingType'] == 'DESC' ? $opt['label'] . ' ' . $lang['su'] . '!' : $opt['label'] . ' ' . $lang['giu'] . '!');
@@ -479,14 +479,14 @@ class Utilities extends Core
 	public static function filterListDataObj($mainData, $fieldsSearch, $search)
 	{
 		$obj = new stdclass();
-		$arr = array();
+		$arr = [];
 		if (is_array($mainData)) {
 			foreach ($mainData as $key => $value) {
 				$copy = false;
 				if (is_array($fieldsSearch)) {
 					foreach ($fieldsSearch as $key1 => $value1) {
 						if (isset($value->$key1)) {
-							if (strripos($value->$key1, $search) !== false) $copy = true;
+							if (strripos($value->$key1, (string) $search) !== false) $copy = true;
 						}
 					}
 				}
@@ -499,14 +499,14 @@ class Utilities extends Core
 	public static function filterListDataArray($mainData, $fieldsSearch, $search)
 	{
 		$obj = new stdclass();
-		$arr = array();
+		$arr = [];
 		if (is_array($mainData)) {
 			foreach ($mainData as $key => $value) {
 				$copy = false;
 				if (is_array($fieldsSearch)) {
 					foreach ($fieldsSearch as $key1 => $value1) {
 						if (isset($value->$key1)) {
-							if (strripos($value->$key1, $search) !== false) {
+							if (strripos($value->$key1, (string) $search) !== false) {
 								$copy = true;
 							}
 						}
@@ -585,12 +585,12 @@ class Utilities extends Core
 					$fieldTitleSeo = 'title_seo_';
 					$fieldTitleMeta = 'title_meta_';
 
-					if ($titleField != '')  $fieldTitle = rtrim($titleField, '_') . '_' . $langSuffix;
+					if ($titleField != '')  $fieldTitle = rtrim((string) $titleField, '_') . '_' . $langSuffix;
 
 					/* gestione multilingua */
-					$valueTitle = Multilanguage::getLocaleObjectValue($value, $fieldTitle, $langSuffix, array());
-					$valueTitleSeo = Multilanguage::getLocaleObjectValue($value, $fieldTitleSeo, $langSuffix, array());
-					$valueTitleMeta = Multilanguage::getLocaleObjectValue($value, $fieldTitleMeta, $langSuffix, array());
+					$valueTitle = Multilanguage::getLocaleObjectValue($value, $fieldTitle, $langSuffix, []);
+					$valueTitleSeo = Multilanguage::getLocaleObjectValue($value, $fieldTitleSeo, $langSuffix, []);
+					$valueTitleMeta = Multilanguage::getLocaleObjectValue($value, $fieldTitleMeta, $langSuffix, []);
 
 
 					if (self::$level == 0) $classLi = $classMainLi;
@@ -640,11 +640,11 @@ class Utilities extends Core
 					}
 
 					$hrefValue = str_replace('{{URLSITE}}', URL_SITE, $hrefValue);
-					$hrefValue = preg_replace('/{{ID}}/', $value->id, $hrefValue);
-					$hrefValue = preg_replace('/{{SEO}}/', $valueTitleSeo, $hrefValue);
-					$hrefValue = preg_replace('/{{SEOCLEAN}}/', SanitizeStrings::urlslug($valueTitleSeo, array()), $hrefValue);
-					$hrefValue = preg_replace('/{{SEOENCODE}}/', urlencode($valueTitleSeo), $hrefValue);
-					$hrefValue = preg_replace('/{{TITLE}}/', urlencode($valueTitleSeo), $hrefValue);
+					$hrefValue = preg_replace('/{{ID}}/', (string) $value->id, $hrefValue);
+					$hrefValue = preg_replace('/{{SEO}}/', (string) $valueTitleSeo, $hrefValue);
+					$hrefValue = preg_replace('/{{SEOCLEAN}}/', (string) SanitizeStrings::urlslug($valueTitleSeo, []), $hrefValue);
+					$hrefValue = preg_replace('/{{SEOENCODE}}/', urlencode((string) $valueTitleSeo), $hrefValue);
+					$hrefValue = preg_replace('/{{TITLE}}/', urlencode((string) $valueTitleSeo), $hrefValue);
 
 					self::$treeResult .= '<li' . $strShowLiId . ' class="' . $classLi . '">' . "\n";
 					self::$treeResult .= '<a' . $strShowHrefId . ' class="' . $classAref . '" href="' . $hrefValue . '"';

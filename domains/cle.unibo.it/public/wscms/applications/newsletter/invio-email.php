@@ -31,7 +31,7 @@ switch(Core::$request->method) {
 		}
 
 		// preleva i dati della newsletter
-		Sql::initQuery($App->tableNew,array('*'),array($newsletter_id),'active = 1 AND id = ?');
+		Sql::initQuery($App->tableNew,['*'],[$newsletter_id],'active = 1 AND id = ?');
 		$App->newsletterDetails = Sql::getRecord();	
 		if (Core::$resultOp->error > 0) { die('Errore database preleva i dati della newsletter'); }
 		if (!isset($App->newsletterDetails->id) || (isset($App->newsletterDetails->id) && $App->newsletterDetails->id == 0)) {
@@ -49,14 +49,14 @@ switch(Core::$request->method) {
 
 		$file = ADMIN_PATH_UPLOAD_DIR.$App->templatesFolder.$App->newsletterDetails->template;
 		$urldelete = URL_SITE.$App->settings['admin url delete address']->value_it;
-		$App->newsletterDetails->content_it = ToolsStrings::parseHtmlContent($App->newsletterDetails->content_it,array('customtag'=>'{{PATHNEWSLETTER}}','customtagvalue'=>UPLOAD_DIR.$App->templatesFolder));
+		$App->newsletterDetails->content_it = ToolsStrings::parseHtmlContent($App->newsletterDetails->content_it,['customtag'=>'{{PATHNEWSLETTER}}','customtagvalue'=>UPLOAD_DIR.$App->templatesFolder]);
 		if (file_exists($file) == true) {
 			$mailbody = file_get_contents($file);
 			$mailbody = preg_replace('/%PATHNEWSLETTER%/',UPLOAD_DIR.$App->templatesFolder,$mailbody);	
-			$mailbody = preg_replace('/%DATATIMEINS%/',$App->newsletterDetails->datatimeins,$mailbody);
-			$mailbody = preg_replace('/%TITLE%/', htmlspecialchars($App->newsletterDetails->title_it),$mailbody);
-			$mailbody = preg_replace('/%CONTENT%/',$App->newsletterDetails->content_it,$mailbody);
-			$mailbody = preg_replace('/%URLSITE%/',URL_SITE,$mailbody);	
+			$mailbody = preg_replace('/%DATATIMEINS%/',$App->newsletterDetails->datatimeins,(string) $mailbody);
+			$mailbody = preg_replace('/%TITLE%/', htmlspecialchars($App->newsletterDetails->title_it),(string) $mailbody);
+			$mailbody = preg_replace('/%CONTENT%/',(string) $App->newsletterDetails->content_it,(string) $mailbody);
+			$mailbody = preg_replace('/%URLSITE%/',URL_SITE,(string) $mailbody);	
 	    } else {
 			$mailbody = $App->newsletterDetails->content_it;
 		}
@@ -64,7 +64,7 @@ switch(Core::$request->method) {
 		//echo $mailbody; die();
 			
 		// controlla se ci sono ancora email da inviare
-		Sql::initQuery($App->tableIndInvio,array('*'),array(),'inviata = 0');
+		Sql::initQuery($App->tableIndInvio,['*'],[],'inviata = 0');
 		Sql::setLimit(' LIMIT 1  OFFSET 0');
 		$listAddress = Sql::getRecords();
 		if (Core::$resultOp->error > 0) { die('Errore database controlla se ci sono ancora email da inviare'); }
@@ -80,7 +80,7 @@ switch(Core::$request->method) {
 
 						// aggiorna il file con l'hash indirizzo
 						$mailbodySend = $mailbody;
-						$mailbodySend = preg_replace('/%URLDELETE%/',$urldelete.'/'.$value->hash,$mailbodySend);
+						$mailbodySend = preg_replace('/%URLDELETE%/',$urldelete.'/'.$value->hash,(string) $mailbodySend);
 
 						// imposto la email
 						$mail = new PHPMailer();			
@@ -110,7 +110,7 @@ switch(Core::$request->method) {
 						}	
 						
 						// imposta il flag invio
-						Sql::initQuery($App->tableIndInvio,array('inviata'),array('1',$value->id),'id = ?');
+						Sql::initQuery($App->tableIndInvio,['inviata'],['1',$value->id],'id = ?');
 						Sql::updateRecord();
 						if (Core::$resultOp->error > 0) { die('Errore database imposta il flag invio zero'); }	
 
@@ -143,7 +143,7 @@ switch(Core::$request->method) {
 
 
 			// setta i paremetri inviata nella newsletter
-			Sql::initQuery($App->params->tables['new'],array('datatimesent','sent'),array($now,'1',$newsletter_id),'id = ?');
+			Sql::initQuery($App->params->tables['new'],['datatimesent','sent'],[$now,'1',$newsletter_id],'id = ?');
 			//Sql::updateRecord();
 			if (Core::$resultOp->error > 0) { die('Errore database setta i paremetri inviata nella newsletter'); }	
 
@@ -184,7 +184,7 @@ switch(Core::$request->method) {
 		$App->newsletter->id = 0;
 		
 		/* preleva le newsletter per la select */		
-		Sql::initQuery($App->tableNew,array('*'));
+		Sql::initQuery($App->tableNew,['*']);
 		Sql::setOrder('datatimeins DESC');
 		$App->newsletterSelect = Sql::getRecords();
 		if (Core::$resultOp->error == 1) die();
@@ -196,7 +196,7 @@ switch(Core::$request->method) {
 		$App->newsletter->id = intval($_SESSION['newsletter']['newsletter da inviare finale']);
 
 		if ($App->newsletter->id > 0) {
-			Sql::initQuery($App->tableNew,array('*'),array($App->newsletter->id),'active = 1 AND id = ?');
+			Sql::initQuery($App->tableNew,['*'],[$App->newsletter->id],'active = 1 AND id = ?');
 			$obj = Sql::getRecord();
 			if (Core::$resultOp->error == 0) {
 				$App->newsletter = $obj;

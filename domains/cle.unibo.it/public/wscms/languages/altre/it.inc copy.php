@@ -15,8 +15,8 @@ $_lang['data format string'] = "%DAY% %STRINGMONTH% %YEAR%";
 $_lang['charset'] = 'it-IT';
 $_lang['charset date'] = 'it_IT';
 
-$_lang['lista giorni'] = array('N.D.','lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica');
-$_lang['lista mesi'] = array('N.D.','gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre');
+$_lang['lista giorni'] = ['N.D.','lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica'];
+$_lang['lista mesi'] = ['N.D.','gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
 
 $_lang['lingue'] = "lingue";
 $_lang['lingua'] = "lingua";
@@ -43,7 +43,7 @@ $_lang['lista lingue abbreviate']['hr'] = "cro";
 $_lang['lista lingue abbreviate']['cn'] = "cin";
 $_lang['lista lingue abbreviate']['el'] = "gre";
 $_lang['lista lingue abbreviate']['pl'] = "pol";
-	
+
 /* label */
 $_lang['privacy policy'] = "privacy policy";
 $_lang['href-title privacy policy'] = "Leggi la privacy policy";
@@ -131,8 +131,8 @@ $_lang['ordinamento'] = "ordinamento";
 $_lang['ordine abb'] = 'ord.';
 $_lang['ordine'] = 'ordine';
 
-$_lang['page-type'] = array('default'=>'contenuto','label'=>'etichetta','url'=>'url','module-link'=>'link a modulo');
-$_lang['menu-type'] = array('default'=>'Default','label'=>'Etichetta','url'=>'Url','module-link'=>'Link a modulo','module-menu'=>'Menu generato da modulo');
+$_lang['page-type'] = ['default'=>'contenuto','label'=>'etichetta','url'=>'url','module-link'=>'link a modulo'];
+$_lang['menu-type'] = ['default'=>'Default','label'=>'Etichetta','url'=>'Url','module-link'=>'Link a modulo','module-menu'=>'Menu generato da modulo'];
 $_lang['tipi di moduli menu gestiti'] = 'tipi di moduli menu gestiti';
 $_lang['tipi di moduli menu gestiti info'] = '* <i>I menu in elenco possono essere disponibili solo se i relativi moduli sono installati e attivi.</i>';
 
@@ -386,7 +386,7 @@ $_lang['testo errore mail'] = "Non è stato possibile inviare emails per un prob
 $_lang['Nessuna voce trovata!'] = 'Nessuna voce trovata!';
 $_lang['indirizzo email NON valido'] = 'indirizzo email NON valido';
 
-$_lang = array_merge($_lang,array(
+$_lang = array_merge($_lang,[
 
     'lingue' => 'lingue',
 
@@ -411,7 +411,7 @@ $_lang = array_merge($_lang,array(
     'contenuti' => 'contenuti',
 
     'galleria' => 'galleria',
-    
+
     'blocco' => 'blocco',
     'ordini' => 'ordini',
     'impostazioni' => 'impostazioni',
@@ -448,8 +448,8 @@ $_lang = array_merge($_lang,array(
     'configurazione modulo meta description - testo' => 'Il titolo da inserite nel tag HTML<br> <b>[meta name="description"]</b>',    
     'configurazione modulo meta keywords' => 'Meta keywords',
     'configurazione modulo meta keywords - testo' => 'Il titolo da inserite nel tag HTML<br> <b>[meta name="keywords"]</b>',
-    
-    
+
+
 
 
 
@@ -463,7 +463,7 @@ $_lang = array_merge($_lang,array(
 
     // messaggi conferme
     'Tag SEO modificati correttamente' => 'Tag SEO modificati correttamente',
-    
+
     // errori
     'Il valore per il campo %ITEM% non è stato validato!' => 'Il valore per il campo %ITEM% non è stato validato!',
     'Il campo %ITEM% deve avere un numero di caratteri totale di %VALUERIF%!' => 'Il campo %ITEM% deve avere un numero di caratteri totale di %VALUERIF%!',
@@ -473,7 +473,7 @@ $_lang = array_merge($_lang,array(
     'Indirizzo email %EMAIL% è disponibile!' => 'Indirizzo email %EMAIL% è disponibile!',
     'Indirizzo email %EMAIL% risulta già presente nel nostro database!' => 'Indirizzo email %EMAIL% risulta già presente nel nostro database!',
     'Devi inserire un indirizzo email valido!' => 'Devi inserire un indirizzo email valido!',
-	
+
 	'Il campo %ITEM% NON deve superare i %VALUERIF% caratteri!' => 'Il campo %ITEM% NON deve superare i %VALUERIF% caratteri!',
 
     // messaggi emails
@@ -484,7 +484,7 @@ $_lang = array_merge($_lang,array(
     'testo email sezione richiesta username' => "<p>Come da richiesta le inviamo il nome utente iscritto al sito <b>%SITENAME%</b> che è associato all'indirizzo email: <b>%EMAIL%</b></p><p>Nome Utente: <b>%USERNAME%</b></p>",
     'Email inviata correttamente! Nel testo troverete il username!' => "Email inviata correttamente! Nel testo troverete l'username!",
     'La nuova password vi è stata inviata con email indirizzo associato ed è stata memorizzata nel sistema!' => "La nuova password vi è stata inviata con una email all'indirizzo associato ed è stata memorizzata nel sistema!",
-));
+]);
 
 
 

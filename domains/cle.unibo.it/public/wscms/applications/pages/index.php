@@ -15,34 +15,34 @@ $App->pageTitle = $App->params->pageTitle;
 $App->id = intval(Core::$request->param);
 if (isset($_POST['id'])) $App->id = intval($_POST['id']);
 
-$App->defaultJavascript = "messages['Devi inserire un contenuto!'] = '".preg_replace('/%ITEM%/',$_lang['contenuto'],$_lang['Devi inserire un %ITEM%!'])."';";
+$App->defaultJavascript = "messages['Devi inserire un contenuto!'] = '".preg_replace('/%ITEM%/',(string) $_lang['contenuto'],(string) $_lang['Devi inserire un %ITEM%!'])."';";
 
-switch(substr(Core::$request->method,-4,4)) {
+switch(substr((string) Core::$request->method,-4,4)) {
 	case 'Iimg':
 		$App->sessionName = $App->sessionName.'-images';
 		$App->params->tables['resources'] = $App->params->tableRif.'_resources';
-		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0'));
+		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0']);
 		$Module = new Module($App->params->tables['resources'],Core::$request->action,$_MY_SESSION_VARS[$App->sessionName]);	
 		include_once(PATH.$App->pathApplications.Core::$request->action."/item-images.php");	
 	break;
 	case 'Ifil':
 		$App->sessionName = $App->sessionName.'-files';
 		$App->params->tables['resources'] = $App->params->tableRif.'_resources';
-		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0'));
+		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0']);
 		$Module = new Module($App->params->tables['resources'],Core::$request->action,$_MY_SESSION_VARS[$App->sessionName]);	
 		include_once(PATH.$App->pathApplications.Core::$request->action."/item-files.php");	
 	break;
 	case 'Igal':
 		$App->sessionName = $App->sessionName.'-gallery';
 		$App->params->tables['resources'] = $App->params->tableRif.'_resources';
-		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0'));
+		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0']);
 		$Module = new Module($App->params->tables['resources'],Core::$request->action,$_MY_SESSION_VARS[$App->sessionName]);	
 		include_once(PATH.$App->pathApplications.Core::$request->action."/item-gallery.php");	
 	break;
 	case 'Ivid':
 		$App->sessionName = $App->sessionName.'-videos';
 		$App->params->tables['resources'] = $App->params->tableRif.'_resources';
-		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0'));
+		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0']);
 		$Module = new Module($App->params->tables['resources'],Core::$request->action,$_MY_SESSION_VARS[$App->sessionName]);	
 		$App->params->fields['resources']['filename']['required'] = false;
 		$App->params->fields['resources']['org_filename']['required'] = false;
@@ -53,21 +53,21 @@ switch(substr(Core::$request->method,-4,4)) {
 	case 'Bimg':
 		$App->sessionName = $App->sessionName.'-images';
 		$App->params->tables['resources'] = $App->params->tableRif.'_blocks_resources';
-		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0'));
+		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0']);
 		$Module = new Module($App->params->tables['resources'],Core::$request->action,$_MY_SESSION_VARS[$App->sessionName]);	
 		include_once(PATH.$App->pathApplications.Core::$request->action."/block-images.php");	
 	break;
 	case 'Bfil':
 		$App->sessionName = $App->sessionName.'-files';
 		$App->params->tables['resources'] = $App->params->tableRif.'_blocks_resources';
-		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0'));
+		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0']);
 		$Module = new Module($App->params->tables['resources'],Core::$request->action,$_MY_SESSION_VARS[$App->sessionName]);	
 		include_once(PATH.$App->pathApplications.Core::$request->action."/block-files.php");	
 	break;
 	case 'Bvid':
 		$App->sessionName = $App->sessionName.'-videos';
 		$App->params->tables['resources'] = $App->params->tableRif.'_blocks_resources';
-		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0'));
+		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'','id_owner'=>'0']);
 		$Module = new Module($App->params->tables['resources'],Core::$request->action,$_MY_SESSION_VARS[$App->sessionName]);	
 		$App->params->fields['resources']['filename']['required'] = false;
 		$App->params->fields['resources']['org_filename']['required'] = false;
@@ -78,7 +78,7 @@ switch(substr(Core::$request->method,-4,4)) {
 	case 'Iblo':
 		$App->sessionName = $App->sessionName.'-blocks';
 		$App->params->tables['resources'] = $App->params->tableRif.'_blocks_resources';
-		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>''));
+		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'']);
 		$Module = new Module($App->params->tables['iblo'],Core::$request->action,$_MY_SESSION_VARS[$App->sessionName]);	
 		include_once(PATH.$App->pathApplications.Core::$request->action."/blocks.php");	
 	break;
@@ -89,7 +89,7 @@ switch(substr(Core::$request->method,-4,4)) {
 		//Core::setDebugMode(1);
 		$App->sessionName = $App->sessionName;
 		$App->params->tables['resources'] = $App->params->tableRif.'_resources';
-		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'25','srcTab'=>''));
+		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'25','srcTab'=>'']);
 		$Module = new Module($App->params->tables['item'],Core::$request->action,$_MY_SESSION_VARS[$App->sessionName]);	
 		include_once(PATH.$App->pathApplications.Core::$request->action."/items.php");		
 

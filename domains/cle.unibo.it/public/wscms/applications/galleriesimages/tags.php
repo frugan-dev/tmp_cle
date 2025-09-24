@@ -11,7 +11,7 @@ switch(Core::$request->method) {
 	case 'activeTags':
 	case 'disactiveTags':
 		if ($App->id == 0) {	ToolsStrings::redirect(URL_SITE.'error/404'); }	
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tables['tags'],$App->id,array('label'=>Config::$langVars['tag'],'attivata'=>Config::$langVars['attivato'],'disattivata'=>Config::$langVars['disattivato']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tables['tags'],$App->id,['label'=>Config::$langVars['tag'],'attivata'=>Config::$langVars['attivato'],'disattivata'=>Config::$langVars['disattivato']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTags');
 	break;
@@ -21,14 +21,14 @@ switch(Core::$request->method) {
 
 		// prendo i vecchi dati	
 		$App->itemOld = new stdClass;
-		Sql::initQuery($App->params->tables['tags'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['tags'],['*'],[$App->id],'id = ?');
 		$App->itemOld = Sql::getRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
-		Sql::initQuery($App->params->tables['tags'],array('id'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['tags'],['id'],[$App->id],'id = ?');
 		Sql::deleteRecord();
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['tag'],Config::$langVars['%ITEM% cancellato'])).'!';	
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['tag'],(string) Config::$langVars['%ITEM% cancellato'])).'!';	
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTags');
 
 	break;
@@ -36,7 +36,7 @@ switch(Core::$request->method) {
 	case 'newTags':
 		$App->item = new stdClass;
 		$App->item->active = 1;
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['tag'],Config::$langVars['inserisci %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['tag'],(string) Config::$langVars['inserisci %ITEM%']);
 		$App->methodForm = 'insertTags';
 		$App->viewMethod = 'form';	
 	break;
@@ -45,7 +45,7 @@ switch(Core::$request->method) {
 		if (!$_POST) { ToolsStrings::redirect(URL_SITE.'error/404'); }
 
 		// parsa i post in base ai campi
-		Form::parsePostByFields($App->params->fields['tags'],Config::$langVars,array());
+		Form::parsePostByFields($App->params->fields['tags'],Config::$langVars,[]);
 		if (Core::$resultOp->error > 0) { 
 			$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/newTags');
@@ -54,7 +54,7 @@ switch(Core::$request->method) {
 		Sql::insertRawlyPost($App->params->fields['tags'],$App->params->tables['tags']);
 		if (Core::$resultOp->error > 0) { die('error insert db'); ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['tag'],Config::$langVars['%ITEM% inserito'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['tag'],(string) Config::$langVars['%ITEM% inserito'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTags');
 
 	break;
@@ -62,10 +62,10 @@ switch(Core::$request->method) {
 	case 'modifyTags':	
 		if ($App->id == 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/404'); }	
 		$App->item = new stdClass;
-		Sql::initQuery($App->params->tables['tags'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['tags'],['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->params->tables['tags']);
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['tag'],Config::$langVars['modifica %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['tag'],(string) Config::$langVars['modifica %ITEM%']);
 		$App->methodForm = 'updateTags';	
 		$App->viewMethod = 'form';
 
@@ -77,7 +77,7 @@ switch(Core::$request->method) {
 
 
 		// parsa i post in base ai campi
-		Form::parsePostByFields($App->params->fields['tags'],Config::$langVars,array());
+		Form::parsePostByFields($App->params->fields['tags'],Config::$langVars,[]);
 		if (Core::$resultOp->error > 0) { 
 			$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/newTags');
@@ -86,7 +86,7 @@ switch(Core::$request->method) {
 		Sql::updateRawlyPost($App->params->fields['tags'],$App->params->tables['tags'],'id',$App->id);
 		if (Core::$resultOp->error > 0) { die('error insert db'); ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['tag'],Config::$langVars['%ITEM% modificato'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['tag'],(string) Config::$langVars['%ITEM% modificato'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTags');		
 	
 	break;
@@ -102,15 +102,15 @@ switch(Core::$request->method) {
 	
 		$App->items = new stdClass;
 		$App->item = new stdClass;						
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);				
-		$qryFields = array('*');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);				
+		$qryFields = ['*'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		$and = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['tags'] ,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['tags'] ,'');
 		}	
 		if (isset($sessClause) && $sessClause != '') $clause .= $and.'('.$sessClause.')';
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {
@@ -124,7 +124,7 @@ switch(Core::$request->method) {
 
 		if (Core::$resultOp->error <> 1) $obj = Sql::getRecords();
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (is_array($obj) && is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {	
 				$field = 'title_'.$_lang['user'];	
@@ -136,10 +136,10 @@ switch(Core::$request->method) {
 		
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
-		$App->paginationTitle = preg_replace('/%START%/',$App->pagination->firstPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',$App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',$App->pagination->itemsTotal,$App->paginationTitle);
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['categorie'],Config::$langVars['lista delle %ITEM%']);
+		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['categorie'],(string) Config::$langVars['lista delle %ITEM%']);
 		$App->viewMethod = 'list';	
 	break;	
 }

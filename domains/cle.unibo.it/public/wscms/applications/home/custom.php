@@ -1,92 +1,92 @@
 <?php
 /* wscms/home/custom.php v.3.5.4. 06/08/2019 */
 /* sector */
-if (in_array(DB_TABLE_PREFIX.'sector',$tablesDb) && file_exists(PATH.$App->pathApplications."sector/index.php") && Permissions::checkAccessUserModule('sector',$App->userLoggedData,$App->user_modules_active,$App->modulesCore) == true) {
-	$App->homeBlocks['sector'] = array(
+if (in_array(DB_TABLE_PREFIX.'sector',$tablesDb) && file_exists(PATH.$App->pathApplications."sector/index.php") && Permissions::checkAccessUserModule('sector',$App->userLoggedData,$App->user_modules_active) == true) {
+	$App->homeBlocks['sector'] = [
 		'table'=>DB_TABLE_PREFIX.'sector',
 		'icon panel'=>'fa-gear',
 		'label'=>'Our Sector',
-		'sex suffix'=>ucfirst($_lang['nuovi']),
+		'sex suffix'=>ucfirst((string) $_lang['nuovi']),
 		'type'=>'info',
 		'url'=>true,
-		'url item'=>array (
+		'url item'=> [
 			'string'=>URL_SITE_ADMIN.'sector',
-			'opt'=>array()
-		)
-	);			
-	$App->homeTables['sector'] = array(
+			'opt'=>[]
+		]
+	];			
+	$App->homeTables['sector'] = [
 		'table'=>DB_TABLE_PREFIX.'sector',
 		'icon panel'=>'fa-gear',
-		'label'=>ucfirst($_lang['ultimi']).' Our Sector',
-		'fields'=>array(
-			'title'=>array(
+		'label'=>ucfirst((string) $_lang['ultimi']).' Our Sector',
+		'fields'=>[
+			'title'=>[
 				'multilanguage'=>1,
 				'type'=>'varchar',
-				'label'=>ucfirst($_lang['titolo']),
+				'label'=>ucfirst((string) $_lang['titolo']),
 				'url'=>true,
-				'url item'=>array(
+				'url item'=>[
 					'string'=>URL_SITE_ADMIN.'sector',
-					'opt'=>array(
+					'opt'=>[
 						'fieldItemRif'=>''
-					)
-				)
-			),
-			'filename'=>array(
+					]
+				]
+			],
+			'filename'=>[
 				'multilanguage'=>0,
 				'type'=>'varchar',
-				'label'=>ucfirst($_lang['immagine']),
+				'label'=>ucfirst((string) $_lang['immagine']),
 				'type'=>'image',
 				'pathdef'=>UPLOAD_DIR.'sector/',
 				'path'=>UPLOAD_DIR.'sector/'
-			)
-		)
-	);	
+			]
+		]
+	];	
 }
 /* evidence */
-if (in_array(DB_TABLE_PREFIX.'evidenza',$tablesDb) && file_exists(PATH.$App->pathApplications."evidenza/index.php") && Permissions::checkAccessUserModule('evidenza',$App->userLoggedData,$App->user_modules_active,$App->modulesCore) == true) {
-	$App->homeBlocks['evidenze'] = array(
+if (in_array(DB_TABLE_PREFIX.'evidenza',$tablesDb) && file_exists(PATH.$App->pathApplications."evidenza/index.php") && Permissions::checkAccessUserModule('evidenza',$App->userLoggedData,$App->user_modules_active) == true) {
+	$App->homeBlocks['evidenze'] = [
 		'table'=>DB_TABLE_PREFIX.'evidenza',
 		'icon panel'=>'fa-book',
 		'label'=>'In evidenze',
-		'sex suffix'=>ucfirst($_lang['nuove']),
+		'sex suffix'=>ucfirst((string) $_lang['nuove']),
 		'type'=>'info',
 		'url'=>true,
-		'url item'=>array (
+		'url item'=> [
 			'string'=>URL_SITE_ADMIN.'evidenza',
-			'opt'=>array()
-			)
-		);			
-	$App->homeTables['evidenze'] = array(
+			'opt'=>[]
+			]
+		];			
+	$App->homeTables['evidenze'] = [
 		'table'=>DB_TABLE_PREFIX.'evidenza',
 		'icon panel'=>'fa-book',
-		'label'=>ucfirst($_lang['ultime']).' In Evidence',
-		'fields'=>array(
-			'title'=>array(
+		'label'=>ucfirst((string) $_lang['ultime']).' In Evidence',
+		'fields'=>[
+			'title'=>[
 				'multilanguage'=>1,
 				'type'=>'varchar',
-				'label'=>ucfirst($_lang['titolo']),
+				'label'=>ucfirst((string) $_lang['titolo']),
 				'url'=>true,
-				'url item'=>array(
+				'url item'=>[
 					'string'=>URL_SITE_ADMIN.'evidenza',
-					'opt'=>array(
+					'opt'=>[
 						'fieldItemRif'=>''
-						)
-					)
-				),
-			'filename'=>array(
+						]
+					]
+				],
+			'filename'=>[
 				'multilanguage'=>0,
 				'type'=>'varchar',
-				'label'=>ucfirst($_lang['immagine']),
+				'label'=>ucfirst((string) $_lang['immagine']),
 				'type'=>'image',
 				'pathdef'=>UPLOAD_DIR.'evidenza/',
 				'path'=>UPLOAD_DIR.'evidenza/'
-				)
-			)
-		);	
+				]
+			]
+		];	
 }
 
 
-	
+
 
 		/* 
 		MODELLO 

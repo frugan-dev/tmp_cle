@@ -17,35 +17,35 @@ if (isset($_POST['id'])) $App->id = intval($_POST['id']);
 
 $App->templateBase = 'struttura-login.html';
 
-$section = preg_replace('/%ITEM%/',$_lang['login'],$_lang['torna al %ITEM%']);
-$section1 = '<a href="'.URL_SITE_ADMIN.'" title="'.ucfirst($section).'">'.ucfirst($_lang['login']).'</a>';
-$App->returnlink = ucfirst(preg_replace('/%ITEM%/',$section1,$_lang['torna al %ITEM%']));
+$section = preg_replace('/%ITEM%/',(string) $_lang['login'],(string) $_lang['torna al %ITEM%']);
+$section1 = '<a href="'.URL_SITE_ADMIN.'" title="'.ucfirst($section).'">'.ucfirst((string) $_lang['login']).'</a>';
+$App->returnlink = ucfirst(preg_replace('/%ITEM%/',$section1,(string) $_lang['torna al %ITEM%']));
 
 if (isset($_POST['submit'])) {
 	if ($_POST['email'] == "") {
 			Core::$resultOp->error = 1;
-			Core::$resultOp->message = preg_replace('/%ITEM%/',$_lang['indirizzo email'],$_lang['Devi inserire un %ITEM%!']);
+			Core::$resultOp->message = preg_replace('/%ITEM%/',(string) $_lang['indirizzo email'],(string) $_lang['Devi inserire un %ITEM%!']);
 			} else {
-				$email = SanitizeStrings::stripMagic(strip_tags($_POST['email']));
+				$email = SanitizeStrings::stripMagic(strip_tags((string) $_POST['email']));
 				Core::$resultOp->error = 0;
 				}			
 	if (Core::$resultOp->error == 0) {	
 		/* legge username dalla email */	
 		/* (tabella,campi(array),valori campi(array),where clause, limit, order, option , pagination(default false)) */
-		Sql::initQuery(DB_TABLE_PREFIX.'users',array('id','username'),array($email),"email = ? AND active = 1");
+		Sql::initQuery(DB_TABLE_PREFIX.'users',['id','username'],[$email],"email = ? AND active = 1");
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error == 0) {		
 			if (Sql::getFoundRows() > 0) {
 				/* crea l'email */
 				$titolo = $_lang['titolo email sezione richiesta username'];
-				$titolo = preg_replace('/%SITENAME%/',SITE_NAME,$titolo);
+				$titolo = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $titolo);
 				$testo = $_lang['testo email sezione richiesta username'];
-				$testo = preg_replace('/%SITENAME%/',SITE_NAME,$testo);
-				$testo = preg_replace('/%EMAIL%/',$email,$testo);
-				$testo = preg_replace('/%USERNAME%/',$App->item->username,$testo);
+				$testo = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $testo);
+				$testo = preg_replace('/%EMAIL%/',(string) $email,$testo);
+				$testo = preg_replace('/%USERNAME%/',(string) $App->item->username,$testo);
 				$text_plain = Html2Text::convert($testo);
 				//echo $titolo;echo $testo;die();
-				$opt = array();
+				$opt = [];
 				//FIXED - DKIM requirements
 				$opt['fromEmail'] = $_ENV['MAIL_FROM_EMAIL'] ?? $globalSettings['default email'];
 				$opt['fromLabel'] = $globalSettings['default email label'];

@@ -3,11 +3,11 @@
 
 // messaggi sistema
 if (isset($_MY_SESSION_VARS['message']) && $_MY_SESSION_VARS['message'] != '') {
-	$mess = explode('|',$_MY_SESSION_VARS['message']);
+	$mess = explode('|',(string) $_MY_SESSION_VARS['message']);
 	$_MY_SESSION_VARS = $my_session->my_session_unsetVar('message');
 	}
 if (isset($_SESSION['message']) && $_SESSION['message'] != '') {
-	$mess = explode('|',$_SESSION['message']);
+	$mess = explode('|',(string) $_SESSION['message']);
 	unset($_SESSION['message']);
 	}
 if (isset($mess[0])) Core::$resultOp->error = $mess[0];
@@ -15,7 +15,7 @@ if (isset($mess[1])) Core::$resultOp->message =$mess[1];
 
 $App->systemMessages = '';
 $appErrors = Utilities::getMessagesCore(Core::$resultOp);
-list($show,$error,$type,$content) = $appErrors;
+[$show, $error, $type, $content] = $appErrors;
 if ($error > 0 && $type == 0) $type = $error;
 if ($show == true) {
 	$App->systemMessages .= '<div class="row"><div class="col-md-12"><div id="systemMessageID" class="alert';
@@ -48,7 +48,7 @@ foreach(Config::$userModulesTree AS $sectionKey=>$sectionModules) {
 		
 			$outputMenu = '';
 			
-			$menu = json_decode($module->code_menu) or die('Errore nel campo menu. Formato Json non valido!'.$module->code_menu);	
+			$menu = json_decode((string) $module->code_menu) or die('Errore nel campo menu. Formato Json non valido!'.$module->code_menu);	
 			
 			//print_r($menu);
 			
@@ -66,12 +66,12 @@ foreach(Config::$userModulesTree AS $sectionKey=>$sectionModules) {
 				$outputUlSubmenu = '';
 				$outputLiSubmenu = '';
 
-				$moduleName = (isset($module->name) ? $module->name : '');
-				$moduleLabel = (isset($module->label) ? $module->label : '');
-				$menuName = (isset($menu->name) ? $menu->name : '');
-				$menuIcon = (isset($menu->icon) ? $menu->icon : '');
-				$menuAction = (isset($menu->action) ? $menu->action : '');
-				$menuLabel = (isset($menu->label) ? $menu->label : '');				
+				$moduleName = ($module->name ?? '');
+				$moduleLabel = ($module->label ?? '');
+				$menuName = ($menu->name ?? '');
+				$menuIcon = ($menu->icon ?? '');
+				$menuAction = ($menu->action ?? '');
+				$menuLabel = ($menu->label ?? '');				
 				$havesubmenu = 0;			
 				$collapsed = ' collapsed';		
 
@@ -98,9 +98,9 @@ foreach(Config::$userModulesTree AS $sectionKey=>$sectionModules) {
 							$submenuUrl = URL_SITE_ADMIN;							
 							$submanuLabel = $submenu->label;
 							if (isset($localStrings[$submanuLabel])) $submanuLabel = $localStrings[$submanuLabel];								
-							$submenuName = (isset($submenu->name) ? $submenu->name : '');
-							$submenuIcon = (isset($submenu->icon) ? $submenu->icon : '');
-							$submenuAction = (isset($submenu->action) ? $submenu->action : '');
+							$submenuName = ($submenu->name ?? '');
+							$submenuIcon = ($submenu->icon ?? '');
+							$submenuAction = ($submenu->action ?? '');
 							
 							$submenuUrl .= $moduleName.'/'.$submenuName;
 							
@@ -141,7 +141,7 @@ foreach(Config::$userModulesTree AS $sectionKey=>$sectionModules) {
 				// sostituiso il modulename con la localizzazione se esiste
 				if (isset($localStrings[$moduleLabel])) $moduleLabel = $localStrings[$moduleLabel];	
 				$outputMenu = preg_replace('/%LABEL%/',$moduleLabel,$outputMenu);
-				$outputMenu = preg_replace('/%NAME%/',$moduleLabel,$outputMenu);	
+				$outputMenu = preg_replace('/%NAME%/',$moduleLabel,(string) $outputMenu);	
 								
 				$App->rightCodeMenu .= $outputMenu;		
 			

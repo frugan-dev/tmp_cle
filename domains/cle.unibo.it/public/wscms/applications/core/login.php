@@ -23,14 +23,14 @@ switch(Core::$request->method) {
 				$App->error = 0;
 				$App->messages = $_lang['Devi inserire un nome utente!'];
 				} else {
-					$username = SanitizeStrings::stripMagic(strip_tags($_POST['username']));
+					$username = SanitizeStrings::stripMagic(strip_tags((string) $_POST['username']));
 					}
 			
 			if ($_POST['password'] == "") {
 				$App->error = 1;
 				$App->messages  = $_lang['Devi inserire la password!'];
 				} else { 
-					$password = SanitizeStrings::stripMagic(strip_tags($_POST['password']));
+					$password = SanitizeStrings::stripMagic(strip_tags((string) $_POST['password']));
 					}
 			
 			if ($App->error == 0) {					
@@ -39,8 +39,8 @@ switch(Core::$request->method) {
 				$App->item = new stdClass;					
 				/* (tabella,campi(array),valori campi(array),where clause, limit, order, option , pagination(default false)) */
 				Sql::initQuery(DB_TABLE_PREFIX.'users',
-				array('id','name','surname','username','password','levels_id','avatar','template','is_root'),
-				array(),
+				['id','name','surname','username','password','levels_id','avatar','template','is_root'],
+				[],
 				"username = '".$username."' AND active = 1");
 				$App->item = Sql::getRecord();			
 				if (Core::$resultOp->error == 0) {
@@ -51,8 +51,8 @@ switch(Core::$request->method) {
 						//$password = md5($password);
 						/* echo $password.'<br>'.$itemData->password; */
 						//if ($password === $App->item->password) {						
-						if (password_verify($password,$App->item->password)) {
-							$userSess = array();
+						if (password_verify((string) $password,(string) $App->item->password)) {
+							$userSess = [];
 							if ($App->item->avatar != '') $userSess['avatar'] = 'ok';
 							$idUser = $App->item->id;
 
@@ -60,14 +60,14 @@ switch(Core::$request->method) {
 							$lastLogin = $now;
 							/* controllo se esiste il cookie altrimenti lo creo */
 							if(!isset($_COOKIE[DATA_SESSIONS_COOKIE_NAME])) {
-								setcookie(DATA_SESSIONS_COOKIE_NAME, $now, time() + (86400 * 30), "/"); // 86400 = 1 day
+								setcookie(DATA_SESSIONS_COOKIE_NAME, $now, ['expires' => time() + (86400 * 30), 'path' => "/"]); // 86400 = 1 day
 								} else {
 									$lastLogin = $_COOKIE[DATA_SESSIONS_COOKIE_NAME];
 									//setcookie(DATA_SESSIONS_COOKIE_NAME, $now, 1577833200, "/");
 									}		
 							$my_session->my_session_register('lastLogin',$lastLogin);
 							$my_session->my_session_register('idUser',$idUser);
-							$_MY_SESSION_VARS = array();					
+							$_MY_SESSION_VARS = [];					
 							$_MY_SESSION_VARS = $my_session->my_session_read();					
 							ToolsStrings::redirect(URL_SITE_ADMIN."home");
 							die();						

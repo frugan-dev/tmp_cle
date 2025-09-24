@@ -31,7 +31,7 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 /* avvio sessione */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
@@ -67,11 +67,11 @@ if (isset($_REQUEST['page'])) $home_news_page = intval($_REQUEST['page']);
 //_SESSION['home_news_page']
 
 
-$news = array();
+$news = [];
 Config::initQueryParams();
 Config::$queryParams['tables'] = DB_TABLE_PREFIX.'news';
-Config::$queryParams['fields'] = array('*');
-Config::$queryParams['fieldsVal'] = array();
+Config::$queryParams['fields'] = ['*'];
+Config::$queryParams['fieldsVal'] = [];
 Config::$queryParams['where'] = 'active = 1';
 Config::$queryParams['and'] = ' and ';
 /*
@@ -89,13 +89,13 @@ $pdoObject = Sql::getPdoObjRecords();
 $news_pagination = Utilities::getPagination($home_news_page,Sql::getTotalsItems(),$itemsForPage);
 //ToolsStrings::dump($App->news_pagination); die();
 while ($row = $pdoObject->fetch()) {
-    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
-    $row->summary = Multilanguage::getLocaleObjectValue($row,'summary_',Config::$langVars['user'],array('htmLawed'=>1,'parse'=>1)); 
-    $row->dataformatted = DateFormat::getDateTimeIsoFormatString($row->datatimeins,'%DAY% %STRINGMONTH% %YEAR%',array()); 
+    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
+    $row->summary = Multilanguage::getLocaleObjectValue($row,'summary_',Config::$langVars['user'],['htmLawed'=>1,'parse'=>1]); 
+    $row->dataformatted = DateFormat::getDateTimeIsoFormatString($row->datatimeins,'%DAY% %STRINGMONTH% %YEAR%',[]); 
     // preleva la categoria
-    Sql::initQuery(DB_TABLE_PREFIX.'news_cat',array('*'),array($row->id_cat),'id = ?','');
+    Sql::initQuery(DB_TABLE_PREFIX.'news_cat',['*'],[$row->id_cat],'id = ?','');
     $foo = Sql::getRecord();
-    $row->category = Multilanguage::getLocaleObjectValue($foo,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
+    $row->category = Multilanguage::getLocaleObjectValue($foo,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
     $news[] = $row;		
 }
 //ToolsStrings::dump($news); die();

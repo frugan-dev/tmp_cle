@@ -45,7 +45,7 @@ if (isset($_POST['id'])) $App->id = intval($_POST['id']);
 
 $App->defaultJavascript = '';
 
-switch(substr(Core::$request->method,-4,4)) {	
+switch(substr((string) Core::$request->method,-4,4)) {	
 	case 'Conf':
 		$Module = new Module(Core::$request->action,$App->params->tables['news']);
 		include_once(PATH.$App->pathApplications.Core::$request->action."/config.php");
@@ -53,14 +53,14 @@ switch(substr(Core::$request->method,-4,4)) {
 
 	case 'Ifil':
 		$App->sessionName = $App->sessionName.'-files';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10'));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10']);
 		$Module = new Module(Core::$request->action,$App->tableIfil);
 		include_once(PATH.'applications/'.Core::$request->action."/item-files.php");	
 	break;
 
 	case 'Cate':
 		$App->sessionName = $App->sessionName.'-cate';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10'));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10']);
 		$Module = new Module(Core::$request->action,$App->tableCate);
 		include_once(PATH.'applications/'.Core::$request->action."/categories.php");	
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.'applications/'.Core::$request->action.'/categories.js"></script>';		
@@ -68,7 +68,7 @@ switch(substr(Core::$request->method,-4,4)) {
 
 	default:
 		$App->sessionName = $App->sessionName.'-item';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10'));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10']);
 		$Module = new Module(Core::$request->action,$App->tableItem);
 		include_once(PATH.'applications/'.Core::$request->action."/items.php");	
 		$datetime = DateTime::createFromFormat('Y-m-d H:i:s',$App->item->datatimeins);

@@ -9,11 +9,6 @@ abstract class Shuttle_Dump_File {
 	 */
 	protected $fh;
 
-	/**
-	 * Location of the dump file on the disk
-	 */
-	protected $file_location;
-
 	abstract function write($string);
 	abstract function end();
 
@@ -23,8 +18,10 @@ abstract class Shuttle_Dump_File {
 		}
 		return new Shuttle_Dump_File_Plaintext($filename);
 	}
-	function __construct($file) {
-		$this->file_location = $file;
+	function __construct(/**
+     * Location of the dump file on the disk
+     */
+    protected $file_location) {
 		$this->fh = $this->open();
 
 		if (!$this->fh) {
@@ -33,7 +30,7 @@ abstract class Shuttle_Dump_File {
 	}
 
 	public static function is_gzip($filename) {
-		return preg_match('~gz$~i', $filename);
+		return preg_match('~gz$~i', (string) $filename);
 	}	
 }
 
@@ -45,7 +42,7 @@ class Shuttle_Dump_File_Plaintext extends Shuttle_Dump_File {
 		return fopen($this->file_location, 'w');
 	}
 	function write($string) {
-		return fwrite($this->fh, $string);
+		return fwrite($this->fh, (string) $string);
 	}
 	function end() {
 		return fclose($this->fh);
@@ -60,7 +57,7 @@ class Shuttle_Dump_File_Gzip extends Shuttle_Dump_File {
 		return gzopen($this->file_location, 'wb9');
 	}
 	function write($string) {
-		return gzwrite($this->fh, $string);
+		return gzwrite($this->fh, (string) $string);
 	}
 	function end() {
 		return gzclose($this->fh);
@@ -71,16 +68,15 @@ class Shuttle_Dump_File_Gzip extends Shuttle_Dump_File {
  * MySQL insert statement builder. 
  */
 class Shuttle_Insert_Statement {
-	private $rows = array();
+	private $rows = [];
 	private $length = 0;
-	private $table;
 
-	function __construct($table) {
-		$this->table = $table;
-	}
+	function __construct(private $table)
+    {
+    }
 
 	function reset() {
-		$this->rows = array();
+		$this->rows = [];
 		$this->length = 0;
 	}
 
@@ -136,7 +132,7 @@ abstract class Shuttle_Dumper {
 	/**
 	 * Specified tables to exclude
 	 */
-	public $exclude_tables = array();
+	public $exclude_tables = [];
 
 	/**
 	 * Factory method for dumper on current hosts's configuration. 
@@ -187,7 +183,7 @@ abstract class Shuttle_Dumper {
 			             of matched files. (Quiet mode)
 			....
 			*/
-			$output = array();
+			$output = [];
 			exec('where /Q ' . $command, $output, $return_val);
 
 			if (intval($return_val) === 1) {
@@ -229,7 +225,7 @@ abstract class Shuttle_Dumper {
 			SHOW TABLES LIKE "' . $this->db->escape_like($table_prefix) . '%"
 		');
 
-		$tables_list = array();
+		$tables_list = [];
 		foreach ($tables as $table_row) {
 			$table_name = $table_row[0];
 			if (!in_array($table_name, $this->exclude_tables)) {
@@ -242,10 +238,10 @@ abstract class Shuttle_Dumper {
 
 class Shuttle_Dumper_ShellCommand extends Shuttle_Dumper {
 	function dump($export_file_location, $table_prefix='') {
-		$command = 'mysqldump -h ' . escapeshellarg($this->db->host) .
-			' -u ' . escapeshellarg($this->db->username) . 
-			' --password=' . escapeshellarg($this->db->password) . 
-			' ' . escapeshellarg($this->db->name);
+		$command = 'mysqldump -h ' . escapeshellarg((string) $this->db->host) .
+			' -u ' . escapeshellarg((string) $this->db->username) . 
+			' --password=' . escapeshellarg((string) $this->db->password) . 
+			' ' . escapeshellarg((string) $this->db->name);
 
 		$include_all_tables = empty($table_prefix) &&
 			empty($this->include_tables) &&
@@ -310,7 +306,7 @@ class Shuttle_Dumper_Native extends Shuttle_Dumper {
 		$insert = new Shuttle_Insert_Statement($table);
 
 		while ($row = $this->db->fetch_row($data)) {
-			$row_values = array();
+			$row_values = [];
 			foreach ($row as $value) {
 				$row_values[] = $this->db->escape($value);
 			}
@@ -397,8 +393,8 @@ class Shuttle_DBConn_Mysql extends Shuttle_DBConn {
 	}
 
 	function fetch($query, $result_type=MYSQL_ASSOC) {
-		$result = $this->query($query, $this->connection);
-		$return = array();
+		$result = $this->query($query);
+		$return = [];
 		while ( $row = mysql_fetch_array($result, $result_type) ) {
 			$return[] = $row;
 		}
@@ -413,7 +409,7 @@ class Shuttle_DBConn_Mysql extends Shuttle_DBConn {
 	}
 
 	function escape_like($search) {
-		return str_replace(array('_', '%'), array('\_', '\%'), $search);
+		return str_replace(['_', '%'], ['\_', '\%'], $search);
 	}
 
 	function get_var($sql) {
@@ -457,8 +453,8 @@ class Shuttle_DBConn_Mysqli extends Shuttle_DBConn {
 	}
 
 	function fetch($query, $result_type=MYSQLI_ASSOC) {
-		$result = $this->query($query, $this->connection);
-		$return = array();
+		$result = $this->query($query);
+		$return = [];
 		while ( $row = $result->fetch_array($result_type) ) {
 			$return[] = $row;
 		}
@@ -473,7 +469,7 @@ class Shuttle_DBConn_Mysqli extends Shuttle_DBConn {
 	}
 
 	function escape_like($search) {
-		return str_replace(array('_', '%'), array('\_', '\%'), $search);
+		return str_replace(['_', '%'], ['\_', '\%'], $search);
 	}
 
 	function get_var($sql) {

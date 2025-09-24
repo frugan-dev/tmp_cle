@@ -27,7 +27,7 @@ class Applications extends Core {
 		return $session;
 	}
 
-	public static function getWhereClauseDBFromFiltersPost($session,$whereClause,$whereAndClause,$fields,$fieldsValues,$exclude=array()) 
+	public static function getWhereClauseDBFromFiltersPost($session,$whereClause,$whereAndClause,$fields,$fieldsValues,$exclude=[]) 
 	{
 			//print_r($session);
 		$and = '';
@@ -36,8 +36,8 @@ class Applications extends Core {
 
 			// per date
 			if ( isset($session['filters']['datadal']) || isset($session['filters']['dataal']) ) {
-				$datadal = (isset($session['filters']['datadal']) ? $session['filters']['datadal'] : '');
-				$dataal = (isset($session['filters']['dataal']) ? $session['filters']['dataal'] : '');
+				$datadal = ($session['filters']['datadal'] ?? '');
+				$dataal = ($session['filters']['dataal'] ?? '');
 
 				if ($datadal != '' && $dataal == '') {
 					$fieldsValues[] = DateFormat::dateFormating($datadal,'Y-m-d');
@@ -52,7 +52,7 @@ class Applications extends Core {
 				}
 				$whereAndClause = $and;
 			}
-			
+
 			// fine date
 
 			foreach ($session['filters'] AS $key=>$value) {
@@ -72,19 +72,19 @@ class Applications extends Core {
 				} else {
 					$whereClause .= '('.$sesswhereClause.')';
 				}
-				
+
 			}
 
 			//echo '<br>whereClause 0.2: '.$whereClause;
 		}
-		return array($whereClause,$whereAndClause,$fields,$fieldsValues);
+		return [$whereClause,$whereAndClause,$fields,$fieldsValues];
 	}
 	
 	// for table
-	public static function setTableFieldOrderSession($field='',$session,$opt=array()) 
+	public static function setTableFieldOrderSession($field='',$session = null,$opt=[]) 
 	{
-		$optDef = array(	
-		);	
+		$optDef = [	
+		];	
 		$opt = array_merge($optDef,$opt);
 		
 		if (!isset($session[$field])) {
@@ -93,13 +93,13 @@ class Applications extends Core {
 
 	}
 
-	public static function getTableFieldOrderOptions($field='',$session,$opt=array()) 
+	public static function getTableFieldOrderOptions($field='',$session = null,$opt=[]) 
 	{
-		$optDef = array(
+		$optDef = [
 			'icon asc' 		=> 'fa fa-long-arrow-up',
 			'icon desc'		=> 'fa fa-long-arrow-down',
 			'icon'		=> ''
-		);	
+		];	
 		$opt = array_merge($optDef,$opt);	
 		
 		$order = $session[$field];
@@ -112,10 +112,10 @@ class Applications extends Core {
 	public static function resetDataTableArrayVars() {
 		$array['whereAll'] = '';
 		$array['andAll'] = '';
-		$array['fieldsValueAll'] = array();
+		$array['fieldsValueAll'] = [];
 		$array['where'] = '';
 		$array['and'] = '';
-		$array['fieldsValue'] = array();
+		$array['fieldsValue'] = [];
 		$array['limit'] = '';
 		$array['order'] = '';
 		$array['filtering'] = false;

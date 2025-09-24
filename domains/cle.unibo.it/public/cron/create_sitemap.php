@@ -24,14 +24,14 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 $tablesDb = Sql::getTablesDatabase($globalSettings['database'][DATABASE]['name']);
 //print_r($tablesDb);
 
-Sql::initQuery(DB_TABLE_PREFIX.'modules',array('*'),array(),'active = 1');
-Sql::setOptions(array('fieldTokeyObj'=>'name'));
+Sql::initQuery(DB_TABLE_PREFIX.'modules',['*'],[],'active = 1');
+Sql::setOptions(['fieldTokeyObj'=>'name']);
 $modules = Sql::getRecords();	
 
-$element = array();
+$element = [];
 
 if (array_key_exists('pages', $modules) && in_array(DB_TABLE_PREFIX.'pages',$tablesDb)) {
-	$pages = Pages::setMainTreePagesData(array('table'=>'pages','languages'=>'NULL','getbreadcrumbs'=>0));
+	$pages = Pages::setMainTreePagesData(['table'=>'pages','languages'=>'NULL','getbreadcrumbs'=>0]);
 	//print_r($pages);
 	if (isset($pages) && is_array($pages) && count($pages) > 0) {
 		foreach ($pages AS $page) {
@@ -41,19 +41,19 @@ if (array_key_exists('pages', $modules) && in_array(DB_TABLE_PREFIX.'pages',$tab
 				$lastmod = $datetime->format('Y-m-d\TH:i:sP');				
 				$changefreq = 'daily';
 				$priority = '1.0';				
-				$element[] = array(
+				$element[] = [
 					'url'					=> $url,
 					'lastmod'				=> $lastmod,
 					'changefreq'			=> $changefreq,
 					'priority'              => $priority,
-				);
+				];
 			}
 		}
 	}
 }
 
 if (array_key_exists('ecommerce', $modules) && in_array(DB_TABLE_PREFIX.'ec_categories',$tablesDb)) {
-	$categories = Categories::getCategoriesListAll(array('tablecat'=>'ec_categories','tablepro'=>'ec_products','sqloptions'=>array('fieldTokeyObj'=>'id')));
+	$categories = Categories::getCategoriesListAll(['tablecat'=>'ec_categories','tablepro'=>'ec_products','sqloptions'=>['fieldTokeyObj'=>'id']]);
 	if (isset($categories) && is_array($categories) && count($categories) > 0) {
 		foreach ($categories AS $category) {
 			
@@ -62,26 +62,26 @@ if (array_key_exists('ecommerce', $modules) && in_array(DB_TABLE_PREFIX.'ec_cate
 				$title = $category->alias;
 				$t = 'title_seo_'.$lang;
 				if (isset($category->$t) && $category->$t != '')  $title = $category->$t;
-				$url = URL_SITE.$lang.'/products/'.$category->id.'/'.SanitizeStrings::urlslug($title,array('delimiter'=>'-'));				
+				$url = URL_SITE.$lang.'/products/'.$category->id.'/'.SanitizeStrings::urlslug($title,['delimiter'=>'-']);				
 				$datetime = new DateTime($category->created);
 				$lastmod = $datetime->format('Y-m-d\TH:i:sP');				
 				$changefreq = 'daily';
 				$priority = '1.0';				
-				$element[] = array(
+				$element[] = [
 					'url'					=> $url,
 					'lastmod'				=> $lastmod,
 					'changefreq'			=> $changefreq,
 					'priority'              => $priority,
-				);
+				];
 			}
 			
 			/* crea i prodotti */
 			if (in_array(DB_TABLE_PREFIX.'ec_products',$tablesDb)) {
 				/* trova i prodotti */
-				$fieldValues = array();
+				$fieldValues = [];
 				$fieldValues[] = $category->id;
 				$where = 'active = 1 AND id_cat = ?';		
-				Sql::initQuery(DB_TABLE_PREFIX.'ec_products',array('*'),$fieldValues,$where);
+				Sql::initQuery(DB_TABLE_PREFIX.'ec_products',['*'],$fieldValues,$where);
 				$products = Sql::getRecords();
 				if (isset($products) && is_array($products) && count($products) > 0) {
 					foreach ($products AS $product) {						
@@ -90,17 +90,17 @@ if (array_key_exists('ecommerce', $modules) && in_array(DB_TABLE_PREFIX.'ec_cate
 							$title = $product->$t;
 							$t1 = 'title_seo_'.$lang;
 							if (isset($product->$t	) && $product->$t1 != '')  $title = $product->$t1;
-							$url = URL_SITE.$lang.'/products/dt/'.$product->id.'/'.SanitizeStrings::urlslug($title,array('delimiter'=>'-'));				
+							$url = URL_SITE.$lang.'/products/dt/'.$product->id.'/'.SanitizeStrings::urlslug($title,['delimiter'=>'-']);				
 							$datetime = new DateTime($product->created);
 							$lastmod = $datetime->format('Y-m-d\TH:i:sP');				
 							$changefreq = 'daily';
 							$priority = '1.0';				
-							$element[] = array(
+							$element[] = [
 								'url'					=> $url,
 								'lastmod'				=> $lastmod,
 								'changefreq'			=> $changefreq,
 								'priority'              => $priority,
-							);
+							];
 						}						
 					}
 				}	

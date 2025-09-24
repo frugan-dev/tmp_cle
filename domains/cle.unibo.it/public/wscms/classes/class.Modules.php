@@ -27,13 +27,13 @@ class Modules extends Core {
         messagge => eventuale messaggio
     )
     */
-    public static function checkIfItemExistInDb($table,$fieldId,$field,$labelfield,$value,$matchtype = '=',$opt = array()) {
+    public static function checkIfItemExistInDb($table,$fieldId,$field,$labelfield,$value,$matchtype = '=',$opt = []) {
         //Core::setDebugMode(1);
         $foo = 0;
         if ($table != '' && $field != '') {         
             $clause = $field . $matchtype . ' ?';
-            $fieldsValue = array($value);
-            $subclause = array();
+            $fieldsValue = [$value];
+            $subclause = [];
             // aggiunge exclude
             if (isset($opt['excludefields']) && is_array($opt['excludefields']) && count($opt['excludefields']) > 0) {
                 foreach ($opt['excludefields'] AS $key=>$value) {
@@ -44,7 +44,7 @@ class Modules extends Core {
                 }
             }
             if (count($subclause) > 0) $clause .= ' AND ('.implode(' AND ',$subclause).')';           
-            Config::$queryParams = array();
+            Config::$queryParams = [];
             Config::$queryParams['tables'] = $table;
             Config::$queryParams['keyRif'] = $fieldId;
             Config::$queryParams['whereClause'] = $clause;
@@ -56,10 +56,10 @@ class Modules extends Core {
         }
         if ($foo > 0) {
             $data['result'] = 1;
-            $data['message'] = preg_replace('/%ITEM%/',$labelfield,Config::$langVars['Il valore per il campo %ITEM% è già presente nel nostro database!']);
+            $data['message'] = preg_replace('/%ITEM%/',(string) $labelfield,(string) Config::$langVars['Il valore per il campo %ITEM% è già presente nel nostro database!']);
         } else {
             $data['result'] = 0;
-            $data['message'] = preg_replace('/%ITEM%/',$labelfield,Config::$langVars['Il valore per il campo %ITEM% è disponibile!']);
+            $data['message'] = preg_replace('/%ITEM%/',(string) $labelfield,(string) Config::$langVars['Il valore per il campo %ITEM% è disponibile!']);
         }
        return $data;
     }

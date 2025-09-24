@@ -8,11 +8,11 @@ if (isset($_POST['id_owner']) && isset($_MY_SESSION_VARS[$App->sessionName]['id_
 if (Core::$request->method == 'listIvid' && $App->id > 0) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'id_owner',$App->id);
 
 /* gestione sessione -> id_owner */	
-$App->id_owner = (isset($_MY_SESSION_VARS[$App->sessionName]['id_owner']) ? $_MY_SESSION_VARS[$App->sessionName]['id_owner'] : 0);
+$App->id_owner = ($_MY_SESSION_VARS[$App->sessionName]['id_owner'] ?? 0);
 
 if ($App->id_owner > 0) {
-	Sql::initQuery($App->params->tables['item'],array('*'),array($App->id_owner),'active = 1 AND id = ?');
-	Sql::setOptions(array('fieldTokeyObj'=>'id'));
+	Sql::initQuery($App->params->tables['item'],['*'],[$App->id_owner],'active = 1 AND id = ?');
+	Sql::setOptions(['fieldTokeyObj'=>'id']);
 	$App->ownerData = Sql::getRecord();
 	if (Core::$resultOp->error > 0) {echo Core::$resultOp->message; die;}
 	$field = 'title_'.$_lang['user'];	
@@ -23,7 +23,7 @@ if ($App->id_owner > 0) {
 	}
 
 if (!isset($App->ownerData->id) || (isset($App->ownerData->id) && $App->ownerData->id == 0)) {
-	ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/messageItem/2/'.urlencode($_lang['Devi creare o attivare almeno una voce!']));
+	ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/messageItem/2/'.urlencode((string) $_lang['Devi creare o attivare almeno una voce!']));
 	die();
 	}
 	
@@ -31,30 +31,30 @@ $App->pageSubTitle = $_lang['voce'].': ';
 
 switch(Core::$request->method) {
 	case 'moreOrderingIvid':
-		Utilities::increaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['resources'],'orderingType'=>$App->params->ordersType['ivid'],'parent'=>1,'parentField'=>'id_owner','label'=>ucfirst($_lang['video']).' '.$_lang['spostato'],'addclauseparent'=>'resource_type = ?','addclauseparentvalues'=>array(4)));
+		Utilities::increaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['resources'],'orderingType'=>$App->params->ordersType['ivid'],'parent'=>1,'parentField'=>'id_owner','label'=>ucfirst((string) $_lang['video']).' '.$_lang['spostato'],'addclauseparent'=>'resource_type = ?','addclauseparentvalues'=>[4]]);
 		$App->viewMethod = 'list';	
 	break;
 	case 'lessOrderingIvid':
-		Utilities::decreaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['resources'],'orderingType'=>$App->params->ordersType['ivid'],'parent'=>1,'parentField'=>'id_owner','label'=>ucfirst($_lang['video']).' '.$_lang['spostato'],'addclauseparent'=>'resource_type = ?','addclauseparentvalues'=>array(4)));
+		Utilities::decreaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['resources'],'orderingType'=>$App->params->ordersType['ivid'],'parent'=>1,'parentField'=>'id_owner','label'=>ucfirst((string) $_lang['video']).' '.$_lang['spostato'],'addclauseparent'=>'resource_type = ?','addclauseparentvalues'=>[4]]);
 		$App->viewMethod = 'list';		
 	break;
 
 	case 'activeIvid':
 	case 'disactiveIvid':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tables['resources'],$App->id,array('label'=>$_lang['video'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tables['resources'],$App->id,['label'=>$_lang['video'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']]);
 		$App->viewMethod = 'list';		
 	break;
 		
 	case 'deleteIvid':
 		if ($App->id > 0) { 
 			if (!isset($App->itemOld)) $App->itemOld = new stdClass;
-			Sql::initQuery($App->params->tables['resources'],array('filename','org_filename'),array($App->id),'id = ?');
+			Sql::initQuery($App->params->tables['resources'],['filename','org_filename'],[$App->id],'id = ?');
 		   $App->itemOld = Sql::getRecord();
 		   if (Core::$resultOp->error == 0) {
-				Sql::initQuery($App->params->tables['resources'],array(),array($App->id),'id = ?');
+				Sql::initQuery($App->params->tables['resources'],[],[$App->id],'id = ?');
 				Sql::deleteRecord();
 				if (Core::$resultOp->error == 0) {
-					Core::$resultOp->message = ucfirst($_lang['video cancellato']).'!';		
+					Core::$resultOp->message = ucfirst((string) $_lang['video cancellato']).'!';		
 					}
 				}
 			}
@@ -95,7 +95,7 @@ switch(Core::$request->method) {
 			$App->viewMethod = 'formNew';
 			} else {
 				$App->viewMethod = 'list';
-				Core::$resultOp->message = ucfirst($_lang['video inserito']).'!';			
+				Core::$resultOp->message = ucfirst((string) $_lang['video inserito']).'!';			
 				}
 	break;
 
@@ -136,7 +136,7 @@ switch(Core::$request->method) {
 			} else {
 				if (isset($_POST['submitForm'])) {	
 					$App->viewMethod = 'list';
-					Core::$resultOp->message = ucfirst($_lang['video modificato']).'!';								
+					Core::$resultOp->message = ucfirst((string) $_lang['video modificato']).'!';								
 					} else {						
 						if (isset($_POST['id'])) {
 							$App->id = $_POST['id'];
@@ -167,7 +167,7 @@ switch(Core::$request->method) {
 	
 	case 'messageIvid':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';
 	break;
 	
@@ -200,7 +200,7 @@ switch((string)$App->viewMethod){
 	
 	case 'formMod':
 		$App->item = new stdClass;	
-		Sql::initQuery($App->params->tables['resources'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['resources'],['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['resources']);
 		$App->item->filenameRequired = (isset($App->item->filename) && $App->item->filename != '' ? false : true);
@@ -211,15 +211,15 @@ switch((string)$App->viewMethod){
 	
 	case 'list':
 		$App->items = new stdClass;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
-		$qryFields = array('*');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
+		$qryFields = ['*'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = 'resource_type = 4';
 		$and = ' AND ';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['resources'],'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['resources'],'');
 			}	
 		if ($App->id_owner > 0) {
 			$clause .= $and."id_owner = ?";
@@ -237,7 +237,7 @@ switch((string)$App->viewMethod){
 		Sql::setOrder('ordering '.$App->params->ordersType['ivid']);
 		if (Core::$resultOp->error <> 1) $obj = Sql::getRecords();
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {	
 				$field = 'title_'.$_lang['user'];	
@@ -249,9 +249,9 @@ switch((string)$App->viewMethod){
 		
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
-		$App->paginationTitle = preg_replace('/%START%/',$App->pagination->firstPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',$App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',$App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
 
 		$App->pageSubTitle .= $_lang['lista dei video'];
 		$App->templateApp = 'listIvid.tpl.php';	

@@ -26,11 +26,11 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 /* avvio sessione */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
 $result = 1;
-if (Sql::countRecordQry(DB_TABLE_PREFIX."users",'id','email = ?',array($_POST['email'])) == 0) $result = 0;
+if (Sql::countRecordQry(DB_TABLE_PREFIX."users",'id','email = ?',[$_POST['email']]) == 0) $result = 0;
 echo $result;
 ?>

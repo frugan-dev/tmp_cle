@@ -7,7 +7,7 @@ switch(Core::$request->method) {
 
 		// requpero i vecchi dati
 		$App->oldItem = new stdClass;
-		Sql::initQuery($App->params->tables['conf'],array('*'),array(),'id = 1');
+		Sql::initQuery($App->params->tables['conf'],['*'],[],'id = 1');
 		$App->oldItem = Sql::getRecord();
 		//if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); die(); }	
 
@@ -35,7 +35,7 @@ switch(Core::$request->method) {
 			$_POST['org_image_header'] = ''; 	
 		}	 
 
-		Form::parsePostByFields($App->params->fields['conf'],$_lang,array());
+		Form::parsePostByFields($App->params->fields['conf'],$_lang,[]);
 		
 		//ToolsStrings::dump($_POST);die();
 
@@ -51,13 +51,13 @@ switch(Core::$request->method) {
 			}	   			
 		}
 	
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['configurazione'],Core::$langVars['%ITEM% modificata'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['configurazione'],(string) Core::$langVars['%ITEM% modificata'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/formConf');	
 		die();						
 	break;
 	
 	default;	
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Core::$langVars['configurazione'], $_lang['modifica %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Core::$langVars['configurazione'], (string) $_lang['modifica %ITEM%']);
 		$App->viewMethod = 'formMod';	
 	break;	
 	}
@@ -69,7 +69,7 @@ switch((string)$App->viewMethod) {
 	default:
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->params->tables['conf'],array('*'),array());
+		Sql::initQuery($App->params->tables['conf'],['*'],[]);
 		$App->item = Sql::getRecord();
 		$App->methodForm = 'updateConf';
 		$App->templateApp = 'formConf.html';	

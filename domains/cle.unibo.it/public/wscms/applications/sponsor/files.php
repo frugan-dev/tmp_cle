@@ -13,11 +13,11 @@ if (isset($_POST['id_owner'])) $_MY_SESSION_VARS = $my_session->addSessionsModul
 if (Core::$request->method == 'listIfil' && $App->id > 0) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'id_owner',$App->id);
 
 /* gestione sessione -> id_owner */	
-$App->id_owner = (isset($_MY_SESSION_VARS[$App->sessionName]['id_owner']) ? $_MY_SESSION_VARS[$App->sessionName]['id_owner'] : 0);
+$App->id_owner = ($_MY_SESSION_VARS[$App->sessionName]['id_owner'] ?? 0);
 
 if ($App->id_owner > 0) {
-	Sql::initQuery($App->tableItem,array('*'),array($App->id_owner),'active = 1 AND id = ?');
-	Sql::setOptions(array('fieldTokeyObj'=>'id'));
+	Sql::initQuery($App->tableItem,['*'],[$App->id_owner],'active = 1 AND id = ?');
+	Sql::setOptions(['fieldTokeyObj'=>'id']);
 	$App->ownerData = Sql::getRecord();
 	}
 if (Core::$resultOp->error > 0) {echo Core::$resultOp->message; die;}
@@ -29,24 +29,24 @@ if (!isset($App->ownerData->id) || (isset($App->ownerData->id) && $App->ownerDat
 switch(Core::$request->method) {
 	case 'activeIfil':
 	case 'disactiveIfil':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->tableIfil,$App->id,ucfirst($App->labels['ifil']['item']),$App->labels['ifil']['itemSex']);
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->tableIfil,$App->id,ucfirst((string) $App->labels['ifil']['item']));
 		$App->viewMethod = 'list';		
 	break;
 		
 	case 'deleteIfil':
 		if ($App->id > 0) { 
 			if (!isset($App->itemOld)) $App->itemOld = new stdClass;
-			Sql::initQuery($App->tableIfil,array('filename','org_filename'),array($App->id),'id = ?');
+			Sql::initQuery($App->tableIfil,['filename','org_filename'],[$App->id],'id = ?');
 		   $App->itemOld = Sql::getRecord();
 		   if (Core::$resultOp->error == 0) {
-				Sql::initQuery($App->tableIfil,array(),array($App->id),'id = ?');
+				Sql::initQuery($App->tableIfil,[],[$App->id],'id = ?');
 				Sql::deleteRecord();
 				if (Core::$resultOp->error == 0) {
 					/* cancella il file vero e proprio */
 					if (file_exists($App->ifilUploadPathDir.$App->itemOld->filename)) {			
 						@unlink($App->ifilUploadPathDir.$App->itemOld->filename);			
 						} 			
-					Core::$resultOp->message = ucfirst($App->labels['ifil']['item']).' cancellat'.$App->labels['ifil']['itemSex'].'!';		
+					Core::$resultOp->message = ucfirst((string) $App->labels['ifil']['item']).' cancellat'.$App->labels['ifil']['itemSex'].'!';		
 					}
 				}
 			}
@@ -90,7 +90,7 @@ switch(Core::$request->method) {
 			$App->viewMethod = 'formNew';
 			} else {
 				$App->viewMethod = 'list';
-				Core::$resultOp->message = ucfirst($App->labels['ifil']['item']).' inserit'.$App->labels['ifil']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['ifil']['item']).' inserit'.$App->labels['ifil']['itemSex'].'!';				
 				}
 	break;
 
@@ -105,7 +105,7 @@ switch(Core::$request->method) {
 			if (!isset($_POST['created'])) $_POST['created'] = $App->nowDateTime;
 			if (!isset($_POST['active'])) $_POST['active'] = 0;	
 	   	/* preleva Ifilname vecchio */
-	   	Sql::initQuery($App->tableIfil,array('filename','org_filename'),array($App->id),'id = ?');	
+	   	Sql::initQuery($App->tableIfil,['filename','org_filename'],[$App->id],'id = ?');	
 	   	$App->itemOld = Sql::getRecord();	   	
 	   	if (Core::$resultOp->error == 0) { 	  		   	
 	   		/* preleva il filename dal form */	   	
@@ -145,7 +145,7 @@ switch(Core::$request->method) {
 			} else {
 				if (isset($_POST['submitForm'])) {	
 					$App->viewMethod = 'list';
-					Core::$resultOp->message = ucfirst($App->labels['ifil']['item']).' modificat'.$App->labels['ifil']['itemSex'].'!';								
+					Core::$resultOp->message = ucfirst((string) $App->labels['ifil']['item']).' modificat'.$App->labels['ifil']['itemSex'].'!';								
 					} else {						
 						if (isset($_POST['id'])) {
 							$App->id = $_POST['id'];
@@ -176,7 +176,7 @@ switch(Core::$request->method) {
 	
 	case 'messageIfil':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';
 	break;
 	
@@ -203,7 +203,7 @@ switch((string)$App->viewMethod){
 	
 	case 'formMod':
 		$App->templateApptdClass;	
-		Sql::initQuery($App->tableIfil,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tableIfil,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->fieldsIfil);
 		$App->item->filenameRequired = (isset($App->item->filename) && $App->item->filename != '' ? false : true);
@@ -213,14 +213,14 @@ switch((string)$App->viewMethod){
 	
 	case 'list':
 		$App->items = new stdClass;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
-		$qryFields = array('*');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
+		$qryFields = ['*'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsIfil,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsIfil,'');
 			}	
 		if ($App->id_owner > 0) {
 			$clause .= "id_owner = ?";

@@ -15,9 +15,9 @@ $App->pageTitle = $App->params->pageTitle;
 $App->id = intval(Core::$request->param);
 if (isset($_POST['id'])) $App->id = intval($_POST['id']);
 	
-switch(substr(Core::$request->method,-4,4)) {	
+switch(substr((string) Core::$request->method,-4,4)) {	
 	default:	
-		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>''));
+		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'']);
 		$Module = new Module(Core::$request->action,$App->params->tables['item']);
 		include_once(PATH.$App->pathApplications.Core::$request->action."/items.php");
 	break;

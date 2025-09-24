@@ -15,7 +15,7 @@
 		Dettagli <?php echo $this->App->labels['ifil']['owner']; ?>:
 	</div>
 	<div class="col-md-10"> 
-		<big><?php echo htmlspecialchars($this->App->ownerData->title_it,ENT_QUOTES,'UTF-8'); ?></big>
+		<big><?php echo htmlspecialchars((string) $this->App->ownerData->title_it,ENT_QUOTES,'UTF-8'); ?></big>
 	</div>
 </div>
 <form role="form" action="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/listIfil" method="post" enctype="multipart/form-data">
@@ -45,7 +45,7 @@
 							<div class="tables_filter text-right">
 								<label>
 									Search:
-									<input name="searchFromTable" value="<?php if(isset($this->mySessionVars[$this->App->sessionName]['srcTab']) && $this->mySessionVars[$this->App->sessionName]['srcTab'] != '') echo htmlspecialchars($this->mySessionVars[$this->App->sessionName]['srcTab'],ENT_QUOTES,'UTF-8'); ?>" class="form-control input-sm" type="search" onchange="this.form.submit();">
+									<input name="searchFromTable" value="<?php if(isset($this->mySessionVars[$this->App->sessionName]['srcTab']) && $this->mySessionVars[$this->App->sessionName]['srcTab'] != '') echo htmlspecialchars((string) $this->mySessionVars[$this->App->sessionName]['srcTab'],ENT_QUOTES,'UTF-8'); ?>" class="form-control input-sm" type="search" onchange="this.form.submit();">
 								</label>
 							</div>
 						</div>

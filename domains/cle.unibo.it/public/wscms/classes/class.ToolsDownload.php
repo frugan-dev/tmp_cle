@@ -10,7 +10,7 @@ class ToolsDownload extends Core {
 	{
 		if ($filename) { 
  			if (file_exists($path.$filename)) {
-				$dim = filesize($filename,$path); 
+				$dim = filesize($filename); 
 				###########################################################################    
 				// fix for IE catching or PHP bug issue
 				header("Pragma: public");
@@ -35,16 +35,16 @@ class ToolsDownload extends Core {
 	}
 
 	public static function downloadFileFromDB($path,$opt) {
-		$optDef = array('fileFieldName'=>'filename','fileOrgFieldName'=>'org_filename','fieldFolderName'=>'','folderName'=>'','table'=>'','valuesClause'=>array(),'whereClause'=>'id = ?');
+		$optDef = ['fileFieldName'=>'filename','fileOrgFieldName'=>'org_filename','fieldFolderName'=>'','folderName'=>'','table'=>'','valuesClause'=>[],'whereClause'=>'id = ?'];
 		$opt = array_merge($optDef,$opt);
 		$obj = new stdClass;	
-		Sql::initQuery($opt['table'],array('*'),$opt['valuesClause'],$opt['whereClause']);	 
+		Sql::initQuery($opt['table'],['*'],$opt['valuesClause'],$opt['whereClause']);	 
 		$obj = Sql::getRecord();	
 		if (Core::$resultOp->type == 1) die ('Errore database download file pagina!');
 		$fieldFile = $opt['fileFieldName'];
 		$fieldFileOrg = $opt['fileOrgFieldName'];
 		if (isset($obj->$fieldFile) && $obj->$fieldFile != '') {	
-			$file = basename($obj->$fieldFile);
+			$file = basename((string) $obj->$fieldFile);
 			$orgfile = $obj->$fieldFileOrg;
 			$file_extension = strtolower(substr(strrchr($file,'.'),1));
 			if ($file != '') {
@@ -97,11 +97,11 @@ class ToolsDownload extends Core {
 
 	public static function downloadFileFromDB2($path,$opt) 
 	{
-		$optDef = array('fileFieldName'=>'filename','fileOrgFieldName'=>'org_filename','fieldFolderName'=>'','folderName'=>'','table'=>'','valuesClause'=>array(),'whereClause'=>'id = ?');
+		$optDef = ['fileFieldName'=>'filename','fileOrgFieldName'=>'org_filename','fieldFolderName'=>'','folderName'=>'','table'=>'','valuesClause'=>[],'whereClause'=>'id = ?'];
 		$opt = array_merge($optDef,$opt);
 		$obj = new stdClass;	
 
-		Sql::initQuery($opt['table'],array('*'),$opt['valuesClause'],$opt['whereClause']);	 
+		Sql::initQuery($opt['table'],['*'],$opt['valuesClause'],$opt['whereClause']);	 
 		$obj = Sql::getRecord();	
 		if (Core::$resultOp->type == 1) die ('Errore database download file pagina!');
 	
@@ -109,7 +109,7 @@ class ToolsDownload extends Core {
 		$fieldFileOrg = $opt['fileOrgFieldName'];
 		if (isset($obj->$fieldFile) && $obj->$fieldFile != '') {
 
-			$file = basename($obj->$fieldFile);
+			$file = basename((string) $obj->$fieldFile);
 			$orgfile = $obj->$fieldFileOrg;
 			$file_extension = strtolower(substr(strrchr($file,'.'),1));
 			if ($file != '') {
@@ -176,81 +176,50 @@ class ToolsDownload extends Core {
 	}
 	
 	public static function getFileTypeExtension($fileExtension) {
-		switch ($fileExtension) {
-			case 'ogg': $ctype = 'application/ogg'; break;
-			case 'pdf': $ctype = 'application/pdf'; break;
-	      	case 'exe': $ctype = 'application/octet-stream'; break;
-	      	case 'zip': $ctype = 'application/zip'; break;
-	      	case 'doc': $ctype = 'application/msword'; break;
-	      	case 'xls': $ctype = 'application/vnd.ms-excel'; break;
-	      	case 'ppt': $ctype = 'application/vnd.ms-powerpoint'; break;
-	      	case 'gif': $ctype = 'image/gif'; break;
-	      	case 'png': $ctype = 'image/png'; break;
-	      	case 'jpe': case 'jpeg':
-	      	case 'jpg': $ctype='image/jpg'; break;
-		   	default: $ctype='application/force-download';
-		}		  
+		$ctype = match ($fileExtension) {
+            'ogg' => 'application/ogg',
+            'pdf' => 'application/pdf',
+            'exe' => 'application/octet-stream',
+            'zip' => 'application/zip',
+            'doc' => 'application/msword',
+            'xls' => 'application/vnd.ms-excel',
+            'ppt' => 'application/vnd.ms-powerpoint',
+            'gif' => 'image/gif',
+            'png' => 'image/png',
+            'jpe', 'jpeg', 'jpg' => 'image/jpg',
+            default => 'application/force-download',
+        };		  
 		return $ctype;
 	}
 	
 	public static function getFileIcon($file,$opt) {
-		$optDef = array('iconsize'=>'128x128');
+		$optDef = ['iconsize'=>'128x128'];
 		$opt = array_merge($optDef,$opt);
-		$fileExtension = strtolower(substr(strrchr($file,'.'),1));									 
-		switch ($fileExtension) {
-			case 'pdf':
-      		$icon = 'fa-file-pdf-o';
-      	break;
-		  	case 'doc':
-				$icon = 'fa-file-word-o';
-			break;
-		  	case 'docx':
-				$icon = 'fa-file-word-o';
-		  	break;
-		  	case 'txt':
-		      $icon = 'fa-file-text-o';
-		 	break;
-		  	case 'xls':
-		     $icon = 'fa-file-excel-o';
-		 	break;
-		  	case 'xlsx':
-		     $icon = 'fa-file-excel-o';
-			break;
-		  	case 'xlsm':
-		      $icon = 'fa-file-excel-o';
-		  	break;
-		  	case 'ppt':
-		      $icon = 'fa-file-powerpoint-o';
-			break;
-		  	case 'pptx':
-		      $icon = 'fa-file-powerpoint-o';
-			break;
-		  	case 'mp3':
-		      $icon = 'fa-file-audio-o';
-		  	break;
-		  	case 'wmv':
-		      $icon = 'fa-file-video-o';
-		  	break;
-		  	case 'mp4':
-		      $icon = 'fa-file-movie-o';
-		   break;
-		  	case 'mpeg':
-		      $icon = 'fa-file-movie-o';
-		   break;
-		  	case 'html':
-		      $icon = 'fa-file-code-o';
-		   break;
-		  	default:
-		      $icon = 'fa-file-o';
-			break;
- 		}   
+		$fileExtension = strtolower(substr(strrchr((string) $file,'.'),1));									 
+		$icon = match ($fileExtension) {
+            'pdf' => 'fa-file-pdf-o',
+            'doc' => 'fa-file-word-o',
+            'docx' => 'fa-file-word-o',
+            'txt' => 'fa-file-text-o',
+            'xls' => 'fa-file-excel-o',
+            'xlsx' => 'fa-file-excel-o',
+            'xlsm' => 'fa-file-excel-o',
+            'ppt' => 'fa-file-powerpoint-o',
+            'pptx' => 'fa-file-powerpoint-o',
+            'mp3' => 'fa-file-audio-o',
+            'wmv' => 'fa-file-video-o',
+            'mp4' => 'fa-file-movie-o',
+            'mpeg' => 'fa-file-movie-o',
+            'html' => 'fa-file-code-o',
+            default => 'fa-file-o',
+        };   
 		return $icon;							
 	}
 	
 	public static function getFileImage($file,$opt) {
-		$optDef = array('iconsize'=>'128x128');
+		$optDef = ['iconsize'=>'128x128'];
 		$opt = array_merge($optDef,$opt);
-		$fileExtension = strtolower(substr(strrchr($file,'.'),1));
+		$fileExtension = strtolower(substr(strrchr((string) $file,'.'),1));
 		$pdfImg = '//cdn1.iconfinder.com/data/icons/CrystalClear/128x128/mimetypes/pdf.png';
 		$docImg = '//cdn2.iconfinder.com/data/icons/sleekxp/Microsoft%20Office%202007%20Word.png';
 		$pptImg = '//cdn2.iconfinder.com/data/icons/sleekxp/Microsoft%20Office%202007%20PowerPoint.png';
@@ -261,53 +230,23 @@ class ToolsDownload extends Core {
 		$htmlImg = '//cdn1.iconfinder.com/data/icons/nuove/128x128/mimetypes/html.png';
 		$fileImg = '//cdn3.iconfinder.com/data/icons/musthave/128/New.png';
 									 
-		switch ($fileExtension) {
-			case 'pdf':
-      		$img = $pdfImg;
-      	break;
-		  	case 'doc':
-				$img = $docImg;
-			break;
-		  	case 'docx':
-				$img = $docImg;
-		  	break;
-		  	case 'txt':
-		      $img = $txtImg;
-		 	break;
-		  	case 'xls':
-		      $img = $xlsImg;
-		 	break;
-		  	case 'xlsx':
-		      $img = $xlsImg;
-			break;
-		  	case 'xlsm':
-		      $img = $xlsImg;
-		  	break;
-		  	case 'ppt':
-		      $img = $pptImg;
-			break;
-		  	case 'pptx':
-		      $img = $pptImg;
-			break;
-		  	case 'mp3':
-		      $img = $audioImg;
-		  	break;
-		  	case 'wmv':
-		      $img = $videoImg;
-		  	break;
-		  	case 'mp4':
-		      $img = $videoImg;
-		   break;
-		  	case 'mpeg':
-		      $img = $videoImg;
-		   break;
-		  	case 'html':
-		      $img = $htmlImg;
-		   break;
-		  	default:
-		      $img = $fileImg;
-			break;
- 		}   
+		$img = match ($fileExtension) {
+            'pdf' => $pdfImg,
+            'doc' => $docImg,
+            'docx' => $docImg,
+            'txt' => $txtImg,
+            'xls' => $xlsImg,
+            'xlsx' => $xlsImg,
+            'xlsm' => $xlsImg,
+            'ppt' => $pptImg,
+            'pptx' => $pptImg,
+            'mp3' => $audioImg,
+            'wmv' => $videoImg,
+            'mp4' => $videoImg,
+            'mpeg' => $videoImg,
+            'html' => $htmlImg,
+            default => $fileImg,
+        };   
 		return $img;							
 	}
 

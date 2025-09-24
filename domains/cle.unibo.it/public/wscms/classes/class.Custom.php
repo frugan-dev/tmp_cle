@@ -15,7 +15,7 @@ class Custom extends Core {
 	{
 		//Config::$debugMode = 1;
 		$res = false;
-		$count = Sql::countRecordQry( Config::$dbTablePrefix.'companies','id','code = ?',array($companies_code));
+		$count = Sql::countRecordQry( Config::$dbTablePrefix.'companies','id','code = ?',[$companies_code]);
 		if (Config::$resultOp->error > 0) die('Errore db lettura code companies');
 		if ($count > 0) {
 			$res = true;

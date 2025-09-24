@@ -15,14 +15,14 @@ class Multilanguage extends Core {
 		}
 		
 	private static function getString($str,$opz){
-		$opzDef = array('htmlawed'=>false,'numchars'=>'','tagp'=>'','htmlout'=>false,'striptags'=>false,'xss'=>false,'urlslug'=>false,'deletetagp'=>false,'striptags'=>false,'parse'=>false);	
+		$opzDef = ['htmlawed'=>false,'numchars'=>'','tagp'=>'','htmlout'=>false,'striptags'=>false,'xss'=>false,'urlslug'=>false,'deletetagp'=>false,'striptags'=>false,'parse'=>false];	
 		$opz = array_merge($opzDef,$opz);	
 
 		if ($opz['parse'] == true) $str = ToolsStrings::parseHtmlContent($str);
 		
 		/* opzioni */
 		if ($opz['deletetagp'] == true) {
-			$str = ltrim($str,'<p>');
+			$str = ltrim((string) $str,'<p>');
 			$str = rtrim($str,'</p>');
 			}
 			
@@ -30,10 +30,10 @@ class Multilanguage extends Core {
 		if ($opz['urlslug'] == true) $str = SanitizeStrings::urlslug($str);
 		if ($opz['htmlawed'] == true) $str = htmLawed::hl($str);	
 		if ($opz['xss'] == true) $str = SanitizeStrings::xss($str);
-		if ($opz['striptags'] == true) $str = strip_tags($str);	
+		if ($opz['striptags'] == true) $str = strip_tags((string) $str);	
 				
 		if ($opz['numchars'] != '') {
-			$arr = array();
+			$arr = [];
 			$arr['numchars'] = $opz['numchars'];
 			if (isset($opz['suffix'])) $arr['suffix'] = $opz['suffix'];
 			$str = ToolsStrings::getStringFromTotNumberChar($str,$arr);
@@ -44,7 +44,7 @@ class Multilanguage extends Core {
 		
 	public static function getLocaleObjectValue($obj,$field,$localesuffix,$opz){
 		$str = '';
-		$opzDef = array('deflocalesuffix'=>'it');	
+		$opzDef = ['deflocalesuffix'=>'it'];	
 		$opz = array_merge($opzDef,$opz);			
 		$rifObj = $field.$localesuffix;
 		$rifObjDef = $field.$opz['deflocalesuffix'];		
@@ -60,7 +60,7 @@ class Multilanguage extends Core {
 	public static function getLocaleArrayValue($array,$field,$localeSuffix,$params){
 		$str = '';
 		$defLocaleSuffix = 'it';
-		$defLocaleSuffix = (isset($params['deflocalesuffix']) ? $params['deflocalesuffix'] : $defLocaleSuffix);	
+		$defLocaleSuffix = ($params['deflocalesuffix'] ?? $defLocaleSuffix);	
 		$rifString = $field.$localeSuffix;
 		$rifStringDef = $field.$defLocaleSuffix;
 		
@@ -78,8 +78,8 @@ class Multilanguage extends Core {
 	public static function getLanguageUrl($action,$method,$param,$params,$lang)
 	{
 		$strUrl = URL_SITE;
-		$url = array();
-		$urlFinal = array();
+		$url = [];
+		$urlFinal = [];
 		if ($action != '') $url[] = $action;
 		if ($method != '') $url[] = $method;
 		if ($param != '') $url[] = $param;

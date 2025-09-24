@@ -9,7 +9,7 @@ if (isset($_POST['searchFromTable']) && isset($_MY_SESSION_VARS[$App->sessionNam
 // preleva le galleriesimages_categories
 if (isset($App->params->tables['galleriesimages_categories'])) {
 	$App->galleriesimages_categories = new stdClass;
-	Sql::initQuery($App->params->tables['galleriesimages_categories'],array('*'),array(),'');
+	Sql::initQuery($App->params->tables['galleriesimages_categories'],['*'],[],'');
 	$App->galleriesimages_categories = Sql::getRecords();
 	if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 	//ToolsStrings::dump($App->galleriesimages_categories);
@@ -18,12 +18,12 @@ if (isset($App->params->tables['galleriesimages_categories'])) {
 
 switch(Core::$request->method) {
 	case 'moreOrderingPage':
-		Utilities::increaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['page'],'orderingType'=>$App->params->orderTypes['page'],'parent'=>1,'parentField'=>'parent','label'=>ucfirst($_lang['voce']).' '.$_lang['spostata']));
+		Utilities::increaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['page'],'orderingType'=>$App->params->orderTypes['page'],'parent'=>1,'parentField'=>'parent','label'=>ucfirst((string) $_lang['voce']).' '.$_lang['spostata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listPage');
 	break;
 	case 'lessOrderingPage':
-		Utilities::decreaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['page'],'orderingType'=>$App->params->orderTypes['page'],'parent'=>1,'parentField'=>'parent','label'=>ucfirst($_lang['voce']).' '.$_lang['spostata']));
+		Utilities::decreaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['page'],'orderingType'=>$App->params->orderTypes['page'],'parent'=>1,'parentField'=>'parent','label'=>ucfirst((string) $_lang['voce']).' '.$_lang['spostata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listPage');
 	break;
@@ -31,7 +31,7 @@ switch(Core::$request->method) {
 	case 'activePage':
 	case 'disactivePage':
 		if ($App->id == 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/404'); }	
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tables['page'],$App->id,array('label'=>Config::$langVars['voce'],'attivata'=>Config::$langVars['attivata'],'disattivata'=>Config::$langVars['disattivata']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tables['page'],$App->id,['label'=>Config::$langVars['voce'],'attivata'=>Config::$langVars['attivata'],'disattivata'=>Config::$langVars['disattivata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listPage');
 	break;
@@ -40,54 +40,54 @@ switch(Core::$request->method) {
 		if ($App->id == 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/404'); }
 
 		/* controlla se ha blocchi associati */			
-		Sql::initQuery($App->params->tables['iblo'],array('id'),array($App->id),'id_owner = ?');
+		Sql::initQuery($App->params->tables['iblo'],['id'],[$App->id],'id_owner = ?');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['blocchi'],Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['blocchi'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}
 				
 		/* controlla se ha figli associati */			
-		Sql::initQuery($App->params->tables['item'],array('id'),array($App->id),'parent = ?');
+		Sql::initQuery($App->params->tables['item'],['id'],[$App->id],'parent = ?');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['voci'],Core::$langVars['Ci sono ancora %ITEM% associate!']));
+			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['voci'],(string) Core::$langVars['Ci sono ancora %ITEM% associate!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}
 				
 		/* controlla se ha immagini associate */
-		Sql::initQuery($App->params->tables['resources'],array('id'),array($App->id),'id_owner = ? AND resource_type = 1');
+		Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 1');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['immagini'],Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['immagini'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}	
 
 		/* controlla se ha files associati */			
-		Sql::initQuery($App->params->tables['resources'],array('id'),array($App->id),'id_owner = ? AND resource_type = 2');
+		Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 2');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['files'],Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['files'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}	
 				
 		/* controlla se ha immagini gallerie associate */
-		Sql::initQuery($App->params->tables['resources'],array('id'),array($App->id),'id_owner = ? AND resource_type = 3');
+		Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 3');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['gallerie'],Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['gallerie'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}	
 
 		/* controlla se ha video associati */			
-		Sql::initQuery($App->params->tables['resources'],array('id'),array($App->id),'id_owner = ? AND resource_type = 4');
+		Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 4');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['video'],Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['video'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}	
 				
 		$App->itemOld = new stdClass;
-		Sql::initQuery($App->params->tables['item'],array('filename'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['item'],['filename'],[$App->id],'id = ?');
 		$App->itemOld = Sql::getRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); }
 
 				
-		Sql::initQuery($App->params->tables['item'],array('id'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['item'],['id'],[$App->id],'id = ?');
 		Sql::deleteRecord();
 					
 		// cancello il file associato
@@ -95,7 +95,7 @@ switch(Core::$request->method) {
 			@unlink($App->params->uploadPaths['item'].$App->itemOld->filename);			
 		}
 		
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['voce'],Core::$langVars['%ITEM% cancellata'])).'!';	
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['voce'],(string) Core::$langVars['%ITEM% cancellata'])).'!';	
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 	break;
 	
@@ -107,16 +107,16 @@ switch(Core::$request->method) {
 		$App->templateItem = new stdClass();
 		$App->subCategories = new stdClass();	
 		/* select per parent */
-		$opt = array(
+		$opt = [
 			'lang'=>$_lang['user'],
 			'tableCat'=>$App->params->tables['item'],
-		);
+		];
 
 		Subcategories::$levelString = ' --> ';
 		Subcategories::$countItems = 0;
 		Subcategories::$ordering = 'ordering '.$App->params->orderTypes['item'];
 		Subcategories::$dbTable = $App->params->tables['item'];
-		$App->subCategories = Subcategories::getObjFromSubCategories($opt);
+		$App->subCategories = Subcategories::getObjFromSubCategories();
 		/* carica i dati del template */
 		$App->templateItem = $Module->getTemplatePredefinito(0);		
 		if (!isset($App->templateItem->id) || (isset($App->templateItem->id) && (int)$App->templateItem->id == 0)) {	
@@ -134,7 +134,7 @@ switch(Core::$request->method) {
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['item']);
 		$App->item->filenameRequired = false;
 		$App->item->filename1Required = false;
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['voce'],$_lang['inserisci %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) $_lang['inserisci %ITEM%']);
 		$App->methodForm = 'insertItem';
 		$App->viewMethod = 'form';	
 	break;
@@ -157,12 +157,12 @@ switch(Core::$request->method) {
 	   	
 		/* imposta alias */
 		/* imposta alias */
-		$opt = array(
+		$opt = [
 			'fieldrif'=>'alias',
 			'exclude id'=>'',
 			'table'=>$App->params->tables['item'],
 			'default alias'=>$_POST['title_'.$_lang['user']]
-		);	
+		];	
 		$_POST['alias'] = Utilities::getUnivocalAlias($_POST['alias'],$opt);
 
 
@@ -180,7 +180,7 @@ switch(Core::$request->method) {
 		}   	
 
 		/* parsa i post in base ai campi */
-		Form::parsePostByFields($App->params->fields['item'],$_lang,array());
+		Form::parsePostByFields($App->params->fields['item'],$_lang,[]);
 		if (Core::$resultOp->error > 0) { 
 			$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/newItem');
@@ -196,7 +196,7 @@ switch(Core::$request->method) {
 			move_uploaded_file($tempFilename,$App->params->uploadPaths['item'].$_POST['filename']) or die('Errore caricamento file');
 		}	
 		
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['voce'],Core::$langVars['%ITEM% inserita'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['voce'],(string) Core::$langVars['%ITEM% inserita'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');	
 
 	break;
@@ -206,22 +206,22 @@ switch(Core::$request->method) {
 		$App->templateItem = new stdClass();
 		$App->subCategories = new stdClass();	
 		/* select per parent */
-		$opt = array(
+		$opt = [
 			'lang'=>$_lang['user'],
 			'tableCat'=>$App->params->tables['item'],
 			'hideId'=>1,
 			'hideSons'=>1,
 			'rifId'=>'id',
 			'rifIdValue'=>$App->id
-			);
+			];
 		Subcategories::$levelString = ' --> ';
 		Subcategories::$dbTable = $App->params->tables['item'];
 		Subcategories::$countItems = 0;
 		Subcategories::$ordering = 'ordering '.$App->params->orderTypes['item'];
 
-		$App->subCategories = Subcategories::getObjFromSubCategories($opt);
+		$App->subCategories = Subcategories::getObjFromSubCategories();
 
-		Sql::initQuery($App->params->tables['item'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['item'],['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error == 1) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['item']);
 		/* carica i dati del template */
@@ -234,7 +234,7 @@ switch(Core::$request->method) {
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['item']);
 		$App->item->filenameRequired = (isset($App->item->filename) && $App->item->filename != '' ? false : false);
 		$App->item->filename1Required = (isset($App->item->filename1) && $App->item->filename1 != '' ? false : false);
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['voce'],$_lang['modifica %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) $_lang['modifica %ITEM%']);
 		$App->methodForm = 'updateItem';		
 		$App->viewMethod = 'form';
 	break;
@@ -248,16 +248,16 @@ switch(Core::$request->method) {
 		$App->itemOld = new stdClass;
 				
 		/* preleva dati vecchio */
-		Sql::initQuery($App->params->tables['item'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['item'],['*'],[$App->id],'id = ?');
 		$App->itemOld = Sql::getRecord();
 			
 		/* imposta alias */
-		$opt = array(
+		$opt = [
 			'fieldrif'=>'alias',
 			'exclude id'=>$App->id,
 			'table'=>$App->params->tables['item'],
 			'default alias'=>$_POST['title_'.$_lang['user']]
-		);	
+		];	
 		$_POST['alias'] = Utilities::getUnivocalAlias($_POST['alias'],$opt);
 
 			
@@ -292,7 +292,7 @@ switch(Core::$request->method) {
 		//ToolsStrings::dump($_POST);
 		   
 		/* parsa i post in base ai campi */
-		Form::parsePostByFields($App->params->fields['item'],$_lang,array());
+		Form::parsePostByFields($App->params->fields['item'],$_lang,[]);
 		if (Core::$resultOp->error > 0) { 
 			$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyItem/'.$App->id);
@@ -317,7 +317,7 @@ switch(Core::$request->method) {
 			}	   			
 		}
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['pagina'],Core::$langVars['%ITEM% modificata'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['pagina'],(string) Core::$langVars['%ITEM% modificata'])).'!';
 		if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyItem/'.$App->id);
 		} else {
@@ -333,22 +333,22 @@ switch(Core::$request->method) {
 
 	case 'messageItem':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';
 	break;
 
 	case 'listItem':
 	default;	
 		//ToolsStrings::dump(Config::$globalSettings);
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 10);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 10);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
 		Sql::setItemsForPage($App->itemsForPage);
 		$Module->setMySessionApp($_MY_SESSION_VARS[$App->sessionName]);
 		
-		$opt = array('lang'=>Config::$globalSettings['default language']);
+		$opt = ['lang'=>Config::$globalSettings['default language']];
 		$Module->listMainData($App->params->fields['item'],$App->page,$App->itemsForPage,Config::$globalSettings['languages'],$opt);
 		$App->items = $Module->getMainData();
-		$App->pageSubTitle = preg_replace('/%ITEM%/',$_lang['voci'],$_lang['lista delle %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['voci'],(string) $_lang['lista delle %ITEM%']);
 		$App->viewMethod = 'list';	
 	break;	
 
@@ -380,24 +380,24 @@ switch(Core::$request->method) {
 	case 'updateSeoItem':
 		if ($App->id == 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/404'); }
 		if (!$_POST) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/404'); }
-		$fields = array();
-		$fieldsVal = array();
+		$fields = [];
+		$fieldsVal = [];
 		foreach($globalSettings['languages'] AS $lang) {
 			$fields[] = 'meta_title_'.$lang;	
-			$fieldsVal[] = (isset($_POST['meta_title_'.$lang]) ? $_POST['meta_title_'.$lang] : '');									
+			$fieldsVal[] = ($_POST['meta_title_'.$lang] ?? '');									
 			$fields[] = 'meta_description_'.$lang;
-			$fieldsVal[] = (isset($_POST['meta_description_'.$lang]) ? $_POST['meta_description_'.$lang] : '');					
+			$fieldsVal[] = ($_POST['meta_description_'.$lang] ?? '');					
 			$fields[] = 'meta_keyword_'.$lang;
-			$fieldsVal[] = (isset($_POST['meta_keyword_'.$lang]) ? $_POST['meta_keyword_'.$lang] : '');					
+			$fieldsVal[] = ($_POST['meta_keyword_'.$lang] ?? '');					
 			$fields[] = 'title_seo_'.$lang;
-			$fieldsVal[] = (isset($_POST['title_seo_'.$lang]) ? $_POST['title_seo_'.$lang] : '');
+			$fieldsVal[] = ($_POST['title_seo_'.$lang] ?? '');
 		}					
 		$fieldsVal[] = $App->id;
 		Sql::initQuery($App->params->tables['page'],$fields,$fieldsVal,'id = ?','');
 		Sql::updateRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['Tag SEO'],Core::$langVars['%ITEM% modificati'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['Tag SEO'],(string) Core::$langVars['%ITEM% modificati'])).'!';
 
 
 		if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
@@ -420,7 +420,7 @@ switch((string)$App->viewMethod) {
 
 	case 'formSeoMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->params->tables['item'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['item'],['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();		
 		$App->templateApp = 'formSeoPage.html';
 		$App->methodForm = 'updateSeoItem';	

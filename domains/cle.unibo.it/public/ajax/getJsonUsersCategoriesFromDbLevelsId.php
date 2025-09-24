@@ -38,7 +38,7 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 /* avvio sessione */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
@@ -47,12 +47,12 @@ $App->params->tables['users']  = DB_TABLE_PREFIX.'users';
 $App->params->tables['levels'] = DB_TABLE_PREFIX.'levels';
 $App->params->tables['caus'] = DB_TABLE_PREFIX.'users_categories';
 
-$levels_id = (isset($_POST['levels_id']) ? $_POST['levels_id'] : 10);
+$levels_id = ($_POST['levels_id'] ?? 10);
 $users_categories_id = (isset($_POST['']) ? $_POST['users_categories_id'] : 3);
 $levels_id_alias = '';
 
 // trova levels_alias_id in base al livello
-Sql::initQuery($App->params->tables['levels'],array('*'),array($levels_id),'id = ?');
+Sql::initQuery($App->params->tables['levels'],['*'],[$levels_id],'id = ?');
 $foo = Sql::getRecord();
 if (isset($foo->id_alias)) $levels_id_alias = $foo->id_alias;
 
@@ -67,7 +67,7 @@ echo '$levels_id_alias:'.$levels_id_alias;
 $queryVars = Applications::resetDataTableArrayVars();
 $queryVars['table'] = $App->params->tables['caus'];
 $queryVars['fields'][] = '*';
-$queryVars['fieldsValue'] = array();
+$queryVars['fieldsValue'] = [];
 if ($levels_id_alias != '') {
     $queryVars['where'] = 'levels_id_alias = ?';
     $queryVars['fieldsValue'][] = intval($levels_id_alias);

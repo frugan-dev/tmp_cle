@@ -17,7 +17,7 @@ class Sql extends Core {
 	static $customQry = '';
 	static $table = '';
 	static $fields = '';
-	static $fieldsValue = array();
+	static $fieldsValue = [];
 	static $clause = '';
 	static $wherePrefix = '';
 	static $order = '';
@@ -28,11 +28,11 @@ class Sql extends Core {
 	static $addslashes = true;	
 	static $foundRows = 0;
 		
-	static $breadcrumbs = array();
+	static $breadcrumbs = [];
 	static $countA = 0;	
 	static $parentstring = '';
 	static $pretitleparent = '';	
-	static $languages = array('it');
+	static $languages = ['it'];
 	
 	static $listTreeData = '';
 	
@@ -51,15 +51,15 @@ class Sql extends Core {
 	{
 		self::$dbConfig = Config::getDatabaseSettings();
 		//print_r(self::$dbConfig);
-		$user = (isset(self::$dbConfig['user']) ? self::$dbConfig['user'] : 'nd');
-		$password = (isset( self::$dbConfig['password']) ? self::$dbConfig['password'] : 'nd');
-		$host = (isset(self::$dbConfig['host']) ? self::$dbConfig['host'] : 'nd');
-		$name = (isset(self::$dbConfig['name']) ? self::$dbConfig['name'] : 'nd');
+		$user = (self::$dbConfig['user'] ?? 'nd');
+		$password = (self::$dbConfig['password'] ?? 'nd');
+		$host = (self::$dbConfig['host'] ?? 'nd');
+		$name = (self::$dbConfig['name'] ?? 'nd');
 		$dsn = 'mysql:host='.$host.';dbname='.$name.';port=3306;connect_timeout=15';
 		
-		$opts = array(
+		$opts = [
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION		
-		);
+		];
 			
 		if( version_compare(PHP_VERSION, '5.3.6', '<') ){
     		if( defined('PDO::MYSQL_ATTR_INIT_COMMAND') ){
@@ -85,8 +85,8 @@ class Sql extends Core {
 	/* QUERY CUSTOM */		
 	public static function getPdoObjRecords()
 	{			
-		$obj = array();		
-		$op_fieldTokeyObj = (isset(self::$options['fieldTokeyObj']) ? self::$options['fieldTokeyObj'] : '');		
+		$obj = [];		
+		$op_fieldTokeyObj = (self::$options['fieldTokeyObj'] ?? '');		
 		$clause = self::$clause;
 		if ($clause != '') $clause = " WHERE ".$clause;			
 		if (self::$customQry == '') {
@@ -125,10 +125,10 @@ class Sql extends Core {
 	}
 	
 	public static function getRecords(){	
-		$obj = array();		
+		$obj = [];		
 		/* opzioni */
 		/* la key dell oggettto è presa da un campo */
-		$op_fieldTokeyObj = (isset(self::$options['fieldTokeyObj']) ? self::$options['fieldTokeyObj'] : '');		
+		$op_fieldTokeyObj = (self::$options['fieldTokeyObj'] ?? '');		
 		/* sezione CLAUSE */
 		$clause = self::$clause;
 		if ($clause != '') $clause = " WHERE ".$clause;		
@@ -185,7 +185,7 @@ class Sql extends Core {
 	public static function getRecord()
 	{	
 		//self::resetResultOp();
-		$obj = array();
+		$obj = [];
 		$clause = self::$clause;
 		if ($clause != '') $clause = " WHERE ".$clause;			
 		if (self::$customQry == '') {
@@ -216,8 +216,8 @@ class Sql extends Core {
 
 	public static function insertRecord() {
 			//self::resetResultOp();
-			$fields = array();
-			$fieldsPrepare = array();		
+			$fields = [];
+			$fieldsPrepare = [];		
 			/* creo l'elenco dei campi */			
 			if (is_array(self::$fields) && count(self::$fields) > 0) {
 				foreach(self::$fields AS $key=>$value){
@@ -243,8 +243,8 @@ class Sql extends Core {
 		}
 
 	public static function updateRecord() {
-			$fields = array();
-			$fieldsPrepare = array();			
+			$fields = [];
+			$fieldsPrepare = [];			
 			/* creo l'elenco dei campi */			
 			if (is_array(self::$fields) && count(self::$fields) > 0) {
 				foreach(self::$fields AS $key=>$value){
@@ -382,7 +382,7 @@ class Sql extends Core {
 		
 	public static function getTablesDatabase($database) {
 		try {
-			$arr = array();
+			$arr = [];
 			$pdoCore = self::getInstanceDb();
 			$result = $pdoCore->query("SHOW TABLES");
 				while ($row = $result->fetch(PDO::FETCH_NUM)) {
@@ -402,16 +402,16 @@ class Sql extends Core {
 	
 	/* INSERIMENTI  DA POST */
 	public static function insertRawlyPost($fields,$table) {
-		$fieldListArray = array();
-		$fieldValuesArray = array();
-		$fieldPrepareArray = array();
+		$fieldListArray = [];
+		$fieldValuesArray = [];
+		$fieldPrepareArray = [];
 		if (is_array($fields) && count($fields) > 0){
 			foreach($fields AS $key=>$value){
-				$autoinc = (isset($value['autoinc']) ? isset($value['autoinc']) : false);
-				$nodb = (isset($value['nodb']) ? isset($value['nodb']) : false);
+				$autoinc = (isset($value['autoinc']) ?: false);
+				$nodb = (isset($value['nodb']) ?: false);
 				if ($autoinc == false && $nodb == false) {
-					$fieldListArray[] = $key;				$autoinc = (isset($value['autoinc']) ? isset($value['autoinc']) : false);
-				$nodb = (isset($value['nodb']) ? isset($value['nodb']) : false);
+					$fieldListArray[] = $key;				$autoinc = (isset($value['autoinc']) ?: false);
+				$nodb = (isset($value['nodb']) ?: false);
 
 					if (isset($_POST[$key])) $fieldValuesArray[] = $_POST[$key];
 					$fieldPrepareArray[] = '?';
@@ -436,12 +436,12 @@ class Sql extends Core {
 	
 	/* MODIFICHE DA POST */	
 	public static function updateRawlyPost($fields,$table,$clauseRif,$valueRif) {
-		$fieldListArray = array();
-		$fieldValuesArray = array();
+		$fieldListArray = [];
+		$fieldValuesArray = [];
 		if (is_array($fields) && count($fields) > 0){
 			foreach($fields AS $key=>$value) {
-				$autoinc = (isset($value['autoinc']) ? isset($value['autoinc']) : false);
-				$nodb = (isset($value['nodb']) ? isset($value['nodb']) : false);
+				$autoinc = (isset($value['autoinc']) ?: false);
+				$nodb = (isset($value['nodb']) ?: false);
 				if ($autoinc == false && $nodb == false) {
 					$fieldListArray[] = $key.' = ?';
 					$fieldValueArray[] = $_POST[$key];
@@ -469,10 +469,10 @@ class Sql extends Core {
 		}
 
 	public static function updateRawlyFields($fieldslist,$table,$post,$opt) {
-		$optDef = array('clause'=>'','clauseVals '=>'');	
+		$optDef = ['clause'=>'','clauseVals '=>''];	
 		$opt = array_merge($optDef,$opt);
-		$fields = array();
-		$fieldsVal = array();
+		$fields = [];
+		$fieldsVal = [];
 		if (isset($fieldslist) && is_array($fieldslist) && count($fieldslist) > 0){
 			foreach($fieldslist AS $key=>$value){
 				if ($value['type'] != 'autoinc' && $value['type'] != 'nodb') {
@@ -588,7 +588,7 @@ class Sql extends Core {
 		
 	/* SQL TOOLS */
 	public static function checkRequireFields($fields) {
-		$fieldsTemp = ToolsStrings::multiSearch($fields, array('required' => true));
+		$fieldsTemp = ToolsStrings::multiSearch($fields, ['required' => true]);
 		if (is_array($fieldsTemp) && count($fieldsTemp) > 0){
 			foreach($fieldsTemp AS $key=>$value){
 				if (!isset($_POST[$key]) || $_POST[$key] == '') {		
@@ -600,7 +600,7 @@ class Sql extends Core {
 		}
 		
 	public static function stripMagicFields($array){
-		$resultArray = array();
+		$resultArray = [];
 		foreach($array AS $key=>$value){
 			$resultArray[$key] = SanitizeStrings::stripMagic($value);		
 			}
@@ -630,16 +630,16 @@ class Sql extends Core {
 			return $firstId;	
 		}
 		
-	 public static function getClauseVarsFromAppSession($sessionApp,$fields,$clauseWhere='',$opt=array()) 
+	 public static function getClauseVarsFromAppSession($sessionApp,$fields,$clauseWhere='',$opt=[]) 
 	 { 
-	 	$tableAlias = (isset($opt['tableAlias']) ? $opt['tableAlias'] : '');
-		$fieldsSearch = ToolsStrings::multiSearch($fields, array('searchTable' => true));
+	 	$tableAlias = ($opt['tableAlias'] ?? '');
+		$fieldsSearch = ToolsStrings::multiSearch($fields, ['searchTable' => true]);
 
 		/* sezione per la ricerca */
-		$clauseQry = array();
-		$fieldsVars = array();
+		$clauseQry = [];
+		$fieldsVars = [];
 		$qryTemp = '';		
-		$words = explode(',',$sessionApp);
+		$words = explode(',',(string) $sessionApp);
 		// passati da config
 		if (count($fieldsSearch) > 0) {
 			foreach($fieldsSearch AS $key=>$value){					
@@ -683,17 +683,17 @@ class Sql extends Core {
 
 
 		$qryTemp = implode(' OR ',$clauseQry);			
-		return array($qryTemp,$fieldsVars);
+		return [$qryTemp,$fieldsVars];
 	}
 		
-	public static function getClauseVarsFromSession($session,$fields,$opz=array()) {
-		$separator = (isset($opz['separator']) ? $opz['separator'] : ' ');
+	public static function getClauseVarsFromSession($session,$fields,$opz=[]) {
+		$separator = ($opz['separator'] ?? ' ');
 		
 		/* sezione per la ricerca */
-		$clauseQry = array();
-		$fieldsVars = array();
+		$clauseQry = [];
+		$fieldsVars = [];
 		$qryTemp = '';		
-		$words = explode($separator,$session);
+		$words = explode($separator,(string) $session);
 		if (count($fields) > 0) {
 			foreach($fields AS $value){					
 				if (count($words) > 0) {
@@ -705,20 +705,20 @@ class Sql extends Core {
 				}			
 			}			
 		$qryTemp = implode(' or ',$clauseQry);			
-		return array($qryTemp,$fieldsVars);
+		return [$qryTemp,$fieldsVars];
 		}
 		
-		public static function getClauseVarsFromArray($search,$fields,$opz=array()) {
-			$wf = array();
-			$wfv = array();
+		public static function getClauseVarsFromArray($search,$fields,$opz=[]) {
+			$wf = [];
+			$wfv = [];
 			if (is_array($fields) && count($fields) > 0) {
-				$valueFV = array();
+				$valueFV = [];
 				$valueF = '';
 				foreach ($fields AS $key=>$value) {	
 					$keys = preg_grep( '/'.$search.'/', $value['array']);
 					if (is_array($keys) && count($keys) > 0) {
-						$f = array();
-						$fv = array();
+						$f = [];
+						$fv = [];
 						foreach ($keys AS $keyk=>$valuek) {
 							$f[] = $value['field'].' = ?';
 							$fv[] = $keyk;						
@@ -730,86 +730,76 @@ class Sql extends Core {
 				if ($valueF != '') $wf[] = $valueF;
 				$wfv = $valueFV;
 				}
-		return array($wf,$wfv);
+		return [$wf,$wfv];
 		}
 
 	public static function manageFieldActive($method,$appTable,$id,$opt){
-		$optDef = array('label'=>'voce','attivata'=>'attivata','disattivata'=>'disattivata');	
+		$optDef = ['label'=>'voce','attivata'=>'attivata','disattivata'=>'disattivata'];	
 		$opt = array_merge($optDef,$opt);
    	switch($method) {
    		case 'active':
-   			self::initQuery($appTable,array('active'),array('1',$id),'id = ?');
+   			self::initQuery($appTable,['active'],['1',$id],'id = ?');
 				self::updateRecord();	
-   			self::$resultOp->message = ucfirst($opt['label'])." ".$opt['attivata']."!";
+   			self::$resultOp->message = ucfirst((string) $opt['label'])." ".$opt['attivata']."!";
    		break;
 			case 'disactive':
-				self::initQuery($appTable,array('active'),array('0',$id),'id = ?');
+				self::initQuery($appTable,['active'],['0',$id],'id = ?');
 				self::updateRecord();
-   			self::$resultOp->message = ucfirst($opt['label'])." ".$opt['disattivata']."!";
+   			self::$resultOp->message = ucfirst((string) $opt['label'])." ".$opt['disattivata']."!";
    		break;   		
 		}  	
 	}
 
 	public static function switchFieldOnOff($appTable,$field,$fieldRif,$id,$opt){
-		$optDef = array('labelOn'=>'voce attivata','labelOff'=>'voce disattivata');
+		$optDef = ['labelOn'=>'voce attivata','labelOff'=>'voce disattivata'];
 		$opt = array_merge($optDef,$opt);	
    	/* preleva il valore del flag */
-   	self::initQuery($appTable,array($field),array($id),$fieldRif.' = ?');
+   	self::initQuery($appTable,[$field],[$id],$fieldRif.' = ?');
    	if (!isset($appData)) $appData = new stdClass();
    	if (!isset($appData->item)) $appData->item = new stdClass();
 		$appData->item = Sql::getRecord();
-		switch($appData->item->$field) {
-			case 0:
-				$appData->item->$field = 1;
-			break;
-			case 1:
-			default:
-				$appData->item->$field = 0;
-			break;
-   		}
+		$appData->item->$field = match ($appData->item->$field) {
+            0 => 1,
+            default => 0,
+        };
    	/* lo aggiorna */
-		self::initQuery($appTable,array($field),array($appData->item->$field,$id),$fieldRif.' = ?');
+		self::initQuery($appTable,[$field],[$appData->item->$field,$id],$fieldRif.' = ?');
 		self::updateRecord();
-		switch($appData->item->$field) {
-			case 0:
-				self::$resultOp->message = $opt['labelOff'];
-			break;
-			case 1:
-			default:
-				self::$resultOp->message = $opt['labelOn'];
-			break;
-   		}
+		self::$resultOp->message = match ($appData->item->$field) {
+            0 => $opt['labelOff'],
+            default => $opt['labelOn'],
+        };
    	}
    	
    	/* VOCI ALBERO */
-	public static function setListTreeData($qry,$parent=0,$opt=array()) { 	
+	public static function setListTreeData($qry,$parent=0,$opt=[]) { 	
    		self::resetListDataVar();
    		self::setListTreeDataObj($qry,$parent,$opt);
 	}
    	
-	public static function setListTreeDataObj($qry,$parent = 0,$opt=array()) {
-		$listdata = array();			
+	public static function setListTreeDataObj($qry,$parent = 0,$opt=[]) {
+		$listdata = [];			
 		$listdata = self::getListParentsDataObj($qry,$listdata,$parent,$opt);
 		self::$listTreeData = $listdata;
 	}
 	
-	public static function getListParentsDataObj($qry,$listdata,$parent = 0,$opt) 
+	public static function getListParentsDataObj($qry,$listdata,$parent = 0,$opt = null) 
 	{
-		$optDef = array('orgQry'=>'','qryCountParentZero'=>'','lang'=>'it','fieldKey'=>'','hideId'=>0,'hideSons'=>0,'rifIdValue'=>'','rifId'=>'','getbreadcrumbs'=>0,'levelString'=>'-->');	
+		$optDef = ['orgQry'=>'','qryCountParentZero'=>'','lang'=>'it','fieldKey'=>'','hideId'=>0,'hideSons'=>0,'rifIdValue'=>'','rifId'=>'','getbreadcrumbs'=>0,'levelString'=>'-->'];	
 		$opt = array_merge($optDef,$opt);	
 		
 		//print_r($opt);die();	
 
-		$noId = (isset($option['noId']) ? $option['noId'] : 0);
-		$fieldKey = (isset($option['fieldKey']) ? $option['fieldKey'] : '');
+		$noId = ($option['noId'] ?? 0);
+		$fieldKey = ($option['fieldKey'] ?? '');
 		
 		//$rifIdValue = (isset($option['rifIdValue']) ? $option['rifIdValue'] : '0');
-		$hideLabel = (isset($option['hideLabel']) ? $option['hideLabel'] : 0);
-		$hideLabel = (isset($option['hideLabel']) ? $option['hideLabel'] : 0);
-		$getbreadcrumbs = (isset($option['getbreadcrumbs']) ? $option['getbreadcrumbs'] : 0);
+		$hideLabel = ($option['hideLabel'] ?? 0);
+		$hideLabel = ($option['hideLabel'] ?? 0);
+		$getbreadcrumbs = ($option['getbreadcrumbs'] ?? 0);
 		
 		
-		$rifId = (isset($option['rifId']) ? $option['rifId'] : 'id');
+		$rifId = ($option['rifId'] ?? 'id');
 		self::$languages = self::$globalSettings['languages'];
 		
 		if (!isset(self::$level)) self::$level = 0;
@@ -859,7 +849,7 @@ class Sql extends Core {
 						for($x1=1;$x1 <= self::$level; $x1++) {
 							$listdata[$varKey]->levelString .= $opt['levelString'];
 						}	
-							
+
 						/* aggiunge campi localizzati */
 						$field = "title_".Config::$langVars['user'];
 						if (isset($row->$field)) {
@@ -874,18 +864,18 @@ class Sql extends Core {
 						if (isset($row->$field)) {
 							$listdata[$varKey]->titleparent = $row->$field;	
 						}
-																	
+
 						// breadcrumbs	
 						//$get = 1;						
 						//if ($get == 1 && $getbreadcrumbs == 1) {
 						if ($opt['getbreadcrumbs'] == 1) {
-							if (self::$level == 0) self::$breadcrumbs = array();							
+							if (self::$level == 0) self::$breadcrumbs = [];							
 							// azzerra i superiori al livello se ce ne sono
 							$cc = count(self::$breadcrumbs);
 							$xx = self::$level;
 							for ($xx;$xx<=$cc;$xx++) unset(self::$breadcrumbs[$xx]);							
-							
-							self::$breadcrumbs[self::$level] = array();
+
+							self::$breadcrumbs[self::$level] = [];
 							self::$breadcrumbs[self::$level]['id'] = $row->id;
 							if (isset($row->type)) self::$breadcrumbs[self::$level]['type'] = $row->type;
 							self::$breadcrumbs[self::$level]['parent'] = $row->parent;
@@ -898,12 +888,12 @@ class Sql extends Core {
 							foreach (self::$languages AS $langValue) {
 								$breadcrumbsTitleField = 'title_'.$langValue;
 								$breadcrumbsTitleparentField = 'titleparent_'.$langValue;
-								
+
 								if (isset($row->$breadcrumbsTitleField)) self::$breadcrumbs[self::$level][$breadcrumbsTitleField] = $row->$breadcrumbsTitleField;	
 								if (isset($row->$breadcrumbsTitleparentField)) self::$breadcrumbs[self::$level][$breadcrumbsTitleparentField] = $row->$breadcrumbsTitleparentField;
-								
 
-								
+
+
 								if (isset($row->aliasparent)) self::$breadcrumbs[self::$level]['aliasparent'] = $row->aliasparent;
 								if (isset($row->typeparent)) self::$breadcrumbs[self::$level]['typeparent'] = $row->typeparent;								
 							}
@@ -977,7 +967,7 @@ class Sql extends Core {
 		
 	public static function setClause($value){
 		if (self::$addslashes == true) {
-			self::$clause = addslashes($value);
+			self::$clause = addslashes((string) $value);
 		} else {
 			self::$clause = $value;
 		}
@@ -1003,7 +993,8 @@ class Sql extends Core {
 		self::$resultPaged = $value;
 	}
 		
-	public static function setDebugMode($value){
+	#[\Override]
+    public static function setDebugMode($value){
 		self::$debugMode = $value;
 	}
 	
@@ -1037,7 +1028,7 @@ class Sql extends Core {
 	public static function getTablePrefix()
 	{	
 		self::$dbConfig = Config::getDatabaseSettings();	
-		$s = (isset(self::$dbConfig['tableprefix']) ? self::$dbConfig['tableprefix'] : '');	
+		$s = (self::$dbConfig['tableprefix'] ?? '');	
 		return $s;
 	}	
 
@@ -1051,7 +1042,7 @@ class Sql extends Core {
 		return self::$listTreeData;
 	}
 			
-	public static function initQuery($table='',$fields='',$fieldsValue=array(),$clause='',$order='',$limit='',$opts='',$resultPaged=false)
+	public static function initQuery($table='',$fields='',$fieldsValue=[],$clause='',$order='',$limit='',$opts='',$resultPaged=false)
 	{
 		self::$table = $table;
 		self::$fields = $fields;
@@ -1066,7 +1057,7 @@ class Sql extends Core {
 		self::$resultPaged = $resultPaged;
 	}
 	
-	public static function initQueryBasic($table='',$fields='',$fieldsValue=array(),$clause='')
+	public static function initQueryBasic($table='',$fields='',$fieldsValue=[],$clause='')
 	{
 		self::$table = $table;
 		self::$fields = $fields;

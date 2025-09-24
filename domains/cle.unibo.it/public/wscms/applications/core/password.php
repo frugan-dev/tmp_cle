@@ -5,9 +5,9 @@
 
 /* variabili ambiente */
 $App->codeVersion = ' 3.5.4.';
-$App->pageTitle = ucfirst($_lang['password']);
-$App->pageSubTitle = preg_replace('/%ITEM%/', $_lang['password'], $_lang['modifica la %ITEM%']);
-$App->breadcrumb[] = '<li class="active"><i class="icon-user"></i> '.preg_replace('/%ITEM%/', $_lang['password'], $_lang['modifica %ITEM%']).'</li>';
+$App->pageTitle = ucfirst((string) $_lang['password']);
+$App->pageSubTitle = preg_replace('/%ITEM%/', (string) $_lang['password'], (string) $_lang['modifica la %ITEM%']);
+$App->breadcrumb[] = '<li class="active"><i class="icon-user"></i> '.preg_replace('/%ITEM%/', (string) $_lang['password'], (string) $_lang['modifica %ITEM%']).'</li>';
 $App->templateApp = Core::$request->action.'.html';
 $App->id = intval(Core::$request->param);
 if (isset($_POST['id'])) $App->id = intval($_POST['id']);
@@ -20,7 +20,7 @@ switch(Core::$request->method) {
 			$passwordCK = (isset($_POST['passwordCK']) && $_POST['passwordCK'] != "") ? SanitizeStrings::stripMagic($_POST['passwordCK']) : '';
 			if ($password != '') {
 				if ($password === $passwordCK) {
-					$password = password_hash($password, PASSWORD_DEFAULT);
+					$password = password_hash((string) $password, PASSWORD_DEFAULT);
 					} else {
 						Core::$resultOp->error = 1;
 						Core::$resultOp->message = $_lang['Le due password non corrispondono!'];
@@ -32,7 +32,7 @@ switch(Core::$request->method) {
 				
 			if (Core::$resultOp->error == 0) {	
 				/* (tabella,campi(array),valori campi(array),where clause, limit, order, option , pagination(default false)) */
-				Sql::initQuery(DB_TABLE_PREFIX.'users',array('password'),array($password,$App->id),"id = ?");	
+				Sql::initQuery(DB_TABLE_PREFIX.'users',['password'],[$password,$App->id],"id = ?");	
 				Sql::updateRecord();
 				if(Core::$resultOp->error == 0) {
 					Core::$resultOp->message = $_lang['Password modificata correttamente! Sarà effettiva al prossimo login.'];
@@ -49,9 +49,9 @@ switch(Core::$request->method) {
 			/* recupera i dati memorizzati */
 			$App->item = new stdClass;	
 			/* (tabella,campi(array),valori campi(array),where clause, limit, order, option , pagination(default false)) */
-			Sql::initQuery(Sql::getTablePrefix().'users',array('username','password'),array($App->id),"id = ?");	
+			Sql::initQuery(Sql::getTablePrefix().'users',['username','password'],[$App->id],"id = ?");	
 			$App->item = Sql::getRecord();
-			$App->defaultJavascript = "messages['Le due password non corrispondono!'] = '".addslashes($_lang['Le due password non corrispondono!'])."'";
+			$App->defaultJavascript = "messages['Le due password non corrispondono!'] = '".addslashes((string) $_lang['Le due password non corrispondono!'])."'";
 			} else {
 				//ToolsStrings::redirect(URL_SITE_ADMIN."home");
 				//die();						

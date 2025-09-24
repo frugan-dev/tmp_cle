@@ -33,8 +33,8 @@ $_lang['residenze'] = "residenze";
 $_lang['libri'] = "libri";
 $_lang['giornalini'] = "giornalini";
 
-$_lang = array_merge($_lang,array(
+$_lang = array_merge($_lang,[
     'partners' => 'partners',
     'sponsor' => 'sponsor'
-));
+]);
 ?>

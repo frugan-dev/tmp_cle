@@ -14,12 +14,12 @@ switch(Core::$request->method) {
 	case 'moreOrderingItem':
 		if ($App->id > 0) {
 			Utilities::increaseFieldOrdering($App->id,$_lang,
-			array(
+			[
 				'table'=>$App->params->tables['item'],
 				'orderingType'=>$App->params->orderTypes['item'],
 				'parent'=>0,
 				'parentField'=>'',
-				'label'=>ucfirst(Config::$langVars['voce']).' '.$_lang['spostato']));
+				'label'=>ucfirst((string) Config::$langVars['voce']).' '.$_lang['spostato']]);
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); }			
 			$_SESSION['message'] = '0|'.Core::$resultOp->message;
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
@@ -32,13 +32,13 @@ switch(Core::$request->method) {
 			Utilities::decreaseFieldOrdering(
 				$App->id,
 				$_lang,
-				array(
+				[
 					'table'=>$App->params->tables['item'],
 					'orderingType'=>$App->params->orderTypes['item'],
 					'parent'=>0,
 					'parentField'=>'',
-					'label'=>ucfirst(Config::$langVars['voce']).' '.$_lang['spostato']
-				)
+					'label'=>ucfirst((string) Config::$langVars['voce']).' '.$_lang['spostato']
+				]
 			);
 
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }			
@@ -52,7 +52,7 @@ switch(Core::$request->method) {
 	case 'activeItem':
 	case 'disactiveItem':
 		if ($App->id > 0) {
-			Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tables['item'],$App->id,array('label'=>Config::$langVars['voce'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']));
+			Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tables['item'],$App->id,['label'=>Config::$langVars['voce'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']]);
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }		
 			$_SESSION['message'] = '0|'.Core::$resultOp->message;
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');	
@@ -64,19 +64,19 @@ switch(Core::$request->method) {
 	case 'deleteItem':		
 		if ($App->id > 0) {
 			
-			Sql::initQuery($App->params->tables['laye'],array('id'),array($App->id),'slide_id = ?');
+			Sql::initQuery($App->params->tables['laye'],['id'],[$App->id],'slide_id = ?');
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 			if (Sql::countRecord() > 0) {
-				$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',$_lang['layers'],$_lang['Ci sono ancora %ITEM% associati!']));
+				$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) $_lang['layers'],(string) $_lang['Ci sono ancora %ITEM% associati!']));
 				ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');				
 			}	
 			
 			$App->itemOld = new stdClass;
-			Sql::initQuery($App->params->tables['item'],array('filename'),array($App->id),'id = ?');
+			Sql::initQuery($App->params->tables['item'],['filename'],[$App->id],'id = ?');
 			$App->itemOld = Sql::getRecord();	
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 			
-			Sql::initQuery($App->params->tables['item'],array('id'),array($App->id),'id = ?');
+			Sql::initQuery($App->params->tables['item'],['id'],[$App->id],'id = ?');
 			Sql::deleteRecord();
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 			
@@ -84,7 +84,7 @@ switch(Core::$request->method) {
 				@unlink($App->params->uploadPaths['item'].$App->itemOld->filename);			
 			}
 							
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['voce'],Config::$langVars['%ITEM% cancellato'])).'!';	
+			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% cancellato'])).'!';	
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');		
 		} else {
 			ToolsStrings::redirect(URL_SITE.'error/404');
@@ -93,7 +93,7 @@ switch(Core::$request->method) {
 
 	
 	case 'newItem':
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['voce'],Config::$langVars['inserisci %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['inserisci %ITEM%']);
 		$App->viewMethod = 'formNew';	
 	break;
 	
@@ -113,7 +113,7 @@ switch(Core::$request->method) {
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/newItem/'.$App->id);
 		}
 		
-		Form::parsePostByFields($App->params->fields['item'],Config::$langVars,array());
+		Form::parsePostByFields($App->params->fields['item'],Config::$langVars,[]);
 		if (Core::$resultOp->error > 0) { 
 			$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/newItem/'.$App->id);
@@ -125,8 +125,8 @@ switch(Core::$request->method) {
 		$id_item = Sql::getLastInsertedIdVar();
 
 		// crea unlayer vuoto
-		$fields = array('slide_id','ordering','created','active');
-		$fieldsVal = array($id_item,1,Config::$nowDateTimeIso,1);
+		$fields = ['slide_id','ordering','created','active'];
+		$fieldsVal = [$id_item,1,Config::$nowDateTimeIso,1];
 		Sql::initQuery($App->params->tables['laye'],$fields,$fieldsVal);
 		Sql::insertRecord();
 		if (Core::$resultOp->error > 0) {	die('errore creazione primo layer'); }
@@ -135,12 +135,12 @@ switch(Core::$request->method) {
 			move_uploaded_file(ToolsUpload::getTempFilename(),$App->params->uploadPaths['item'].$_POST['filename']) or die('Errore caricamento file');
 		}	
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['voce'],Config::$langVars['%ITEM% inserita']));
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% inserita']));
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 	break;
 
 	case 'modifyItem':				
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['voce'],Config::$langVars['modifica %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['modifica %ITEM%']);
 		$App->viewMethod = 'formMod';
 	break;
 	
@@ -152,7 +152,7 @@ switch(Core::$request->method) {
 			if (!isset($_POST['ordering'])) $_POST['ordering'] = Sql::getMaxValueOfField($App->params->tables['item'],'ordering','') + 1;
 
 			/* preleva filename vecchio */
-			Sql::initQuery($App->params->tables['item'],array('filename','org_filename'),array($App->id),'id = ?');
+			Sql::initQuery($App->params->tables['item'],['filename','org_filename'],[$App->id],'id = ?');
 			$App->itemOld = Sql::getRecord();
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
@@ -180,7 +180,7 @@ switch(Core::$request->method) {
 			}	
 			
 			/* parsa i post in base ai campi */
-			Form::parsePostByFields($App->params->fields['item'],$_lang,array());
+			Form::parsePostByFields($App->params->fields['item'],$_lang,[]);
 			if (Core::$resultOp->error > 0) { 
 				$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 				ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyItem/'.$App->id);
@@ -197,7 +197,7 @@ switch(Core::$request->method) {
 					}	   			
 			}
 
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['voce'],Config::$langVars['%ITEM% modificata']));
+			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% modificata']));
 			if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 				ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyItem/'.$App->id);
 			} else {
@@ -216,7 +216,7 @@ switch(Core::$request->method) {
 
 	case 'messageItem':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';
 	break;
 
@@ -249,7 +249,7 @@ switch((string)$App->viewMethod) {
 	
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->params->tables['item'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['item'],['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();		
 		if (Core::$resultOp->error == 1) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['item']);
 		$App->item->filenameRequired = (isset($App->item->filename) && $App->item->filename != '' ? false : true);
@@ -261,19 +261,19 @@ switch((string)$App->viewMethod) {
 	case 'list':
 		$App->items = new stdClass;
 		$App->item = new stdClass;	
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);				
-		$qryFields = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);				
+		$qryFields = [];
 		$qryFields[] = 'ite.*';	
 		
 		$qryFields[] = "(SELECT COUNT(lay.id) FROM ".$App->params->tables['laye']." AS lay WHERE lay.slide_id = ite.id) AS layers";
 
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		$and = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['item'],'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['item'],'');
 			}	
 		if (isset($sessClause) && $sessClause != '') $clause .= $and.'('.$sessClause.')';
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {
@@ -286,7 +286,7 @@ switch((string)$App->viewMethod) {
 		Sql::setOrder('ordering '.$App->params->orderTypes['item']);
 		if (Core::$resultOp->error <> 1) $obj = Sql::getRecords();
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (is_array($obj) && is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {	
 				$arr[] = $value;
@@ -297,11 +297,11 @@ switch((string)$App->viewMethod) {
 		$App->items = $arr;
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
-		$App->paginationTitle = preg_replace('/%START%/',$App->pagination->firstPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',$App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',$App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
 
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['voci'],Config::$langVars['lista %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['voci'],(string) Config::$langVars['lista %ITEM%']);
 		$App->templateApp = 'listItem.html';	
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.$App->pathApplications.Core::$request->action.'/templates/'.$App->templateUser.'/js/listItem.js"></script>';
 	break;	

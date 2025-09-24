@@ -6,7 +6,7 @@ if(isset($_POST['searchFromTable'])) $_MY_SESSION_VARS = $my_session->addSession
 
 /* preleva i link moduli (alias) */
 
-Sql::initQuery(Sql::getTablePrefix().'modules',array('id','alias'),array(),"alias <> ''");
+Sql::initQuery(Sql::getTablePrefix().'modules',['id','alias'],[],"alias <> ''");
 Sql::setOrder('ordering DESC'); 
 $App->modules = Sql::getRecords();
 if (Core::$resultOp->error == 1) die('Errore database tabella moduli');
@@ -15,17 +15,17 @@ if (Core::$resultOp->error == 1) die('Errore database tabella moduli');
 
 switch(Core::$request->method) {
 	case 'moreOrdering':
-		$Utilities::increaseFieldOrdering($App->id,array('table'=>$table,'orderingType'=>$App->orderingType,'parent'=>true,'sexSuffix'=>'a','labelItem'=>'Pagina'));
+		$Utilities::increaseFieldOrdering($App->id,['table'=>$table,'orderingType'=>$App->orderingType,'parent'=>true,'sexSuffix'=>'a','labelItem'=>'Pagina']);
 		$App->viewMethod = 'list';	
 	break;
 	case 'lessOrdering':
-		$Utilities::decreaseFieldOrdering($App->id,array('table'=>$table,'orderingType'=>$App->orderingType,'parent'=>true,'sexSuffix'=>'a','labelItem'=>'Pagina'));
+		$Utilities::decreaseFieldOrdering($App->id,['table'=>$table,'orderingType'=>$App->orderingType,'parent'=>true,'sexSuffix'=>'a','labelItem'=>'Pagina']);
 		$App->viewMethod = 'list';	
 	break;
 	
 	case 'active':
 	case 'disactive':
-		Sql::manageFieldActive(Core::$request->method,$table,$App->id,'Pagina','a');
+		Sql::manageFieldActive(Core::$request->method,$table,$App->id,'Pagina');
 		$App->viewMethod = 'list';		
 	break;
 
@@ -151,7 +151,7 @@ switch(Core::$request->method) {
 				}		
 				
 			/* preleva dati vecchio */
-			Sql::initQuery($table,array('alias,parent'),array($App->id),'id = ?');
+			Sql::initQuery($table,['alias,parent'],[$App->id],'id = ?');
 			$App->itemOld = Sql::getRecord();
 			
 			/* imposta alias */
@@ -246,7 +246,7 @@ switch(Core::$request->method) {
 
 	case 'message':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';	
 	break;
 
@@ -282,7 +282,7 @@ switch((string)$App->viewMethod) {
 		$App->subCategories = new stdClass();
 
 		/* select per parent */
-		$opz = array('tableCat'=>$table,'getbreadcrumbs'=>1);
+		$opz = ['tableCat'=>$table,'getbreadcrumbs'=>1];
 		$App->subCategories = $CategoriesCle->getObjFromSubCategories($opz);
 		//ToolsStrings::dump($App->subCategories);
 		
@@ -316,27 +316,27 @@ switch((string)$App->viewMethod) {
 		/* file */
 		if ($App->templateItem->files > 0) {
 			$App->selectPageFiles = $Module->getSelectPageItems('pageFiles');	
-			$App->item->pageFiles = array();
+			$App->item->pageFiles = [];
 			}
 
 		/* images */	
 		if ($App->templateItem->images > 0) {
 			if (!isset($App->selectPageImages)) $App->selectPageImages = new stdClass();
 			$App->selectPageImages = $Module->getSelectPageItems('pageImages');			
-			$App->item->pageImages = array();
+			$App->item->pageImages = [];
 			}
 		//ToolsStrings::dump($App->selectPageImages);
 		
 		/* galleries */	
 		if ($App->templateItem->galleries > 0) {
 			$App->selectPageGalleries = $Module->getSelectPageItems('pageGalleries');	
-			$App->item->pageGalleries = array();
+			$App->item->pageGalleries = [];
 			}
 		
 		/* blocks */	
 		if ($App->templateItem->blocks > 0) {
 			$App->selectPageBlocks = $Module->getSelectPageItems('pageBlocks');	
-			$App->item->pageBlocks = array(); 
+			$App->item->pageBlocks = []; 
 			}
 		
 		if ($Module->error == 1) Utilities::setItemDataObjWithPost($App->item,$fields);
@@ -355,18 +355,18 @@ switch((string)$App->viewMethod) {
 		$App->subCategories = new stdClass();
 		
 		/* select per parent */
-		$opz = array(
+		$opz = [
 			'tableCat'=>$table,
 			'hideId'=>true,
 			'hideSons'=>true,
 			'rifId'=>'id',
 			'rifIdValue'=>$App->id
-			);
+			];
 		$App->subCategories = $CategoriesCle->getObjFromSubCategories($opz);
 
 		ToolsStrings::dump($App->subCategories);
 
-		Sql::initQuery($table,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($table,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error == 1) Utilities::setItemDataObjWithPost($App->item,$fields);
 
@@ -428,11 +428,11 @@ switch((string)$App->viewMethod) {
 	case 'list':
 		$App->item = new stdClass;		
 		$App->item->updated = Config::$nowDateTimeIso;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 10);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 10);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
 		Sql::setItemsForPage($App->itemsForPage);
 		$Module->setMySessionApp($_MY_SESSION_VARS[$App->sessionName]);
-		$opz = array('files'=>$App->params->item_files,'tablefiles'=>$App->tableIfil);
+		$opz = ['files'=>$App->params->item_files,'tablefiles'=>$App->tableIfil];
 		$Module->listMainData($fields,$App->page,$App->itemsForPage,$globalSettings['languages'],$opz);
 		$App->items = $Module->getMainData();
 		//ToolsStrings::dump($App->items);

@@ -15,8 +15,8 @@ $_lang['data format string'] = "%DAY%th, %STRINGMONTH% %YEAR%";
 $_lang['charset'] = 'fr-FR';
 $_lang['charset date'] = 'fr_FR';
 
-$_lang['lista giorni'] = array('N.D.','lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche');
-$_lang['lista mesi'] = array('N.D.','janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre');
+$_lang['lista giorni'] = ['N.D.','lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+$_lang['lista mesi'] = ['N.D.','janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
 $_lang['lingue'] = "langues";
 $_lang['lingua'] = "langue";

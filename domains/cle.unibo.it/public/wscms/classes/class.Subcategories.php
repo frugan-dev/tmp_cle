@@ -23,7 +23,7 @@ class Subcategories extends Core {
 	public static $rifIdValue = '';
 	public static $dbTable = '';
 	private static $dbTableItem = '';
-	private static $dbDbFieldsToAdd = array();
+	private static $dbDbFieldsToAdd = [];
 	private static $subWhereToQuery = '';
 	public static $optAddCompanyOwnerFields = false;
 	public static $dbTablePrefix = '';
@@ -65,7 +65,7 @@ class Subcategories extends Core {
 		//echo $qry;
 		//die('fatto');
 
-		$opt = array(
+		$opt = [
 			'orgQry'							=> $qry,
 			'qryCountParentZero'				=> '',
 			'lang'								=> self::$langUser,
@@ -76,7 +76,7 @@ class Subcategories extends Core {
 			'rifId'								=> '',
 			'getbreadcrumbs'					=> 0,
 			'levelString'						=> self::$levelString
-		);
+		];
 		Sql::resetListTreeData();
 		Sql::resetListDataVar();
 		Sql::setListTreeData($qry,self::$initParent,$opt);
@@ -86,12 +86,12 @@ class Subcategories extends Core {
 
 	public static function getCategoryDetails($id,$table,$opz) {
 		$obj =  new stdClass;
-		$actived = (isset($opz['actived']) ? $opz['actived'] : true);
+		$actived = ($opz['actived'] ?? true);
 		/* prende la categoria indicata */
 		$clause = 'id = ?';
 		if ($actived == true) $clause .= ' AND active = 1';
 		if (self::$subWhereToQuery != '') $clause .= ' AND '.self::$subWhereToQuery;
-		Sql::initQuery($table,array('*'),array($id),$clause);
+		Sql::initQuery($table,['*'],[$id],$clause);
 		$obj = Sql::getRecord();
 		$obj = self::addCustomFields($obj);
 		return $obj;

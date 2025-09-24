@@ -24,9 +24,9 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 /* avvio sessione */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
-echo Sql::countRecordQry(DB_TABLE_PREFIX."users",'id','username = BINARY ?',array($_POST['username']))
+echo Sql::countRecordQry(DB_TABLE_PREFIX."users",'id','username = BINARY ?',[$_POST['username']])
 ?>

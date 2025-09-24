@@ -76,16 +76,16 @@ $globalSettings['site owner'] = 'Websync';
 $globalSettings['copyright'] = '&copy; 2021 Websync';
 
 /* meta for site */
-$globalSettings['meta tags page'] = array(
+$globalSettings['meta tags page'] = [
 	'title ini'=>'',
 	'title separator'=>' | ',
 	'title end'=>"Master CLE Erasmus Mundus",
 	'description'=>"",
 	'keyword'=>""
-	);
+	];
 
 /* CONFIGURAZIONI GENERALI */
-$globalSettings['mesi'] = array('','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novenbre','Dicembre');
+$globalSettings['mesi'] = ['','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novenbre','Dicembre'];
 $globalSettings['anno creazione'] = '2022';
 $globalSettings['azienda referente'] = "Websync s.r.l.";
 $globalSettings['azienda breve'] = "Websync";
@@ -114,11 +114,11 @@ $globalSettings['sito credits url'] = 'https://www.websync.it';
 
 /* LANGUAGE */
 $globalSettings['default language'] = 'en';
-$globalSettings['languages'] = array('it','en','fr','el');
+$globalSettings['languages'] = ['it','en','fr','el'];
 
 /* UPLOAD */
-$globalSettings['image type available'] = array('jpg','png','gif');
-$globalSettings['file type available'] = array('doc','pdf','sql');
+$globalSettings['image type available'] = ['jpg','png','gif'];
+$globalSettings['file type available'] = ['doc','pdf','sql'];
 
 /* LINK SOCIAL */
 $globalSettings['facebook link'] = 'https://www.facebook.com/ErasmusMundusCle';
@@ -140,21 +140,21 @@ $globalSettings['session_random_key'] = $_ENV['SESSION_RANDOM_KEY'];
 
 /* DA NON MODIFICARE */
 
-$globalSettings['requestoption'] = array(
-	'coremodules' => array('requestsajax','confirmaccount','register','login','logout','account','password','profile','nopassword','nousername','moduleassociated','error'),
+$globalSettings['requestoption'] = [
+	'coremodules' => ['requestsajax','confirmaccount','register','login','logout','account','password','profile','nopassword','nousername','moduleassociated','error'],
 	'templateuser'=>'default',
 	'defaulttemplate'=>'default',
-	'templatesforusers'=>array('default'),
+	'templatesforusers'=>['default'],
 	'managechangeaction'=>0,
 	'defaultaction'=>'',
-	'othermodules' => array('404','error','customer','search','test')
-	);
+	'othermodules' => ['404','error','customer','search','test']
+	];
 
-$globalSettings['months'] = array('01' => 'Gennaio','02' => 'Febbraio','03' => 'Marzo','04' => 'Aprile','05' => 'Maggio','06' => 'Giugno','07' => 'Luglio','08' => 'Agosto','09' => 'Settembre','10' => 'Ottobre','11' => 'Novenbre','12' => 'Dicembre');
-$globalSettings['page-type'] = array('default'=>'Default','label'=>'Etichetta','url'=>'Url','module-link'=>'Link a modulo');
-$globalSettings['url-targets'] = array('_self','_blank');
-$globalSettings['module sections'] = array('Moduli Core','Moduli Personalizzati','Moduli Vecchi','Impostazioni','Root');
-$globalSettings['menu-type'] = array('default'=>'Default','label'=>'Etichetta','url'=>'url','module-link'=>'Link a modulo','module-menu'=>'Menu generato da modulo');
+$globalSettings['months'] = ['01' => 'Gennaio','02' => 'Febbraio','03' => 'Marzo','04' => 'Aprile','05' => 'Maggio','06' => 'Giugno','07' => 'Luglio','08' => 'Agosto','09' => 'Settembre','10' => 'Ottobre','11' => 'Novenbre','12' => 'Dicembre'];
+$globalSettings['page-type'] = ['default'=>'Default','label'=>'Etichetta','url'=>'Url','module-link'=>'Link a modulo'];
+$globalSettings['url-targets'] = ['_self','_blank'];
+$globalSettings['module sections'] = ['Moduli Core','Moduli Personalizzati','Moduli Vecchi','Impostazioni','Root'];
+$globalSettings['menu-type'] = ['default'=>'Default','label'=>'Etichetta','url'=>'url','module-link'=>'Link a modulo','module-menu'=>'Menu generato da modulo'];
 
 	
 define('FOLDER_SITE',$globalSettings['folder site']);

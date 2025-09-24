@@ -15,8 +15,8 @@ $_lang['data format string'] = "%DAY%th, %STRINGMONTH% %YEAR%";
 $_lang['charset'] = 'en-EN';
 $_lang['charset date'] = 'en_EN';
 
-$_lang['lista giorni'] = array('N.D.','lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica');
-$_lang['lista mesi'] = array('N.D.','gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre');
+$_lang['lista giorni'] = ['N.D.','lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica'];
+$_lang['lista mesi'] = ['N.D.','gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
 
 $_lang['lingue'] = "languages";
 $_lang['lingua'] = "language";
@@ -113,8 +113,8 @@ $_lang['ordinamento'] = 'order';
 $_lang['ordine abb'] = 'ord.';
 $_lang['ordine'] = 'ordine';
 
-$_lang['page-type'] = array('default'=>'content','label'=>'label','url'=>'url','module-link'=>'link to module');
-$_lang['menu-type'] = array('default'=>'default','label'=>'label','module-link'=>'link to module','module-menu'=>'Menu generated from module');
+$_lang['page-type'] = ['default'=>'content','label'=>'label','url'=>'url','module-link'=>'link to module'];
+$_lang['menu-type'] = ['default'=>'default','label'=>'label','module-link'=>'link to module','module-menu'=>'Menu generated from module'];
 $_lang['tipi di moduli menu gestiti'] = 'ttypes of managed menu modules';
 $_lang['tipi di moduli menu gestiti info'] = '* <i>Listed menus may only be available if the relevant modules are installed and active.</i>';
 
@@ -415,7 +415,7 @@ $_lang['cancella pagina'] = 'delete page';
 $_lang['pagina cancellata'] = "page deleted";
 $_lang['modifica pagina'] = "modify pagina";
 $_lang['pagina modificata'] = "page changed";
-$_lang['page-type'] = array('default'=>'content','label'=>'label','url'=>'url','module-link'=>'link to module');
+$_lang['page-type'] = ['default'=>'content','label'=>'label','url'=>'url','module-link'=>'link to module'];
 $_lang['blocco'] = 'block';
 $_lang['blocchi'] = 'blocks';
 $_lang['lista blocchi'] = "block list";

@@ -2,17 +2,15 @@
 //-------------------------------------------// *** framework siti html-PHP-Mysql// copyright 2009 Roberto Mantovani// http://www.robertomantovani.vr;it// email: me@robertomantovani.vr.it// site-images/module.class.php v.2.6.3. 05/04/2016
 
 class Module {
-	private $action;
 	public $error;
 	public $message;
 	public $messages;
 	
-	public function __construct($action,$table) 	{
-		$this->action = $action;
+	public function __construct(private $action,$table) 	{
 		$this->table = $table;
 		$this->error = 0;	
 		$this->message ='';
-		$this->messages = array();	
+		$this->messages = [];	
 		}
 	}
 ?>

@@ -23,14 +23,14 @@ class ToolsStrings extends Core {
 			if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == "on")) {
 				$protocol = "https://";
 				}
-			if (preg_match("#^/#", $url)) {
+			if (preg_match("#^/#", (string) $url)) {
 				$url = $protocol.$server_name.$url;
-				} else if (!preg_match("#^[a-z]+://#", $url)) {
+				} else if (!preg_match("#^[a-z]+://#", (string) $url)) {
 					$script = $_SERVER['PHP_SELF'];
 					if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] != '' && $_SERVER['PATH_INFO'] != $_SERVER['PHP_SELF']) {
-						$script = substr($script, 0, strlen($script) - strlen($_SERVER['PATH_INFO']));
+						$script = substr((string) $script, 0, strlen((string) $script) - strlen((string) $_SERVER['PATH_INFO']));
 						}
-					$url = $protocol.$server_name.(preg_replace("#/[^/]*$#", "/", $script)).$url;
+					$url = $protocol.$server_name.(preg_replace("#/[^/]*$#", "/", (string) $script)).$url;
 					}
 			$url = str_replace(" ","%20",$url);
 			header("Location: ".$url);
@@ -40,13 +40,13 @@ class ToolsStrings extends Core {
 		}
 		
 	public static function getAlias($oldalias,$alias,$value,$opz) {
-		if ($alias == '') $alias = SanitizeStrings::getAliasString($value,array());
+		if ($alias == '') $alias = SanitizeStrings::getAliasString($value,[]);
 		$aliascheck = false;
 		do {
 			$check = self::checkIssetAlias($alias,$opz);
 			if ($check == true) {
 				if($oldalias != $alias) {
-					$alias .= (string)rand(1,10);	
+					$alias .= (string)random_int(1,10);	
 					Core::$resultOp->error = 2;
 					Core::$resultOp->messages[] = "Alias cambiato perché GIA' esistente!";
 					}			
@@ -58,10 +58,10 @@ class ToolsStrings extends Core {
 		}
 		
 	public static function checkIssetAlias($alias,$opz) {
-		$opzDef = array('idfield'=>'id','aliasfield'=>'alias');	
+		$opzDef = ['idfield'=>'id','aliasfield'=>'alias'];	
 		$opz = array_merge($opzDef,$opz);
 		$count = 0;
-		Sql::initQuery($opz['table'],array($opz['idfield']),array($alias),$opz['aliasfield'].' = ?');
+		Sql::initQuery($opz['table'],[$opz['idfield']],[$alias],$opz['aliasfield'].' = ?');
 		$count = Sql::countRecord();
 		if(Core::$resultOp->error == 0) {
 			return ($count == 1 ? true : false);
@@ -71,9 +71,9 @@ class ToolsStrings extends Core {
 		}
 		
 	public static function getStringFromTotNumberChar($str,$opz){
-		$opzDef = array('numchars'=>100,'suffix'=>'');	
+		$opzDef = ['numchars'=>100,'suffix'=>''];	
 		$opz = array_merge($opzDef,$opz);
-		$str = strip_tags($str);
+		$str = strip_tags((string) $str);
 		if (strlen($str) > $opz['numchars']) $str = mb_strcut($str,0,$opz['numchars']).$opz['suffix'];
 		return $str;
 		}
@@ -81,7 +81,7 @@ class ToolsStrings extends Core {
 	public static function setNewPassword($caratteri_disponibili,$lunghezza){
 		$password = "";
 		for($i = 0; $i<$lunghezza; $i++){
-			$password = $password.substr($caratteri_disponibili,rand(0,strlen($caratteri_disponibili)-1),1);
+			$password = $password.substr((string) $caratteri_disponibili,random_int(0,strlen((string) $caratteri_disponibili)-1),1);
 			}
 		return $password;
    	}
@@ -89,7 +89,7 @@ class ToolsStrings extends Core {
    /* SPECIFICHE ARRAY */
    
    public static function multiSearch(array $array, array $pairs){
-		$found = array();
+		$found = [];
 		foreach ($array as $aKey => $aVal) {
 			$coincidences = 0;
 			foreach ($pairs as $pKey => $pVal) {
@@ -143,7 +143,7 @@ class ToolsStrings extends Core {
 	 /* SPECIFICHE ARRAY->OBJECT */
 	 public static function  findValueInArrayWithObject($arrayobject,$rifobject,$rifvalue,$opt) 
 	 {
-	 	$optDef = array();	
+	 	$optDef = [];	
 		$opt = array_merge($optDef,$opt);
 	 	$result = false;
 	 	if (is_array($arrayobject) && $rifobject != '' && $rifvalue != '') {
@@ -159,7 +159,7 @@ class ToolsStrings extends Core {
 
 	public static function getHtmlContent($obj,$value,$opz) {
 		$str = 'error object value';
-		$opzDef = array();	
+		$opzDef = [];	
 		$opz = array_merge($opzDef,$opz);		
 		if (isset($obj->$value)) $str = $obj->$value;	
 		$str = self::filterHtmlContent($str,$opz);
@@ -168,11 +168,11 @@ class ToolsStrings extends Core {
 
 		
 	public static function filterHtmlContent($str,$opz) {
-		$opzDef = array('htmlout'=>false,'htmlawed'=>true,'parse'=>true,'striptags'=>false);
+		$opzDef = ['htmlout'=>false,'htmlawed'=>true,'parse'=>true,'striptags'=>false];
 		$opz = array_merge($opzDef,$opz);		
 		
 		if ($opz['striptags'] == true) {
-			$str = strip_tags($str);
+			$str = strip_tags((string) $str);
 			$opz['htmLawed'] = false;
 			}
 			
@@ -182,7 +182,7 @@ class ToolsStrings extends Core {
 			}	
 			
 		if (isset($opz['maxchar']) && $opz['maxchar'] > 0) {
-			$str = ToolsStrings::getStringFromTotNumberChar($str,array('numchars'=>$opz['maxchar']));
+			$str = ToolsStrings::getStringFromTotNumberChar($str,['numchars'=>$opz['maxchar']]);
 			$opz['htmLawed'] = false;
 			}		
 		
@@ -192,50 +192,50 @@ class ToolsStrings extends Core {
 		}
 
 		
-	public static function parseHtmlContent($str,$opz=array()) 
+	public static function parseHtmlContent($str,$opz=[]) 
 	{		
-		$opzDef = array('customtag'=>'','customtagvalue'=>'','parseuploads'=>false);
+		$opzDef = ['customtag'=>'','customtagvalue'=>'','parseuploads'=>false];
 		$opz = array_merge($opzDef,$opz);
 		if ($opz['parseuploads'] == true) {
-			$str = preg_replace('/..\/uploads\//',UPLOAD_DIR,$str);
+			$str = preg_replace('/..\/uploads\//',UPLOAD_DIR,(string) $str);
 			$str = preg_replace('/uploads\//',UPLOAD_DIR,$str);
 			}
-		$str = preg_replace('/%AZIENDAREFERENTE%/',self::$globalSettings['azienda referente'],$str);
-		$str = preg_replace('/%AZIENDAINDIRIZZO%/',self::$globalSettings['azienda indirizzo'],$str);
-		$str = preg_replace('/%AZIENDAPROVINCIA%/',self::$globalSettings['azienda provincia'],$str);
-		$str = preg_replace('/%AZIENDAPROVINCIAABBREVIATA%/',self::$globalSettings['azienda targa'],$str);
-		$str = preg_replace('/%AZIENDATARGA%/',self::$globalSettings['azienda targa'],$str);
-		$str = preg_replace('/%AZIENDACAP%/',self::$globalSettings['azienda cap'],$str);
-		$str = preg_replace('/%AZIENDACOMUNE%/',self::$globalSettings['azienda comune'],$str);
-		$str = preg_replace('/%AZIENDANAZIONE%/',self::$globalSettings['azienda nazione'],$str);		
+		$str = preg_replace('/%AZIENDAREFERENTE%/',(string) self::$globalSettings['azienda referente'],(string) $str);
+		$str = preg_replace('/%AZIENDAINDIRIZZO%/',(string) self::$globalSettings['azienda indirizzo'],$str);
+		$str = preg_replace('/%AZIENDAPROVINCIA%/',(string) self::$globalSettings['azienda provincia'],$str);
+		$str = preg_replace('/%AZIENDAPROVINCIAABBREVIATA%/',(string) self::$globalSettings['azienda targa'],$str);
+		$str = preg_replace('/%AZIENDATARGA%/',(string) self::$globalSettings['azienda targa'],$str);
+		$str = preg_replace('/%AZIENDACAP%/',(string) self::$globalSettings['azienda cap'],$str);
+		$str = preg_replace('/%AZIENDACOMUNE%/',(string) self::$globalSettings['azienda comune'],$str);
+		$str = preg_replace('/%AZIENDANAZIONE%/',(string) self::$globalSettings['azienda nazione'],$str);		
 		if (isset(Config::$globalSettings['azienda stato'])) $str = preg_replace('/%AZIENDASTATO%/',Config::$globalSettings['azienda stato'],$str);		
-		$str = preg_replace('/%AZIENDAEMAIL%/',self::$globalSettings['azienda email'],$str);
-		$str = preg_replace('/%AZIENDATELEFONO%/',self::$globalSettings['azienda telefono'],$str);
-		$str = preg_replace('/%AZIENDAFAX%/',self::$globalSettings['azienda fax'],$str);
+		$str = preg_replace('/%AZIENDAEMAIL%/',(string) self::$globalSettings['azienda email'],$str);
+		$str = preg_replace('/%AZIENDATELEFONO%/',(string) self::$globalSettings['azienda telefono'],$str);
+		$str = preg_replace('/%AZIENDAFAX%/',(string) self::$globalSettings['azienda fax'],$str);
 		if (isset(Config::$globalSettings['azienda mobile'])) $str = preg_replace('/%AZIENDAMOBILE%/',Config::$globalSettings['azienda mobile'],$str);
-		$str = preg_replace('/%AZIENDACODICEFISCALE%/',self::$globalSettings['azienda codice fiscale'],$str);
-		$str = preg_replace('/%AZIENDAPARTITAIVA%/',self::$globalSettings['azienda partita iva'],$str);
-		$str = preg_replace('/%AZIENDALATITUDINE%/',self::$globalSettings['azienda latitudine'],$str);
-		$str = preg_replace('/%AZIENDALONGITUDINA%/',self::$globalSettings['azienda longitudine'],$str);
+		$str = preg_replace('/%AZIENDACODICEFISCALE%/',(string) self::$globalSettings['azienda codice fiscale'],$str);
+		$str = preg_replace('/%AZIENDAPARTITAIVA%/',(string) self::$globalSettings['azienda partita iva'],$str);
+		$str = preg_replace('/%AZIENDALATITUDINE%/',(string) self::$globalSettings['azienda latitudine'],$str);
+		$str = preg_replace('/%AZIENDALONGITUDINA%/',(string) self::$globalSettings['azienda longitudine'],$str);
 		
-		$str = preg_replace('/%SITESLOGAN%/',self::$globalSettings['azienda slogan'],$str);
-		$str = preg_replace('/%SITENAME%/',self::$globalSettings['azienda sito'],$str);
+		$str = preg_replace('/%SITESLOGAN%/',(string) self::$globalSettings['azienda slogan'],$str);
+		$str = preg_replace('/%SITENAME%/',(string) self::$globalSettings['azienda sito'],$str);
 
 		$str = preg_replace('/%URLSITE%/',URL_SITE,$str);
 		$str = preg_replace('/{{URLSITE}}/',URL_SITE,$str);
 		
 		if ($opz['customtag'] != '') {
-			if ($opz['customtagvalue'] != '') $str = preg_replace('/'.$opz['customtag'].'/',$opz['customtagvalue'],$str);
+			if ($opz['customtagvalue'] != '') $str = preg_replace('/'.$opz['customtag'].'/',(string) $opz['customtagvalue'],$str);
 		}	
 
 		return $str;	
 	}	
 		
-	public static function encodeHtmlContent($str,$opz=array()) {
-		$opzDef = array('customtag'=>'','customtagvalue'=>'');
+	public static function encodeHtmlContent($str,$opz=[]) {
+		$opzDef = ['customtag'=>'','customtagvalue'=>''];
 		$opz = array_merge($opzDef,$opz);
 		if ($opz['customtag'] != '') {
-			if ($opz['customtagvalue'] != '') $str = preg_replace('/'.$opz['customtag'].'/',$opz['customtagvalue'],$str);
+			if ($opz['customtagvalue'] != '') $str = preg_replace('/'.$opz['customtag'].'/',(string) $opz['customtagvalue'],(string) $str);
 			}	
 		return $str;	
 		}		

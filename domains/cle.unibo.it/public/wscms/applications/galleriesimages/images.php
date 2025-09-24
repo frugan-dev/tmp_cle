@@ -19,12 +19,12 @@ if (isset($_POST['categories_id']) && $_SESSION[$App->sessionName]['categories_i
 $App->categories_id = $_SESSION[$App->sessionName]['categories_id'];
 
 $App->tags = new stdClass;	
-Sql::initQuery($App->params->tables['tags'],array('*'),array(),'');
-Sql::setOptions(array('fieldTokeyObj'=>'id'));
+Sql::initQuery($App->params->tables['tags'],['*'],[],'');
+Sql::setOptions(['fieldTokeyObj'=>'id']);
 Sql::setOrder('title_it ASC');
 $obj = Sql::getRecords();
 if (Core::$resultOp->error > 0) { die('error insert db'); ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
-$arr = array();
+$arr = [];
 if (isset($obj) && is_array($obj) && count($obj) > 0) {
 	foreach ($obj AS $key=>$value) {	
 		$field = 'title_'.$_lang['user'];	
@@ -36,12 +36,12 @@ $App->tags = $arr;
 
 
 $App->categoriesData = new stdClass;	
-Sql::initQuery($App->params->tables['cate'],array('*'),array(),'');
-Sql::setOptions(array('fieldTokeyObj'=>'id'));
+Sql::initQuery($App->params->tables['cate'],['*'],[],'');
+Sql::setOptions(['fieldTokeyObj'=>'id']);
 Sql::setOrder('title_it ASC');
 $obj = Sql::getRecords();
 if (Core::$resultOp->error > 0) { die('error insert db'); ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
-$arr = array();
+$arr = [];
 if (isset($obj) && is_array($obj) && count($obj) > 0) {
 	foreach ($obj AS $key=>$value) {	
 		$field = 'title_'.$_lang['user'];	
@@ -55,12 +55,12 @@ $App->categoriesData = $arr;
 switch(Core::$request->method) {
 	
 	case 'moreOrderingImag':
-		Utilities::increaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['imag'],'orderingType'=>$App->params->orderTypes['imag'],'parent'=>1,'parentField'=>'categories_id','label'=>ucfirst(Config::$langVars['immagine']).' '.$_lang['spostata']));
+		Utilities::increaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['imag'],'orderingType'=>$App->params->orderTypes['imag'],'parent'=>1,'parentField'=>'categories_id','label'=>ucfirst((string) Config::$langVars['immagine']).' '.$_lang['spostata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 	break;
 	case 'lessOrderingImag':
-		Utilities::decreaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['imag'],'orderingType'=>$App->params->orderTypes['imag'],'parent'=>1,'parentField'=>'categories_id','label'=>ucfirst(Config::$langVars['immagine']).' '.$_lang['spostata']));
+		Utilities::decreaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['imag'],'orderingType'=>$App->params->orderTypes['imag'],'parent'=>1,'parentField'=>'categories_id','label'=>ucfirst((string) Config::$langVars['immagine']).' '.$_lang['spostata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 	break;
@@ -68,7 +68,7 @@ switch(Core::$request->method) {
 	case 'activeImag':
 	case 'disactiveImag':
 		if ($App->id == 0) {	ToolsStrings::redirect(URL_SITE.'error/404'); }	
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tables['imag'],$App->id,array('label'=>Config::$langVars['immagine'],'attivata'=>Config::$langVars['attivata'],'disattivata'=>Config::$langVars['disattivata']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tables['imag'],$App->id,['label'=>Config::$langVars['immagine'],'attivata'=>Config::$langVars['attivata'],'disattivata'=>Config::$langVars['disattivata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listImag');
 	break;
@@ -77,14 +77,14 @@ switch(Core::$request->method) {
 		if ($App->id == 0) { ToolsStrings::redirect(URL_SITE.'error/404'); }	
 		// prendo i vecchi dati	
 		$App->itemOld = new stdClass;
-		Sql::initQuery($App->params->tables['imag'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['imag'],['*'],[$App->id],'id = ?');
 		$App->itemOld = Sql::getRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
-		Sql::initQuery($App->params->tables['imag'],array('id'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['imag'],['id'],[$App->id],'id = ?');
 		Sql::deleteRecord();
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['immagine'],Config::$langVars['%ITEM% cancellata'])).'!';	
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['immagine'],(string) Config::$langVars['%ITEM% cancellata'])).'!';	
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listImag');
 
 	break;
@@ -93,10 +93,10 @@ switch(Core::$request->method) {
 		$App->item = new stdClass;	
 		$App->item->active = 1;
 		$App->item->ordering = 0;	
-		$App->itemTags = array();
+		$App->itemTags = [];
 		$App->item->filenameRequired = (isset($App->item->filename) && $App->item->filename != '' ? false : true);
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['item']);
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['immagine'],Config::$langVars['inserisci %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['immagine'],(string) Config::$langVars['inserisci %ITEM%']);
 		$App->methodForm = 'insertImag';
 		$App->viewMethod = 'form';	
 	break;
@@ -132,7 +132,7 @@ switch(Core::$request->method) {
 		if ($_POST['org_filename'] == '' && $App->itemOld->org_filename != '') $_POST['org_filename'] = $App->itemOld->org_filename;	 
 		
 		// parsa i post in base ai campi
-		Form::parsePostByFields($App->params->fields['imag'],Config::$langVars,array());
+		Form::parsePostByFields($App->params->fields['imag'],Config::$langVars,[]);
 		if (Core::$resultOp->error > 0) { 
 			$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/newImag');
@@ -148,20 +148,20 @@ switch(Core::$request->method) {
 			}	   			
 		}
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Config::$langVars['immagine'],Config::$langVars['%ITEM% inserita'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['immagine'],(string) Config::$langVars['%ITEM% inserita'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listImag');
 
 	break;
 
 	case 'modifyImag':		
 		$App->item = new stdClass;
-		Sql::initQuery($App->params->tables['imag'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['imag'],['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();		
-		$App->itemTags = array();
-		if ($App->item->id_tags != '') $App->itemTags = explode(',',$App->item->id_tags);
+		$App->itemTags = [];
+		if ($App->item->id_tags != '') $App->itemTags = explode(',',(string) $App->item->id_tags);
 		if (Core::$resultOp->error == 1) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['item']);
 		$App->item->filenameRequired = (isset($App->item->filename) && $App->item->filename != '' ? false : true);		
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['immagine'],Config::$langVars['modifica %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['immagine'],(string) Config::$langVars['modifica %ITEM%']);
 		$App->methodForm = 'updateImag';
 		$App->viewMethod = 'form';
 	break;
@@ -171,7 +171,7 @@ switch(Core::$request->method) {
 		if (!$_POST) { ToolsStrings::redirect(URL_SITE.'error/404'); }
 
 		// preleva dati vecchio
-		Sql::initQuery($App->params->tables['imag'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['imag'],['*'],[$App->id],'id = ?');
 		$App->itemOld = Sql::getRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
@@ -214,7 +214,7 @@ switch(Core::$request->method) {
 		}
 
 		// parsa i post in base ai campi
-		Form::parsePostByFields($App->params->fields['imag'],Config::$langVars,array());
+		Form::parsePostByFields($App->params->fields['imag'],Config::$langVars,[]);
 		if (Core::$resultOp->error > 0) { 
 			$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/newImag');
@@ -231,7 +231,7 @@ switch(Core::$request->method) {
 		}
 
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',$_lang['immagine'],$_lang['%ITEM% modificata'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) $_lang['immagine'],(string) $_lang['%ITEM% modificata'])).'!';
 		if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyImag/'.$App->id);
 		} else {
@@ -248,12 +248,12 @@ switch(Core::$request->method) {
 	default;	
 		$App->items = new stdClass;
 		$App->item = new stdClass;		
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);				
-		$qryFields = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);				
+		$qryFields = [];
 		$qryFields[] = 'ite.*';		
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		$and = '';
 
@@ -265,7 +265,7 @@ switch(Core::$request->method) {
 			$and = 'AND';
 		}
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['imag'],'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['imag'],'');
 		}	
 		if (isset($sessClause) && $sessClause != '') $clause .= $and.'('.$sessClause.')';
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {
@@ -278,7 +278,7 @@ switch(Core::$request->method) {
 		Sql::setOrder('ordering '.$App->params->orderTypes['imag']);
 		if (Core::$resultOp->error <> 1) $obj = Sql::getRecords();
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (is_array($obj) && is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {	
 				$field = 'title_'.$_lang['user'];	
@@ -289,11 +289,11 @@ switch(Core::$request->method) {
 		$App->items = $arr;
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
-		$App->paginationTitle = preg_replace('/%START%/',$App->pagination->firstPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',$App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',$App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
 
-		$App->pageSubTitle = preg_replace('/%ITEM%/',Config::$langVars['immagini'],Config::$langVars['lista delle %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['immagini'],(string) Config::$langVars['lista delle %ITEM%']);
 		$App->viewMethod = 'list';	
 	break;	
 	}

@@ -23,16 +23,16 @@ class Fornitori extends Core {
 		parent::__construct();  		
 	}
 	
-	public static function getFornitoreFasceOrdiniFromCode($companies_code = '',$opt=array())
+	public static function getFornitoreFasceOrdiniFromCode($companies_code = '',$opt=[])
 	{
-		$optDef = array();	
+		$optDef = [];	
 		$opt = array_merge($optDef,$opt);
 		//Core::setDebugMode(1);
 		$table = Config::$DatabaseTables['ass_fasce_fatturazioni_ordini_companies_code'].' AS assfafattor';
 		$table .= ' INNER JOIN '.Config::$DatabaseTables['fasce_fatturazioni_ordini'].' AS fafattor 
 		ON (assfafattor.fasce_fatturazioni_ordini_id = fafattor.id)';
-		$f = array('assfafattor.*','fafattor.*');
-		$fv = array($companies_code);
+		$f = ['assfafattor.*','fafattor.*'];
+		$fv = [$companies_code];
 		$clause = 'companies_code = ?';
 		Sql::initQuery($table,$f,$fv,$clause,'assfafattor.fasce_fatturazioni_ordini_id ASC','');
 		$foo = Sql::getRecords();
@@ -42,27 +42,27 @@ class Fornitori extends Core {
 		return self::$fornitoreFasceOrders;
 	}
 	
-	public static function getFornitoreNumberOrdersFromCode($companies_code = '',$opt=array())
+	public static function getFornitoreNumberOrdersFromCode($companies_code = '',$opt=[])
 	{
-		$optDef = array();	
+		$optDef = [];	
 		$opt = array_merge($optDef,$opt);
-		$fv = array($companies_code);
+		$fv = [$companies_code];
 		$clause = 'companies_code = ?';
 		$foo = Sql::countRecordQry(Config::$DatabaseTables['orders'],'id',$clause,$fv);
 		return $foo;	
 	}
 
-	public static function getFornitoreOrdersFromCodePdoObject($companies_code,$opt=array()) 
+	public static function getFornitoreOrdersFromCodePdoObject($companies_code,$opt=[]) 
 	{
 
-		$optDef = array();	
+		$optDef = [];	
 		$opt = array_merge($optDef,$opt);
 		//Core::setDebugMode(1);
 		if ($companies_code != '')
 		{
 			$table = Config::$DatabaseTables['orders'];
-			$f = array('*');
-			$fv = array($companies_code);
+			$f = ['*'];
+			$fv = [$companies_code];
 			$clause = 'companies_code = ?';
 			$and = ' and ';
 
@@ -81,15 +81,15 @@ class Fornitori extends Core {
 		return false;
 	}
 
-	public static function getFornitoreOrdersFromCode($companies_code,$opt=array()) 
+	public static function getFornitoreOrdersFromCode($companies_code,$opt=[]) 
 	{
-		$optDef = array();	
+		$optDef = [];	
 		$opt = array_merge($optDef,$opt);
 		if ($companies_code != '')
 		{
-			$pdoObject = self::getFornitoreOrdersFromCodePdoObject($companies_code,$opt=array());
+			$pdoObject = self::getFornitoreOrdersFromCodePdoObject($companies_code,$opt=[]);
 			if (Core::$resultOp->error > 0) { /*ToolsStrings::redirect(URL_SITE.'error/db'); */ die('errore db lettura ordini fornitore'); }
-			$foo = array();
+			$foo = [];
 			while ($row = $pdoObject->fetch()) {
 				if (self::$optGetUserDetails == true && isset($row->users_id)) {
 
@@ -109,8 +109,8 @@ class Fornitori extends Core {
 		if ($companies_code != '')
 		{
 			$table = Config::$DatabaseTables['companies'];
-			$f = array('*');
-			$fv = array($companies_code);
+			$f = ['*'];
+			$fv = [$companies_code];
 			$clause = 'code = ?';
 			Sql::initQuery($table,$f,$fv,$clause,'','');
 			$foo = Sql::getRecord();
@@ -127,9 +127,9 @@ class Fornitori extends Core {
 		{
 			//Sql::setDebugMode(1);
 			$table = Config::$DatabaseTables['users'].' AS users';
-			$f = array('users.*');
+			$f = ['users.*'];
 			//$f = array('prod.id,prod.title,prod.hide_users_ids');
-			$fv = array($id);
+			$fv = [$id];
 			$clause = 'users.id = ?';
 			$and = ' AND ';
 
@@ -161,8 +161,8 @@ class Fornitori extends Core {
 			//Sql::setDebugMode(1);
 			$table = Config::$DatabaseTables['ass_companies_code_users'].' AS ass';
 			$table .= ' INNER JOIN '.Config::$DatabaseTables['users'].' AS users ON (users.id = ass.users_id)';
-			$f = array('ass.*','users.*');
-			$fv = array($code);
+			$f = ['ass.*','users.*'];
+			$fv = [$code];
 			$clause = 'ass.companies_code = ? AND users.active = 1';
 			$and = ' AND ';
 
@@ -178,7 +178,7 @@ class Fornitori extends Core {
 	public static function getFornitoriList()
 	{
 		//Sql::setDebugMode(1);
-		Sql::initQuery(Config::$DatabaseTables['users'],array('*'),array(),'levels_id_alias = 0','','');
+		Sql::initQuery(Config::$DatabaseTables['users'],['*'],[],'levels_id_alias = 0','','');
 		$foo = Sql::getRecords();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); die('errore db lettura fornitori'); }
 		self::$fornitoriList = $foo;

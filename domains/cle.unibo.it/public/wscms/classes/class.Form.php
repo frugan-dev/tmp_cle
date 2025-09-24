@@ -19,36 +19,36 @@ class Form extends Core
 
 	public static function getUpdateRecordFromPostResults($id, $resultOp, $opt)
 	{
-		$optDef = array('label done' => 'modifiche effettuate', 'modviewmethod' => 'formMod', 'label modified' => 'voce modificata', 'label modify' => 'modifica voce', 'label insert' => 'inserisci voce');
+		$optDef = ['label done' => 'modifiche effettuate', 'modviewmethod' => 'formMod', 'label modified' => 'voce modificata', 'label modify' => 'modifica voce', 'label insert' => 'inserisci voce'];
 		$opt = array_merge($optDef, $opt);
 		$viewMethod = '';
 		$pageSubTitle = '';
 		$message = $resultOp->message;
 		if ($resultOp->error == 1) {
-			$pageSubTitle = ucfirst($opt['label modify']);
+			$pageSubTitle = ucfirst((string) $opt['label modify']);
 			$viewMethod = $opt['modviewmethod'];
 		} else {
 			if (isset($_POST['submitForm'])) {
 				$viewMethod = 'list';
-				$message = ucfirst($opt['label modified']) . '!';
+				$message = ucfirst((string) $opt['label modified']) . '!';
 			} else {
 				if (isset($_POST['id'])) {
 					$id = $_POST['id'];
 					$pageSubTitle = $opt['label modify'];
 					$viewMethod = $opt['modviewmethod'];
-					$message = ucfirst($opt['label done']) . '!';
+					$message = ucfirst((string) $opt['label done']) . '!';
 				} else {
 					$viewMethod = 'formNew';
 					$pageSubTitle = $opt['label insert'];
 				}
 			}
 		}
-		return array($id, $viewMethod, $pageSubTitle, $message);
+		return [$id, $viewMethod, $pageSubTitle, $message];
 	}
 
 	public static function getInsertRecordFromPostResults($id, $resultOp, $opt)
 	{
-		$optDef = array('label inserted' => 'voce inserita', 'label insert' => 'inserisci voce');
+		$optDef = ['label inserted' => 'voce inserita', 'label insert' => 'inserisci voce'];
 		$opt = array_merge($optDef, $opt);
 		$viewMethod = '';
 		$pageSubTitle = '';
@@ -58,56 +58,56 @@ class Form extends Core
 			$viewMethod = 'formNew';
 		} else {
 			$viewMethod = 'list';
-			$message = ucfirst($opt['label inserted']) . '!';
+			$message = ucfirst((string) $opt['label inserted']) . '!';
 		}
-		return array($id, $viewMethod, $pageSubTitle, $message);
+		return [$id, $viewMethod, $pageSubTitle, $message];
 	}
 
 	public static function parsePostByFields($fields, $_lang, $opz)
 	{
 		//print_r($fields);
-		$opzDef = array('stripmagicfields' => true);
+		$opzDef = ['stripmagicfields' => true];
 		$opz = array_merge($opzDef, $opz);
 		if (is_array($fields) && count($fields) > 0) {
 			foreach ($fields as $fieldName => $value) {
 
-				$fieldType = (isset($value['type']) ? $value['type'] : '');
-				$fieldLabel = (isset($value['label']) ? $value['label'] : $fieldName);
-				$fieldPostValue = (isset($_POST[$fieldName]) ? $_POST[$fieldName] : '');
+				$fieldType = ($value['type'] ?? '');
+				$fieldLabel = ($value['label'] ?? $fieldName);
+				$fieldPostValue = ($_POST[$fieldName] ?? '');
 				$fieldDetails = $value;
 
 
 				//ToolsStrings::dump($fieldDetails);
 
-				
+
 				//echo '<br>namefield: '.$fieldName;
 				//echo '<br>#'.$_POST[$fieldName].'#';
 				//echo '<br>#forced value: '.$fieldDetails['forcedValue'].'#';
-				
-				$labelField = (isset($value['label']) ? $value['label'] : '');
+
+				$labelField = ($value['label'] ?? '');
 
 				/* aggiorna con il default se vuoti */
 				if (!isset($_POST[$fieldName])) {
 					if (isset($value['defValue'])) $_POST[$fieldName] = $value['defValue'];
 				}
 
-				
+
 				/* controlla se e richiesto */
 				if (isset($fieldDetails['required']) && $fieldDetails['required'] == true) {
 					//echo '<br>controlla richiesto '.$fieldName;
 					self::checkIfRequired($fieldName,$fieldDetails,$_POST);
 				}
-				
+
 				// valida i campi se richiesto
 				if (isset($value['validate']) && $value['validate'] != false) {
 					self::doFieldValidation($fieldName,$value,$_POST,$fieldLabel,$fieldPostValue);					
 				}
-				
+
 				// forza il valore
 				if ( !isset($_POST[$fieldName]) || ( isset($_POST[$fieldName]) && $_POST[$fieldName] == '' ) ) {
 					//die('il campo e vuoto o non esiste');
 					//echo '<br>il campo e vuoto o non esiste';
-					
+
 					//echo '<br>#forced value: '.$fieldDetails['forcedValue'].'#';
 					if ( isset($fieldDetails['forcedValue']) && strval($fieldDetails['forcedValue']) != '' ) {
 						//die('il campo forza e vuoto o non esiste');
@@ -116,7 +116,7 @@ class Form extends Core
 						$_POST[$fieldName] = $fieldDetails['forcedValue'];
 					}
 				}  
-				
+
 				// valida i i tipi di campo (se è text int varchar ecc)  e fa dei controlli. Es. se e varchar|255 controlla che non si superino i 255 caratteri		
 				self::doValidationFieldType($fieldName,$fieldLabel,$fieldType,$fieldPostValue);					
 
@@ -139,7 +139,7 @@ class Form extends Core
 		echo '<br>valore: '.$fieldPostvalue;
 		*/
 		
-		$foo = explode('|',$fieldType);
+		$foo = explode('|',(string) $fieldType);
 		switch ($foo[0]) {
 			
 
@@ -148,7 +148,7 @@ class Form extends Core
 				$res = self::validateFloat($valueRif);
 				if ($res == false) {
 					Config::$resultOp->error = 1;
-					$messaggio = preg_replace( array('/%ITEM%/'), array($fieldLabel,$valueRif), Config::$langVars['Il campo %ITEM% NON è di tipo virgola mobile!'] );
+					$messaggio = preg_replace( ['/%ITEM%/'], [$fieldLabel,$valueRif], (string) Config::$langVars['Il campo %ITEM% NON è di tipo virgola mobile!'] );
 					if ($messaggio != '') Config::$resultOp->messages[$fieldName] = $messaggio;
 				}
 			break;
@@ -159,7 +159,7 @@ class Form extends Core
 					$res = self::validateMaxCharsInString($fieldPostvalue,$valueRif);
 					if ($res == true) {
 						Config::$resultOp->error = 1;
-						$messaggio = preg_replace( array('/%ITEM%/','/%VALUERIF%/'), array($fieldLabel,$valueRif), Config::$langVars['Il campo %ITEM% NON deve superare i %VALUERIF% caratteri!'] );
+						$messaggio = preg_replace( ['/%ITEM%/','/%VALUERIF%/'], [$fieldLabel,$valueRif], (string) Config::$langVars['Il campo %ITEM% NON deve superare i %VALUERIF% caratteri!'] );
 						if ($messaggio != '') Config::$resultOp->messages[$fieldName] = $messaggio;
 					}
 
@@ -181,13 +181,13 @@ class Form extends Core
 		//echo '<br>valida tipo: '.$fieldDetails['validate'];
 		
 
-		list($returnvalue,$result,$returnmessage) = self::validateField($fieldName, $fieldDetails, $fieldPostValueArray,$fieldLabel,$fieldPostValue);
+		[$returnvalue, $result, $returnmessage] = self::validateField($fieldName, $fieldDetails, $fieldPostValueArray,$fieldLabel,$fieldPostValue);
 		//echo '<br>returnmessage: '.$returnmessage;
 			
 		if ($result == false) {
 			Config::$resultOp->error = 1;
-			$messaggio = preg_replace( '/%ITEM%/', $fieldName, Config::$langVars['Il valore per il campo %ITEM% non è stato validato!'] );
-			if (isset($fieldDetails['label'])) $messaggio = preg_replace( '/%ITEM%/', $fieldDetails['label'], Config::$langVars['Il valore per il campo %ITEM% non è stato validato!'] );
+			$messaggio = preg_replace( '/%ITEM%/', (string) $fieldName, (string) Config::$langVars['Il valore per il campo %ITEM% non è stato validato!'] );
+			if (isset($fieldDetails['label'])) $messaggio = preg_replace( '/%ITEM%/', $fieldDetails['label'], (string) Config::$langVars['Il valore per il campo %ITEM% non è stato validato!'] );
 			if ($returnmessage != '') $messaggio = $returnmessage;
 			if (isset($fieldDetails['errorValidateMessage'])) $messaggio = $fieldDetails['errorValidateMessage'];
 			if (isset($fieldDetails['error validate message'])) $messaggio = $fieldDetails['error validate message'];
@@ -201,7 +201,7 @@ class Form extends Core
 	{
 		if (!isset($fieldPostValue[$fieldName]) || (isset($fieldPostValue[$fieldName]) && $fieldPostValue[$fieldName] == '')) {
 			self::$resultOp->error = 1;
-			if (isset($fieldDetails['label'])) $messaggio = preg_replace( '/%ITEM%/', $fieldDetails['label'], Config::$langVars['Devi inserire il campo %ITEM%!'] );
+			if (isset($fieldDetails['label'])) $messaggio = preg_replace( '/%ITEM%/', $fieldDetails['label'], (string) Config::$langVars['Devi inserire il campo %ITEM%!'] );
 			if (isset($fieldDetails['errorMessage'])) $messaggio = $fieldDetails['errorMessage'];
 			if (isset($fieldDetails['error message'])) $messaggio = $fieldDetails['error message'];
 			if ($messaggio != '') self::$resultOp->messages[$fieldName] = $messaggio;
@@ -218,7 +218,7 @@ class Form extends Core
 
 				//echo '||'.$fieldPostValue.'||';
 
-				$result = json_decode($fieldPostValue);
+				$result = json_decode((string) $fieldPostValue);
 
 				//echo $result;
 				//ToolsStrings::dump($result);
@@ -227,13 +227,13 @@ class Form extends Core
 
 				if (json_last_error() === JSON_ERROR_NONE) {
 					$returnvalue =  $fieldPostValue;
-					
+
 					//die('fatto');
 
 
 				} else {
 					self::$resultOp->error = 1;
-					self::$resultOp->messages[] = preg_replace('/%ITEM%/', $fieldDetails['label'], 'il campo %ITEM% deve essere in formato json valido!');
+					self::$resultOp->messages[] = preg_replace('/%ITEM%/', (string) $fieldDetails['label'], 'il campo %ITEM% deve essere in formato json valido!');
 
 					//die('fattoERRORE');
 					$returnvalue =  '[]';
@@ -251,7 +251,7 @@ class Form extends Core
 				if ($returnvalue == '') $returnvalue = $fieldDetails['defValue'];
 				$result = self::validateDatetimeIso($returnvalue);
 				if ($result == false) {
-					$message = preg_replace('/%FIELD%/',$fieldLabel,Config::$langVars['La data %FIELD% non è valida!']);
+					$message = preg_replace('/%FIELD%/',(string) $fieldLabel,(string) Config::$langVars['La data %FIELD% non è valida!']);
 				}
 			break;
 			case 'minmax':
@@ -272,7 +272,7 @@ class Form extends Core
 			break;
 			*/
 			case 'explodearray':
-				$opz1 = (isset($value['opz']) ? $value['opz'] : array());
+				$opz1 = ($value['opz'] ?? []);
 				$str = self::validateExplodearray($_POST[$fieldName], $opz1);
 				break;
 
@@ -303,14 +303,14 @@ class Form extends Core
 
 			case 'codicefiscale':
 				if ($_POST[$fieldName] != '') {
-					list($result,$message) = self::validateCF($_POST[$fieldName],strtoupper(Config::$langVars['user']));	
+					[$result, $message] = self::validateCF($_POST[$fieldName],strtoupper((string) Config::$langVars['user']));	
 					$returnvalue = $_POST[$fieldName];
 				}		
 			break;
 
 			case 'partitaiva':
 				if ($_POST[$fieldName] != '') {
-					list($result,$message) = self::validateVAT($_POST[$fieldName],strtoupper(Config::$langVars['user']));
+					[$result, $message] = self::validateVAT($_POST[$fieldName],strtoupper((string) Config::$langVars['user']));
 					$returnvalue = $_POST[$fieldName];
 				}
 			break;
@@ -325,7 +325,7 @@ class Form extends Core
 			case 'currency':
 				$result = self::validateCurrency($returnvalue);
 				if ($result == false) {
-					$message = preg_replace('/%FIELD%/',$fieldLabel,Config::$langVars['Il valore %FIELD% non è di un formato valuta!']);	
+					$message = preg_replace('/%FIELD%/',(string) $fieldLabel,(string) Config::$langVars['Il valore %FIELD% non è di un formato valuta!']);	
 				}
 			break;
 
@@ -334,14 +334,14 @@ class Form extends Core
 			break;
 		}
 
-		return array($returnvalue,$result,$message);
+		return [$returnvalue,$result,$message];
 	}
 
 	/* VALITAZIONE CAMPI */
 
 	public static function validateExplodearray($array, $opz)
 	{
-		$opzDef = array('delimiter' => ',');
+		$opzDef = ['delimiter' => ','];
 		$opz = array_merge($opzDef, $opz);
 		if (is_array($array)) {
 			$array = implode( $opz['delimiter'],$array );
@@ -385,21 +385,21 @@ class Form extends Core
 
 	public static function validateEmail($email)
 	{
-		
+
 		 // Regular expression pattern for email validation
     $pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
 
     // Check if the email matches the pattern
-    if (preg_match($pattern, $email)) {
+    if (preg_match($pattern, (string) $email)) {
         return true; // Email is valid
     } else {
         return false; // Email is invalid
     }
-    
+
     /*
 		//echo $email;
 		//by Femi Hasani [www.vision.to]
-		
+
 		if (!preg_match("/^[\w\.-]{1,}\@([\da-zA-Z-]{1,}\.){1,}[\da-zA-Z-]+$/", $email)) return false;
 		list($prefix, $domain) = preg_split("/@/", $email);
 		if (function_exists("getmxrr") && getmxrr($domain, $mxhosts)) {
@@ -417,9 +417,9 @@ class Form extends Core
 		if ($valuesrif < $minvalue || $valuesrif > $maxvalue) {
 			self::$resultOp->error = 1;
 			$s = Config::$langVars['Il campo %FIELD% deve avere un valore superiore o uguale a %MIN% e inferiore o uguale a %MAX%!'];
-			$s = preg_replace('/%MIN%/', $minvalue, $s);
-			$s = preg_replace('/%MAX%/', $maxvalue, $s);
-			$s = preg_replace('/%FIELD%/', $labelField, $s);
+			$s = preg_replace('/%MIN%/', (string) $minvalue, (string) $s);
+			$s = preg_replace('/%MAX%/', (string) $maxvalue, $s);
+			$s = preg_replace('/%FIELD%/', (string) $labelField, $s);
 			self::$resultOp->messages[] = $s;
 		}
 		return $valuesrif;
@@ -427,12 +427,12 @@ class Form extends Core
 
 	public static function validateMaxCharsInString($valueCheked,$valueRif)
 	{
-		return (mb_strlen($valueCheked) > $valueRif ? true : false);
+		return (mb_strlen((string) $valueCheked) > $valueRif ? true : false);
 	}
 
 	public static function validateVariableUsername($value)
 	{
-		$aValid = array('-', '_', '.', ',', '?', '#', '!');
+		$aValid = ['-', '_', '.', ',', '?', '#', '!'];
 
 		if (!ctype_alnum(str_replace($aValid, '', $value))) {
 			return false;
@@ -447,20 +447,20 @@ class Form extends Core
 		$message = '';
 
 		if ($pi == '') {
-			return array(false,'');
+			return [false,''];
 		}
 		switch ($country) {
 			case 'IT':
 				// -- BEGIN ITALIAN CHECK
-				if (strlen($pi) != 11) {
+				if (strlen((string) $pi) != 11) {
 					$message = "La lunghezza della partita IVA non &egrave;\n" ."corretta: la partita IVA dovrebbe essere lunga\n" ."esattamente 11 caratteri.\n";
 					$validation = false;
-					return array($validation,$message);
+					return [$validation,$message];
 				}
-				if (!preg_match("/^[0-9]+$/", $pi)) {
+				if (!preg_match("/^[0-9]+$/", (string) $pi)) {
 					$message = "La partita IVA contiene dei caratteri non ammessi:\n" ."la partita IVA dovrebbe contenere solo cifre.\n";
 					$validation = false;
-					return array($validation,$message);
+					return [$validation,$message];
 				}
 				$s = 0;
 				for ($i = 0; $i <= 9; $i += 2) {
@@ -474,7 +474,7 @@ class Form extends Core
 				if ((10 - $s % 10) % 10 != ord($pi[10]) - ord('0')) {
 					$message = "La partita IVA non &egrave; valida:\n" ."il codice di controllo non corrisponde.";
 					$validation  = false;
-					return array($validation,$message);
+					return [$validation,$message];
 				}
 				// -- END ITALIAN CHECK
 				break;
@@ -483,7 +483,7 @@ class Form extends Core
 			break;
 		}
 		//echo '<br>validation: '.($validation == true ? 'true' : 'false').'<br>';
-		return array($validation,$message);
+		return [$validation,$message];
 	}
 
 	public static function validateCF($cf, $country = 'IT')
@@ -499,21 +499,21 @@ class Form extends Core
 		switch ($country) {
 			case 'IT':
 				// -- BEGIN ITALIAN CHECK
-				if (strlen($cf) == 11) { // e' un codice fiscale di persona giuridica
-					list($validation,$message) = self::validateVAT($cf, $country = 'IT');
-					return array($validation,$message);
+				if (strlen((string) $cf) == 11) { // e' un codice fiscale di persona giuridica
+					[$validation, $message] = self::validateVAT($cf, $country = 'IT');
+					return [$validation,$message];
 
 				}
-				if (strlen($cf) != 16) {
+				if (strlen((string) $cf) != 16) {
 					$message = "La lunghezza del codice fiscale non &egrave;\n" . "corretta: il codice fiscale dovrebbe essere lungo\n" . "esattamente 16 caratteri.";
 					$validation = false;
-					return array($validation,$message);
+					return [$validation,$message];
 				}
-				$cf = strtoupper($cf);
+				$cf = strtoupper((string) $cf);
 				if (!preg_match("/^[A-Z0-9]+$/", $cf)) {
 					$message = "Il codice fiscale contiene dei caratteri non validi:\n" . "i soli caratteri validi sono le lettere e le cifre.";
 					$validation = false;
-					return array($validation,$message);
+					return [$validation,$message];
 				}
 				$s = 0;
 				for ($i = 1; $i <= 13; $i += 2) {
@@ -641,7 +641,7 @@ class Form extends Core
 				if (chr($s % 26 + ord('A')) != $cf[15]) {
 					$message = "Il codice fiscale non &egrave; corretto:\n" . "il codice di controllo non corrisponde.";
 					$validation = false;
-					return array($validation,$message);
+					return [$validation,$message];
 				}
 				// -- END ITALIAN CHECK
 				break;
@@ -652,10 +652,10 @@ class Form extends Core
 		}
 
 		//echo '<br>validation: '.($validation == true ? 'true' : 'false').'<br>';
-		return array($validation,$message);
+		return [$validation,$message];
 	}
 
 	public static function validateCurrency($value) {
-		return preg_match("/^-?[0-9]+(?:\.[0-9]{1,2})?$/", $value);
+		return preg_match("/^-?[0-9]+(?:\.[0-9]{1,2})?$/", (string) $value);
 	}
 }

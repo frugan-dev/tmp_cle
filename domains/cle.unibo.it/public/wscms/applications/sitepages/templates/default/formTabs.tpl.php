@@ -8,8 +8,8 @@
 			<li><a href="#options-tab" data-toggle="tab">Opzioni</a></li>
 
 			<?php foreach($this->globalSettings['languages'] AS $value): ?>		
-				<li><a href="#datibase<?php echo $value; ?>-tab" data-toggle="tab">Dati Base <?php echo ucfirst($value); ?> <i class="fa"></i></a></li>
-				<li><a href="#contents<?php echo $value; ?>-tab" data-toggle="tab">Contenuti <?php echo ucfirst($value); ?> <i class="fa"></i></a></li>
+				<li><a href="#datibase<?php echo $value; ?>-tab" data-toggle="tab">Dati Base <?php echo ucfirst((string) $value); ?> <i class="fa"></i></a></li>
+				<li><a href="#contents<?php echo $value; ?>-tab" data-toggle="tab">Contenuti <?php echo ucfirst((string) $value); ?> <i class="fa"></i></a></li>
 			<?php endforeach; ?>
 			
 			<?php if ($this->appData->templateItem->images > 0 ): ?>
@@ -168,27 +168,27 @@ foreach($this->globalSettings['languages'] AS $lang):
 
 		<fieldset>
 			<div class="form-group">
-				<label for="title_meta_<?php echo $lang; ?>ID" class="col-lg-2 control-label">Titolo META <?php echo ucfirst($lang); ?> </label>
+				<label for="title_meta_<?php echo $lang; ?>ID" class="col-lg-2 control-label">Titolo META <?php echo ucfirst((string) $lang); ?> </label>
 				<div class="col-lg-7">
-					<input type="text" class="form-control" name="title_meta_<?php echo $lang; ?>" placeholder="Inserisci un titolo META <?php echo ucfirst($lang); ?>" id="title_meta_<?php echo $lang; ?>ID" rows="3" value="<?php echo $titleMETAValue; ?>">
+					<input type="text" class="form-control" name="title_meta_<?php echo $lang; ?>" placeholder="Inserisci un titolo META <?php echo ucfirst((string) $lang); ?>" id="title_meta_<?php echo $lang; ?>ID" rows="3" value="<?php echo $titleMETAValue; ?>">
 				</div>
 			</div>
 		</fieldset>
 
 		<fieldset>
 			<div class="form-group">
-				<label for="title_seo_<?php echo $lang; ?>ID" class="col-lg-2 control-label">Titolo SEO <?php echo ucfirst($lang); ?> </label>
+				<label for="title_seo_<?php echo $lang; ?>ID" class="col-lg-2 control-label">Titolo SEO <?php echo ucfirst((string) $lang); ?> </label>
 				<div class="col-lg-7">
-					<input type="text" class="form-control" name="title_seo_<?php echo $lang; ?>" placeholder="Inserisci un titolo SEO <?php echo ucfirst($lang); ?>" id="title_seo_<?php echo $lang; ?>ID" rows="3" value="<?php echo $titleSEOValue; ?>">
+					<input type="text" class="form-control" name="title_seo_<?php echo $lang; ?>" placeholder="Inserisci un titolo SEO <?php echo ucfirst((string) $lang); ?>" id="title_seo_<?php echo $lang; ?>ID" rows="3" value="<?php echo $titleSEOValue; ?>">
 				</div>
 			</div>
 		</fieldset>
 
 		<fieldset>
 			<div class="form-group">
-				<label for="title_<?php echo $lang; ?>ID" class="col-lg-2 control-label">Titolo <?php echo ucfirst($lang); ?> </label>
+				<label for="title_<?php echo $lang; ?>ID" class="col-lg-2 control-label">Titolo <?php echo ucfirst((string) $lang); ?> </label>
 				<div class="col-lg-7">
-					<input type="text"<?php if ($lang == 'it') echo ' required'; ?> class="form-control" name="title_<?php echo $lang; ?>" placeholder="Inserisci un titolo <?php echo ucfirst($lang); ?>" id="title_<?php echo $lang; ?>ID" rows="3" value="<?php echo $titleValue; ?>">
+					<input type="text"<?php if ($lang == 'it') echo ' required'; ?> class="form-control" name="title_<?php echo $lang; ?>" placeholder="Inserisci un titolo <?php echo ucfirst((string) $lang); ?>" id="title_<?php echo $lang; ?>ID" rows="3" value="<?php echo $titleValue; ?>">
 				</div>
 			</div>
 		</fieldset>

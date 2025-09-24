@@ -2,48 +2,48 @@
 
 /* RESOURCES */
 $DatabaseTables['resources for item'] = '';
-$DatabaseTablesFields['resources for item'] = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'autoinc','primary'=>true),
-	'id_owner'=>array('label'=>'IDOwner','required'=>true,'searchTable'=>false,'type'=>'int'),
-	'resource_type'=>array('label'=>'Type resource','required'=>true,'searchTable'=>false,'type'=>'int'),
-	'filename'=>array('label'=>'File','searchTable'=>false,'required'=>true,'type'=>'varchar'),
-	'org_filename'=>array('label'=>'Nome Originale','searchTable'=>true,'required'=>false,'type'=>'varchar'),
-	'extension'=>array('label'=>'Ext','searchTable'=>false,'required'=>false,'type'=>'varchar'),
-	'code'                                      => array(
+$DatabaseTablesFields['resources for item'] = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'autoinc','primary'=>true],
+	'id_owner'=>['label'=>'IDOwner','required'=>true,'searchTable'=>false,'type'=>'int'],
+	'resource_type'=>['label'=>'Type resource','required'=>true,'searchTable'=>false,'type'=>'int'],
+	'filename'=>['label'=>'File','searchTable'=>false,'required'=>true,'type'=>'varchar'],
+	'org_filename'=>['label'=>'Nome Originale','searchTable'=>true,'required'=>false,'type'=>'varchar'],
+	'extension'=>['label'=>'Ext','searchTable'=>false,'required'=>false,'type'=>'varchar'],
+	'code'                                      => [
         'label'                                 => 'Code',
         'searchTable'                           => false,
         'required'                              => false,
         'type'                                  => 'varchar',
         'defValue'                              => '',
-    ),
-	'size_file'=>array('label'=>'Dimensione','searchTable'=>false,'required'=>false,'type'=>'varchar'),
-	'size_image'                                => array('label'=>'Dimensione','searchTable'=>false,'required'=>false,'type'=>'varchar'),
-	'type'=>array('label'=>'Tipo','searchTable'=>true,'required'=>false,'type'=>'varchar'),
-	'ordering'=>array('label'=>self::$langVars['ordinamento'],'required'=>false,'type'=>'int|8','validate'=>'int','defValue'=>1),
-	'created'                                   => array (
+    ],
+	'size_file'=>['label'=>'Dimensione','searchTable'=>false,'required'=>false,'type'=>'varchar'],
+	'size_image'                                => ['label'=>'Dimensione','searchTable'=>false,'required'=>false,'type'=>'varchar'],
+	'type'=>['label'=>'Tipo','searchTable'=>true,'required'=>false,'type'=>'varchar'],
+	'ordering'=>['label'=>self::$langVars['ordinamento'],'required'=>false,'type'=>'int|8','validate'=>'int','defValue'=>1],
+	'created'                                   =>  [
 		'label'                                 => Config::$langVars['creazione'],
 		'searchTable'                           => false,
 		'required'                              => false,
 		'type'                                  => 'datatime',
 		'defValue'                              => self::$nowDateTimeIso,
 		'forcedValue'                           => self::$nowDateTimeIso
-	),
-	'active'                                    => array (
+	],
+	'active'                                    =>  [
 		'label'                                 => Config::$langVars['attiva'],
 		'required'                              => false,
 		'type'                                  => 'int|1',
 		'defValue'                              => 1,
 		'forcedValue'                           => 1
-	)
-);
+	]
+];
 foreach(self::$globalSettings['languages'] AS $lang) {
 	$searchTable = true;
 	$required = ($lang == self::$langVars['user'] ? true : false);
-	$DatabaseTablesFields['resources for item']['title_'.$lang] = array('label'=>'Titolo '.$lang,'searchTable'=>$searchTable,'required'=>$required,'type'=>'varchar');
-	$DatabaseTablesFields['resources for item']['content_'.$lang] = array('label'=>self::$langVars['contenuto'].'  '.$lang,'searchTable'=>true,'required'=>false,
+	$DatabaseTablesFields['resources for item']['title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>$searchTable,'required'=>$required,'type'=>'varchar'];
+	$DatabaseTablesFields['resources for item']['content_'.$lang] = ['label'=>self::$langVars['contenuto'].'  '.$lang,'searchTable'=>true,'required'=>false,
         'type'                                  => 'text',
         'defValue'                              => ''
-    );	
+    ];	
 }
 
 

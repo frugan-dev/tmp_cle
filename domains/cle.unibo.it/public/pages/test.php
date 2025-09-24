@@ -4,14 +4,14 @@
 //Sql::setDebugMode(1);
 
 /* gestione titoli pagina */ 
-$App->titles = Utilities::getTitlesPage('Test',$App->modulePageData,$_lang['user'],array());
+$App->titles = Utilities::getTitlesPage('Test',$App->modulePageData,$_lang['user'],[]);
 $App->breadcrumbs->title = 'Test';
 
 if (Core::$resultOp->error == 0) {
 	switch (Core::$request->method) {								
 		default:
 		
-			$App->blocchi = array(
+			$App->blocchi = [
 				'1' => 'blocco 1',
 				'2' => 'blocco 2',
 				'3' => 'blocco 3',
@@ -21,7 +21,7 @@ if (Core::$resultOp->error == 0) {
 				'7' => 'blocco 7',
 				'8' => 'blocco 8',
 				'9' => 'blocco 9',
-			);
+			];
 		
 		break;	
 	}

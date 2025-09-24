@@ -9,8 +9,8 @@ $my_session->my_session_destroy();
 /* Richiamiamo il metodo che pulire la tabella */
 $my_session->my_session_gc();
 /* cancello il cookie */
-setcookie (AD_SESSIONS_COOKIE_NAME, "", time()-1);
-setcookie (DATA_SESSIONS_COOKIE_NAME, "", time()-1);
+setcookie (AD_SESSIONS_COOKIE_NAME, "", ['expires' => time()-1]);
+setcookie (DATA_SESSIONS_COOKIE_NAME, "", ['expires' => time()-1]);
 ToolsStrings::redirect(URL_SITE_ADMIN);
 
 ?>

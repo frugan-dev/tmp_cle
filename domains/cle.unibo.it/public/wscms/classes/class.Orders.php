@@ -37,7 +37,7 @@ class Orders extends Core
 	public static $fieldsDbQuery;
 	public static $fieldsValuesDbQuery;
 	public static $langUser = 'it';
-	private static $orderFields = array();
+	private static $orderFields = [];
 	public static $dompdf;
 
 	public static $hideDeleted;
@@ -55,8 +55,8 @@ class Orders extends Core
 	*/
 	public static function cupdateOrderFirstNumberUserAss($orders_number,$users_id)
 	{
-		$f = array('orders_number');
-		$fv = array($orders_number, $users_id);
+		$f = ['orders_number'];
+		$fv = [$orders_number, $users_id];
 		Sql::initQuery(Config::$DatabaseTables['ass_orders_users'], $f, $fv, 'users_id = ?', '', '', '', false);
 		Sql::updateRecord();
 		if (Core::$resultOp->error > 0) {
@@ -72,8 +72,8 @@ class Orders extends Core
 	*/
 	public static function createOrderFirstNumberUserAss($orders_number,$users_id)
 	{
-		$f = array('orders_number', 'users_id');
-		$fv = array($orders_number, $users_id);
+		$f = ['orders_number', 'users_id'];
+		$fv = [$orders_number, $users_id];
 		Sql::initQuery(Config::$DatabaseTables['ass_orders_users'], $f, $fv, '', '', '', false);
 		Sql::insertRecord();
 		if (Core::$resultOp->error > 0) {
@@ -92,7 +92,7 @@ class Orders extends Core
 	public static function getSavedOrderNUmberWhereUserId($users_id)
 	{
 		$orders_number = 0;
-		Sql::initQuery(Config::$DatabaseTables['ass_orders_users'],array('*'),array($users_id),'users_id = ?');
+		Sql::initQuery(Config::$DatabaseTables['ass_orders_users'],['*'],[$users_id],'users_id = ?');
 		$foo = Sql::getRecord();
 		if (isset($foo->orders_number)) {
 			$orders_number = $foo->orders_number;
@@ -102,7 +102,7 @@ class Orders extends Core
 		return $orders_number;
 	} 
 
-	public static function saveInvoice($id)
+	public static function saveInvoice($id): never
 	{
 
 		self::getAllOrderDetails($id);
@@ -123,7 +123,7 @@ class Orders extends Core
 		die();
 	}
 
-	public static function getInvoice($id)
+	public static function getInvoice($id): never
 	{
 		self::getAllOrderDetails($id);
 		//ToolsStrings::dump(self::$orderAllDetails);die();
@@ -158,8 +158,8 @@ class Orders extends Core
 	public static function updateOrder($id)
 	{
 		//print_r(self::$orderFields);
-		$f = array();
-		$fv = array();
+		$f = [];
+		$fv = [];
 		foreach (self::$orderFields as $key => $value) {
 			if ($value != '') {
 				$f[] = $key;
@@ -177,7 +177,7 @@ class Orders extends Core
 
 	public static function resetOrderfields()
 	{
-		self::$orderFields = array();
+		self::$orderFields = [];
 	}
 
 	public static function setOrderFields($value)
@@ -187,9 +187,9 @@ class Orders extends Core
 
 	public static function getOrderProducts($id)
 	{
-		$obj = array();
+		$obj = [];
 		if ($id > 0) {
-			Sql::initQuery(self::$dbTableProducts, array('*'), array($id), 'orders_id = ?', '', '', false);
+			Sql::initQuery(self::$dbTableProducts, ['*'], [$id], 'orders_id = ?', '', '', false);
 			$pdoObject = Sql::getPdoObjRecords();
 			if (Core::$resultOp->error > 0) { die('errore db lettura prodotto carrello'); }
 			while ($row = $pdoObject->fetch()) {
@@ -203,7 +203,7 @@ class Orders extends Core
 	{
 		//Core::setDebugMode(1);
 		$obj = new stdClass();
-		Sql::initQuery(self::$dbTable, array('*'), array($id), 'id = ?', '', '', false);
+		Sql::initQuery(self::$dbTable, ['*'], [$id], 'id = ?', '', '', false);
 		$obj = Sql::getRecord();
 		if (Core::$resultOp->error > 0) { /*die('errore db get record');*/
 			ToolsStrings::redirect(URL_SITE . 'error/db');
@@ -230,13 +230,13 @@ class Orders extends Core
 		$obj = new stdClass();
 		Sql::initQuery(
 			self::$dbTableCompanies . ' AS company',
-			array(
+			[
 				'company.*',
 				'(SELECT comuni.nome FROM ' . Sql::getTablePrefix() . 'location_comuni AS comuni WHERE comuni.id = company.location_comuni_id) AS comune',
 				'(SELECT province.nome FROM ' . Sql::getTablePrefix() . 'location_province AS province WHERE province.id = company.location_province_id) AS provincia',
 				'(SELECT nations.title_' . self::$langUser . ' FROM ' . Sql::getTablePrefix() . 'location_nations AS nations WHERE nations.id = company.location_nations_id) AS nations'
-			),
-			array($code),
+			],
+			[$code],
 			'company.code = ?',
 			'',
 			'',
@@ -262,18 +262,18 @@ class Orders extends Core
 	public static function getOrdersList()
 	{
 		//Core::setDebugMode(1);
-		$obj = array();
+		$obj = [];
 		$table = self::$dbTable . ' AS orders';
 		$table .= ' LEFT JOIN ' . self::$dbTableUsers . ' AS users ON (orders.users_id = users.id)';
 		$table .= ' LEFT JOIN ' . self::$dbTableCompanies . ' AS companies ON (orders.companies_code = companies.code)';
 		$where = '';
 		$and = '';
-		$f = array(
+		$f = [
 			'orders.*',
 			"CONCAT(users.username,' (',users.name,' ',users.surname,')') AS customer",
 			"companies.ragione_sociale AS companies_ragione_sociale"
-		);
-		$fv = array();
+		];
+		$fv = [];
 
 		if (self::$whereDbQueryClause != '') $where .= $and . self::$whereDbQueryClause;
 		if (self::$whereAndDbQueryClause != '') $and = self::$whereAndDbQueryClause;
@@ -305,7 +305,7 @@ class Orders extends Core
 		//echo $and;
 		//print_r($f);
 		//print_r($fv);
-		Sql::initQueryBasic($table, $f, $fv, $where, '', '', false);
+		Sql::initQueryBasic($table, $f, $fv, $where);
 		Sql::setOrder('orders.created DESC');
 		$pdoObject = Sql::getPdoObjRecords();
 		if (Core::$resultOp->error > 0) {
@@ -326,8 +326,8 @@ class Orders extends Core
 		//ToolsStrings::dumpArray($_POST);die();
 		// crea ordine
 		self::$OrderCreated = date('Y-m-d H:i:s');
-		$f = array('number', 'note', 'users_id', 'companies_code', 'status', 'created', 'data');
-		$fv = array(self::$orderNumber, self::$OrderNote, self::$OrderUsersId, self::$OrderCompaniesCode, 'open', self::$OrderCreated, self::$OrderData);
+		$f = ['number', 'note', 'users_id', 'companies_code', 'status', 'created', 'data'];
+		$fv = [self::$orderNumber, self::$OrderNote, self::$OrderUsersId, self::$OrderCompaniesCode, 'open', self::$OrderCreated, self::$OrderData];
 		Sql::initQuery(self::$dbTable, $f, $fv, '', '', '', '', false);
 		Sql::insertRecord();
 		if (Core::$resultOp->error > 0) {
@@ -335,11 +335,11 @@ class Orders extends Core
 			ToolsStrings::redirect(URL_SITE . 'error/db');
 		}
 		self::$orderId = Sql::getLastInsertedIdVar();
-		$order = array('created'=>self::$OrderCreated,'number'=>self::$orderNumber);
+		$order = ['created'=>self::$OrderCreated,'number'=>self::$orderNumber];
 
 		// aggiorna ass number
-		$f = array('orders_number');
-		$fv = array(self::$orderNumber, self::$OrderUsersId);
+		$f = ['orders_number'];
+		$fv = [self::$orderNumber, self::$OrderUsersId];
 		Sql::initQuery(self::$dbTableAssOrdersUsers, $f, $fv, 'users_id = ?', '', '', '', false);
 		Sql::updateRecord();
 		if (Core::$resultOp->error > 0) {
@@ -355,7 +355,7 @@ class Orders extends Core
 		if (isset($products) && is_array($products) && count($products) > 0) {
 			foreach ($products as $value) {
 				$attributes = json_encode($value->attributes);
-				$f = array(
+				$f = [
 					'users_id',
 					'orders_id',
 					'products_id',
@@ -365,8 +365,8 @@ class Orders extends Core
 					'title',
 					'companies_code',
 					'attribute'
-				);
-				$fv = array(
+				];
+				$fv = [
 					self::$OrderUsersId,
 					self::$orderId,
 					$value->products_id,
@@ -376,7 +376,7 @@ class Orders extends Core
 					$value->title,
 					self::$OrderCompaniesCode,
 					$value->attribute
-				);
+				];
 				Sql::initQuery(self::$dbTableProducts, $f, $fv, '', '', '', '', false);
 				Sql::insertRecord();
 				if (Core::$resultOp->error > 0) {
@@ -395,8 +395,8 @@ class Orders extends Core
 		// trova i dati di user
 		$users = self::getOrderUserFromId(self::$OrderUsersId);
 
-		$textEmailCustomer = self::createOrderCustomerHtmlEmail($users, $company, $products, $users);
-		$textEmailStaff = self::createOrderStaffHtmlEmail($users, $company, $products, $users);
+		$textEmailCustomer = self::createOrderCustomerHtmlEmail($users, $company, $products);
+		$textEmailStaff = self::createOrderStaffHtmlEmail($users, $company, $products);
 
 		//echo $textEmailCustomer;echo $textEmailStaff;die('fatto 5');
 
@@ -422,10 +422,10 @@ class Orders extends Core
 			if ($new == 0) $titolo = 'Reinvio ordine';
 			$titolo .= ' numero '.$order['number'].' del '.DateFormat::dateFormating( $order['created'], 'd/m/Y' );
 
-			$titolo = Users::parseEmailText($titolo, $opt = array());
-			$textHtml = Users::parseEmailText($textHtml, $opt = array());
+			$titolo = Users::parseEmailText($titolo, $opt = []);
+			$textHtml = Users::parseEmailText($textHtml, $opt = []);
 			$textPlain = Html2Text::convert($textHtml);
-			$opt = array();
+			$opt = [];
 
 			$fromEmail = Core::$globalSettings['default email'];
 			$fromLabel = Core::$globalSettings['default email label'];
@@ -462,10 +462,10 @@ class Orders extends Core
 		if ($new == 0) $titolo = 'Reinvio dati ordine';
 		$titolo .= ' numero '.$order['number'].' del '.DateFormat::dateFormating( $order['created'], 'd/m/Y' );
 
-		$titolo = Users::parseEmailText($titolo, $opt = array());
-		$textHtml = Users::parseEmailText($textHtml, $opt = array());
+		$titolo = Users::parseEmailText($titolo, $opt = []);
+		$textHtml = Users::parseEmailText($textHtml, $opt = []);
 		$textPlain = Html2Text::convert($textHtml);
-		$opt = array();
+		$opt = [];
 
 		$fromEmail = Core::$globalSettings['default email'];
 		$fromLabel = Core::$globalSettings['default email label'];
@@ -478,7 +478,7 @@ class Orders extends Core
 
 		$opt['sendDebug'] = Core::$globalSettings['send email debug'];
 		$opt['sendDebugEmail'] = Core::$globalSettings['email debug'];
-		$address = array();
+		$address = [];
 		$email = '';
 		if (isset($company->email) && $company->email != '') $address[] = $company->email;
 		if (isset($company->email1) && $company->email1 != '') $address[] = $company->email1;
@@ -513,7 +513,7 @@ class Orders extends Core
 		</p>
 		<p>
 			Prodotti ordinati
-		</p>' . self::createOrderProductsTable($products, array('viewPrice'=>false,'viewCode'=>true) );
+		</p>' . self::createOrderProductsTable($products, ['viewPrice'=>false,'viewCode'=>true] );
 		return $output;
 	}
 
@@ -533,13 +533,13 @@ class Orders extends Core
 		<p>
 			Prodotti ordinati
 		</p>
-		' . self::createOrderProductsTable($products, array('viewPrice'=>false,'viewCode'=>true) );
+		' . self::createOrderProductsTable($products, ['viewPrice'=>false,'viewCode'=>true] );
 		return $output;
 	}
 
 	public static function createOrderProductsTable($products, $opt)
 	{
-		$optDef = array('viewPrice' => 90, 'viewCode' => 100);
+		$optDef = ['viewPrice' => 90, 'viewCode' => 100];
 		$opt = array_merge($optDef,$opt);
 		/*
 		ToolsStrings::dump($opt);
@@ -589,8 +589,8 @@ class Orders extends Core
 
 	public static function loadOrderBillingAddresses()
 	{
-		$f = array('*');
-		$fv = array(self::$carts_id);
+		$f = ['*'];
+		$fv = [self::$carts_id];
 		$clause = 'carts_id = ?';
 		Sql::initQuery(self::$dbTableBillingAddresses, $f, $fv, $clause, '', '', '', false);
 		self::$billingAddresses = Sql::getRecord();
@@ -602,7 +602,7 @@ class Orders extends Core
 
 	public static function addOrderBillingAddresses()
 	{
-		$f = array(
+		$f = [
 			'carts_id',
 			'name',
 			'surname',
@@ -616,8 +616,8 @@ class Orders extends Core
 			'fax',
 			'mobile'
 
-		);
-		$fv = array(
+		];
+		$fv = [
 			self::$carts_id,
 			self::$billingAddresses->name,
 			self::$billingAddresses->surname,
@@ -630,7 +630,7 @@ class Orders extends Core
 			self::$billingAddresses->telephone,
 			self::$billingAddresses->fax,
 			self::$billingAddresses->mobile
-		);
+		];
 		Sql::initQuery(self::$dbTableBillingAddresses, $f, $fv, '', '', '', '', false);
 		Sql::insertRecord();
 		if (Core::$resultOp->error > 0) {
@@ -641,7 +641,7 @@ class Orders extends Core
 
 	public static function addOrderShipmentAddresses()
 	{
-		$f = array(
+		$f = [
 			'carts_id',
 			'name',
 			'surname',
@@ -655,8 +655,8 @@ class Orders extends Core
 			'fax',
 			'mobile'
 
-		);
-		$fv = array(
+		];
+		$fv = [
 			self::$carts_id,
 			self::$shipmentAddresses->name,
 			self::$shipmentAddresses->surname,
@@ -669,7 +669,7 @@ class Orders extends Core
 			self::$shipmentAddresses->telephone,
 			self::$shipmentAddresses->fax,
 			self::$shipmentAddresses->mobile
-		);
+		];
 		Sql::initQuery(self::$dbTableShipmentAddresses, $f, $fv, '', '', '', '', false);
 		Sql::insertRecord();
 		if (Core::$resultOp->error > 0) {

@@ -12,7 +12,7 @@ class Module {
 		$this->appTable = $table;
 		$this->error = 0;	
 		$this->message ='';
-		$this->messages = array();
+		$this->messages = [];
 		}
 	}
 ?>

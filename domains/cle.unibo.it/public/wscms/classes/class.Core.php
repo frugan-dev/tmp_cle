@@ -12,18 +12,19 @@ class Core extends Config {
 	public function __construct()
 	{			
 		parent::__construct();
-		self::$sessionValues = array();
+		self::$sessionValues = [];
 	}
 		
-	public static function init()
+	#[\Override]
+    public static function init()
 	{
 		self::$request = new stdclass;
 		self::$request->type = 'module';
 		self::$request->action = Config::$globalSettings['requestoption']['defaultaction'];
 		self::$request->method = '';
 		self::$request->param = '';
-		self::$request->params = array();
-		self::$request->urlparamrequest = array();
+		self::$request->params = [];
+		self::$request->urlparamrequest = [];
 		// altre sezioni
 		self::$request->page = 0;
 		self::$request->lang = '';
@@ -37,13 +38,13 @@ class Core extends Config {
 	{	
     $reqs = (empty($_GET['request'])) ? '' : $_GET['request'];
 		if (!empty($reqs)) {
-			$parts = explode('/', $reqs);		
+			$parts = explode('/', (string) $reqs);		
 			$parts = self::parseInitReqs($parts);
 		 
-			self::$request->action = (isset($parts[0]) ? $parts[0] : Core::$globalSettings['defaultaction']);
-			self::$request->method = (isset($parts[1]) ? $parts[1] : '');
-			self::$request->param = (isset($parts[2]) ? $parts[2] : '');
-			self::$request->params = array();
+			self::$request->action = ($parts[0] ?? Core::$globalSettings['defaultaction']);
+			self::$request->method = ($parts[1] ?? '');
+			self::$request->param = ($parts[2] ?? '');
+			self::$request->params = [];
 		} else {
 			self::$request->action = Core::$globalSettings['requestoption']['defaultaction'];
 			self::$request->param_alias = Core::$globalSettings['requestoption']['defaultaction'];
@@ -77,8 +78,8 @@ class Core extends Config {
 	public static function parseInitReqs($parts)
 	{
 		$changeaction = false;
-		$action = (isset($parts[0]) ? $parts[0] : '');
-		$method = (isset($parts[1]) ? $parts[1] : '');
+		$action = ($parts[0] ?? '');
+		$method = ($parts[1] ?? '');
 		$pageaction = $action;
 		if (Core::$globalSettings['requestoption']['getlasturlparam'] == true) {
 			$pageaction = end($parts);
@@ -102,7 +103,7 @@ class Core extends Config {
 					unset($parts[$key]);
 					unset($parts[$key1]);
 					$parts = array_values($parts);
-					$action = (isset($parts[0]) ? $parts[0] : '');
+					$action = ($parts[0] ?? '');
 				}
 			}
 
@@ -118,7 +119,7 @@ class Core extends Config {
 					unset($parts[$key]);
 					unset($parts[$key1]);
 					$parts = array_values($parts);
-					$action = (isset($parts[0]) ? $parts[0] : '');
+					$action = ($parts[0] ?? '');
 				}
 			}
 
@@ -195,7 +196,7 @@ class Core extends Config {
 					Core::$request->param_alias = $parts[0];
 					if (isset($parts[1]) && $parts[1] != '') Core::$request->param_alias = $parts[1];
 				}
-				$arr = array($action);
+				$arr = [$action];
 				$parts = array_merge($arr, $parts);
 				$checkroute = true;
 			}
@@ -203,13 +204,13 @@ class Core extends Config {
 			if ($checkroute == false) {
 				//echo '<br>e nel modulo default';
 				$action = Config::$globalSettings['requestoption']['defaultpagesmodule'];
-				$method = (isset(Config::$globalSettings['requestoption']['methods'][0]) ? Config::$globalSettings['requestoption']['methods'][0] : '');
+				$method = (Config::$globalSettings['requestoption']['methods'][0] ?? '');
 				if (isset($parts[0])) {
 					Core::$request->param_id = intval($parts[0]);
 					Core::$request->param_alias = $parts[0];
 					if (isset($parts[1]) && $parts[1] != '') Core::$request->param_alias = $parts[1];
 				}
-				$arr = array($action, $method);
+				$arr = [$action, $method];
 				$parts = array_merge($arr, $parts);
 			}
 
@@ -222,7 +223,7 @@ class Core extends Config {
 
 	public static function oldparseInitReqs($parts,$opz) {	
 		$changeaction = false;
-		$action = (isset($parts[0]) ? $parts[0] : '');
+		$action = ($parts[0] ?? '');
 		if (isset($action) && $action != '') {	
 			/* controlla se il lingua */
 			if (in_array($action,Core::$globalSettings['languages'])) {
@@ -233,9 +234,9 @@ class Core extends Config {
 				}
 				
 									
-			$action = (isset($parts[0]) ? $parts[0] : '');	
+			$action = ($parts[0] ?? '');	
 			/* controlla se è nell/elenco moduli */
-			Sql::initQuery(Sql::getTablePrefix().'modules',array('id'),array($action),'active = 1 AND alias = ?');
+			Sql::initQuery(Sql::getTablePrefix().'modules',['id'],[$action],'active = 1 AND alias = ?');
 			$obj = Sql::getRecord();
 			if (Core::$resultOp->error == 1) die('Errore db lettura moduli!');			
 			if (Sql::getFoundRows() == 0) {				
@@ -248,10 +249,10 @@ class Core extends Config {
 			
 			
 			if ($opz['managechangeaction'] == 1 && $changeaction == true) {
-				$arr = array('page');
+				$arr = ['page'];
 				$parts = array_merge($arr,$parts);				
 				self::$request->type = "page";
-				Sql::initQuery(Sql::getTablePrefix().'site_pages',array('id,alias'),array($action),'active = 1 AND (alias = ?)');
+				Sql::initQuery(Sql::getTablePrefix().'site_pages',['id,alias'],[$action],'active = 1 AND (alias = ?)');
 				Core::$request->page_data = Sql::getRecord();
 				if (Core::$resultOp->error == 1) die('Errore db lettura pagina!');							
 				if (isset(Core::$request->page_data->alias)) Core::$request->page_alias = Core::$request->page_data->alias;
@@ -282,13 +283,13 @@ class Core extends Config {
 		return $paramValue;
 		}
 		
-	public static function createUrl($opz=array()) {
+	public static function createUrl($opz=[]) {
 		
 		/* opzioni */
-		$otherparams = (isset($opz['otherparams']) ? $opz['otherparams'] : '');
-		$parampage = (isset($opz['parampage']) ? $opz['parampage'] : true);		
+		$otherparams = ($opz['otherparams'] ?? '');
+		$parampage = ($opz['parampage'] ?? true);		
 				
-		$url_arr = array();		
+		$url_arr = [];		
 		if (self::$request->action != '') {
 			$url_arr[] = self::$request->action;
 			}
@@ -329,13 +330,13 @@ class Core extends Config {
 	public static function resetResultOp($value){
 		self::$resultOp->type =  0;
 		self::$resultOp->message =  '';
-		self::$resultOp->messages =  array();	
+		self::$resultOp->messages =  [];	
 		}
 	
 	public static function resetMessageToUser($value){
 		self::$messageToUser->type =  0;
 		self::$messageToUser->message =  '';
-		self::$messageToUser->messages =  array();	
+		self::$messageToUser->messages =  [];	
 		}				
 
 	}

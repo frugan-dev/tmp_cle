@@ -29,7 +29,7 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 /* avvio sessione */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
@@ -38,11 +38,11 @@ $App->params->tables['comuni'] = DB_TABLE_PREFIX.'location_comuni';
 
 $comuni_id = (isset($_POST['comuni_id']) ? intval($_POST['comuni_id']) : 6242);
 
-$data = array();
+$data = [];
 if ($comuni_id > 0) {
     $where = 'id = ?';
-    $f = array('*');
-    $fv = array($comuni_id);
+    $f = ['*'];
+    $fv = [$comuni_id];
     Sql::initQuery($App->params->tables['comuni'],$f,$fv,$where);
     $data = Sql::getRecord();
 }

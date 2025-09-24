@@ -2,23 +2,21 @@
 /* wscms/users/class.module.php v.3.5.3. 12/09/2018 */
 
 class Module {
-	private $action;
 	public $error;
 	public $message;
 	public $messages;
 	public $errorType;
 
-	public function __construct($action,$table) 	{
-		$this->action = $action;
+	public function __construct(private $action,$table) 	{
 		$this->appTable = $table;
 		$this->error = 0;	
 		$this->message ='';
-		$this->messages = array();
+		$this->messages = [];
 		}
 
 		
 	public function getUserTemplatesArray() {		
-		$arr = array();
+		$arr = [];
 		if ($handle = opendir('templates/')){
 			while ($file = readdir($handle)) {
 				if (is_dir('templates/'.$file)) {
@@ -34,21 +32,21 @@ class Module {
 	public function checkUsername($id,$_lang) {
 		$this->error = 0;	
 		$this->message ='';
-		$this->messages = array();
+		$this->messages = [];
 		$oldUsername = '';
 		$App = new stdClass;	
       $App->oldItem = new stdClass;	
 		if (intval($id) > 0) {
 			/* recupera i dati memorizzati */
-			Sql::initQuery($this->appTable,array('username'),array($id),'id = ?');	
+			Sql::initQuery($this->appTable,['username'],[$id],'id = ?');	
 			$App->oldItem = Sql::getRecord();
 			$oldUsername = $App->oldItem->username;			
 			}
 		if ($oldUsername != $_POST['username']) {
-			Sql::initQuery($this->appTable,array('id'),array($_POST['username']),'username = ?');
+			Sql::initQuery($this->appTable,['id'],[$_POST['username']],'username = ?');
 			$count = Sql::countRecord();
 			if ($count > 0) {
-				$this->message = preg_replace('/%USERNAME%/',$_POST['username'],$_lang['Username %USERNAME% risulta già presente nel nostro database!']);
+				$this->message = preg_replace('/%USERNAME%/',(string) $_POST['username'],(string) $_lang['Username %USERNAME% risulta già presente nel nostro database!']);
 	      	$this->error = 1;
 	      	$this->errorType = 1;
 	   		}	
@@ -59,21 +57,21 @@ class Module {
 	public function checkEmail($id,$_lang) {
 		$this->error = 0;	
 		$this->message ='';
-		$this->messages = array();
+		$this->messages = [];
 		$oldEmail = '';
 		$App = new stdClass;	
       $App->oldItem = new stdClass;	
 		if (intval($id) > 0) {
 			/* recupera i dati memorizzati */
-			Sql::initQuery($this->appTable,array('email'),array($id),'id = ?');
+			Sql::initQuery($this->appTable,['email'],[$id],'id = ?');
 			$App->oldItem = Sql::getRecord();
 			$oldEmail = $App->oldItem->email;			
 			}
 		if($oldEmail != $_POST['email']) {
-			Sql::initQuery($this->appTable,array('id'),array($_POST['email']),'email = ?');
+			Sql::initQuery($this->appTable,['id'],[$_POST['email']],'email = ?');
 			$count = Sql::countRecord();
 			if ($count > 0) {
-				$this->message = preg_replace('/%EMAIL%/',$_POST['email'],$_lang['Indirizzo email %EMAIL% risulta già presente nel nostro database!']);
+				$this->message = preg_replace('/%EMAIL%/',(string) $_POST['email'],(string) $_lang['Indirizzo email %EMAIL% risulta già presente nel nostro database!']);
 	      	$this->error = 1;
 	      	$this->errorType = 1;
 	   		}	
@@ -85,7 +83,7 @@ class Module {
 	public function checkPassword($id,$_lang) {
 		$this->error = 0;	
 		$this->message ='';
-		$this->messages = array();
+		$this->messages = [];
 		$id = intval($id);
 		$App = new stdClass;	
       $App->oldItem = new stdClass;
@@ -93,13 +91,13 @@ class Module {
 		if ($id > 0) {
 			/* modifica*/
 			/* recupera i dati memorizzati */
-			Sql::initQuery($this->appTable,array('password'),array($id),'id = ?');
+			Sql::initQuery($this->appTable,['password'],[$id],'id = ?');
 			$App->oldItem = Sql::getRecord();
 			$oldPassword = $App->oldItem->password;	
 			if ($_POST['password'] != '') {
 				if ($_POST['password'] === $_POST['passwordCF']) {
 					//$_POST['password'] = md5($_POST['password']);
-					$_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);	
+					$_POST['password'] = password_hash((string) $_POST['password'], PASSWORD_DEFAULT);	
 		   		}	else {
 		   			$_POST['password'] = $oldPassword;
 		   			$this->message = $_lang['Le due password non corrispondono! Sarà comunque mantenuta quella precedentemente memorizzata'];
@@ -115,7 +113,7 @@ class Module {
 				if ($_POST['password'] != '') {
 					if ($_POST['password'] === $_POST['passwordCF']) {
 		      			//$_POST['password'] = md5($_POST['password']);
-		      			$_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+		      			$_POST['password'] = password_hash((string) $_POST['password'], PASSWORD_DEFAULT);
 		      		} else {
 		      			$this->message = $_lang['Le due password non corrispondono!'];
 		      			$this->error = 1;	
@@ -137,12 +135,12 @@ class Module {
 		$count = 0;
 		if (intval($id) > 0) {
 			/* recupera i dati memorizzati */		
-			Sql::initQuery($this->appTable,array('username'),array($id),'id = ?');	
+			Sql::initQuery($this->appTable,['username'],[$id],'id = ?');	
 			$App->oldItem = Sql::getRecord();
 			$oldUsername = $App->oldItem->username;			
 			}
 		if($oldUsername != $username) {
-			Sql::initQuery($this->appTable,array('id'),array($_POST['username']),'username = ?');
+			Sql::initQuery($this->appTable,['id'],[$_POST['username']],'username = ?');
 			$count = Sql::countRecord();
 			}
 		return $count;
@@ -155,12 +153,12 @@ class Module {
 		$count = 0;
 		if (intval($id) > 0) {
 			/* recupera i dati memorizzati */			
-			Sql::initQuery($this->appTable,array('email'),array($id),'id = ?');	
+			Sql::initQuery($this->appTable,['email'],[$id],'id = ?');	
 			$oldItem = Sql::getRecord();
 			$oldEmail = $oldItem->email;			
 			}
 		if ($oldEmail != $email) {
-			Sql::initQuery($this->appTable,array('id'),array($email),'email = ?');
+			Sql::initQuery($this->appTable,['id'],[$email],'email = ?');
 			$count = Sql::countRecord();
 			}
 		return $count;
@@ -169,12 +167,12 @@ class Module {
 	public function getAvatarData($id,$_lang) {
 		$this->error = 0;	
 		$this->message ='';
-		$this->messages = array();
+		$this->messages = [];
 		$avatar = '';
 		$avatar_info = '';		
 		if ($id > 0) {
 			$oldItem = new stdClass;		
-			Sql::initQuery($this->appTable,array('avatar','avatar_info'),array($id),'id = ?');	
+			Sql::initQuery($this->appTable,['avatar','avatar_info'],[$id],'id = ?');	
 			$oldItem = Sql::getRecord();
 			$avatar = '';
 			$avatar_info = '';
@@ -183,7 +181,7 @@ class Module {
 			}		
 		if (isset($_FILES['avatar']) && is_uploaded_file($_FILES['avatar']['tmp_name']) && $_FILES['avatar']['size'] > 0) {	
 			if ($_FILES['avatar']['error'] == 0 ) {         
-            $array_avatarInfo = array();
+            $array_avatarInfo = [];
             $max_size = 40000;
             $result = @is_uploaded_file($_FILES['avatar']['tmp_name']);
             if (!$result) {
@@ -194,7 +192,7 @@ class Module {
                   $size = $_FILES['avatar']['size'];
                   if ($size > $max_size) {
                     	$this->message = $_lang['Il file indicato è troppo grande! Dimensioni massime %DIMENSIONS% Kilobyte. Se il file precedente è presente è stato mantenuto il file precedente!'];
-							$this->message = preg_replace('/%DIMENSIONS%/',($max_size / 1000),$this->message);       				
+							$this->message = preg_replace('/%DIMENSIONS%/',($max_size / 1000),(string) $this->message);       				
            				$this->error = 0;
            				$this->errorType = 2;
            				$App = new stdClass;			         	
@@ -211,7 +209,7 @@ class Module {
                $this->error = 1;
              	}	            
          }
-		return array($avatar,$avatar_info);
+		return [$avatar,$avatar_info];
 		}
 		
 	public function renderAvatarData($id) {
@@ -220,12 +218,12 @@ class Module {
 		if (intval($id) > 0) {
 			/* recupera i dati memorizzati */
 			$this->itemData = new stdClass;		
-			Sql::initQuery($this->appTable,array('avatar','avatar_info'),array($id),'id = ?');	
+			Sql::initQuery($this->appTable,['avatar','avatar_info'],[$id],'id = ?');	
 			$this->itemData = Sql::getRecord();
 			$avatar = $this->itemData->avatar;
 			$info = $this->itemData->avatar_info;
 			}	
-		return array($avatar,$info);
+		return [$avatar,$info];
 		}
 	}
 ?>

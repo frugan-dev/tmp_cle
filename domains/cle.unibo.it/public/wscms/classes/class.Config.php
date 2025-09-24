@@ -57,16 +57,16 @@ class Config {
 		
 	public static function init() 
 	{
-		
+
 		self::$resultOp =  new stdclass;
 		self::$resultOp->type = 0;
 		self::$resultOp->error =  0;
 		self::$resultOp->message =  '';
-		self::$resultOp->messages =  array();	
+		self::$resultOp->messages =  [];	
 		self::$messageToUser =  new stdclass;
 		self::$messageToUser->type =  0;
 		self::$messageToUser->message =  '';
-		self::$messageToUser->messages =  array();
+		self::$messageToUser->messages =  [];
 		self::$debugMode = 0;
 		self::$dbName = DATABASE;
 		self::$databaseUsed = DATABASEUSED;
@@ -80,14 +80,14 @@ class Config {
 		self::$nowTimeIta = date('H:i:s'); 
 
 		self::$dbTablePrefix = self::$globalSettings['database'][self::$databaseUsed]['tableprefix'];
-		
+
 		self::$defPath = PATH;
 		self::$userLoggedDataId = 0;
 
-		self::$queryParams = array();
+		self::$queryParams = [];
 		self::$dbDebugMode = 0;
-		
-		
+
+
 		self::$hideItemNoActiveSelectQuery = false;
 		self::$hideParentItemNoActiveSelectQuery = true;
 
@@ -97,7 +97,7 @@ class Config {
 
 		// carica i dati modulo
 		foreach(Core::$globalSettings['module sections'] AS $key=>$value) {
-			Sql::initQuery(Config::$dbTablePrefix.'modules',array('*'),array($key),'active = 1 AND section = ?','ordering ASC');
+			Sql::initQuery(Config::$dbTablePrefix.'modules',['*'],[$key],'active = 1 AND section = ?','ordering ASC');
 			self::$modules[$key] = Sql::getRecords();
 			if (self::$resultOp->error == 1) die('Errore db livello utenti!');
 		}
@@ -144,7 +144,7 @@ class Config {
 			} else {
 				require_once(PATH."wscms/languages/it.inc.php");
 			}
-					
+
 			if (file_exists(PATH."languages/".$currentlanguage.".inc.php")) {
 				include_once(PATH."languages/".$currentlanguage.".inc.php");
 			} else {
@@ -154,7 +154,7 @@ class Config {
 			include_once(PATH."wscms/languages/en.inc.php");
 			include_once(PATH."languages/en.inc.php");
 		}
-		
+
 		//ToolsStrings::dump($_lang);
 		////ToolsStrings::dump(self::$langVars);
 		self::$langVars = $_lang;
@@ -211,8 +211,8 @@ class Config {
 		if (Sql::tableExists($table) == true) {
 		/* legge la configurazione */
 		self::$moduleConfig = new stdClass();
-		Sql::initQuery($table,array('*'),array(),'active = 1');
-		Sql::setOptions(array('fieldTokeyObj'=>'name'));
+		Sql::initQuery($table,['*'],[],'active = 1');
+		Sql::setOptions(['fieldTokeyObj'=>'name']);
 		self::$moduleConfig = Sql::getRecords();
 		
 		/* controlla se ci sono i parametri richiesti */
@@ -270,10 +270,10 @@ class Config {
 
 	public static function initQueryParams()
 	{
-		self::$queryParams = array();
+		self::$queryParams = [];
 		self::$queryParams['tables'] = '';
-		self::$queryParams['fields'] = array();
-		self::$queryParams['fieldsVal'] = array();
+		self::$queryParams['fields'] = [];
+		self::$queryParams['fieldsVal'] = [];
 		self::$queryParams['where'] = '';
 		self::$queryParams['and'] = '';
 

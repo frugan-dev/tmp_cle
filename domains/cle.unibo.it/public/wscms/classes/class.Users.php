@@ -5,16 +5,16 @@ class Users extends Core {
 
 	public static $dbTable;
 
-	public static $whereDbClause = array();
-	public static $fieldsDbSelect = array('users.*');
-	public static $fieldsDbValues = array();
+	public static $whereDbClause = [];
+	public static $fieldsDbSelect = ['users.*'];
+	public static $fieldsDbValues = [];
 	public static $clauseQueryDb = '';
 	public static $details;
 
-	public static $queryParams = array();
+	public static $queryParams = [];
 
-	public static $qryFields = array('*');
-	public static $qryFieldsValues = array();
+	public static $qryFields = ['*'];
+	public static $qryFieldsValues = [];
 	public static $qryClause = '';
 	public static $qryAndClause = '';
 	public static $qryOrder = '';
@@ -36,15 +36,15 @@ class Users extends Core {
 	}
 
 	public static function initsetQueryParams() {
-		self::$queryParams = array(
+		self::$queryParams = [
 			'tables'			=> self::$dbTable.' AS users',
-			'fields'			=> array('users.*'),
-			'fieldsValues'		=> array(),
+			'fields'			=> ['users.*'],
+			'fieldsValues'		=> [],
 			'whereClause'		=> '',
 			'whereClauseAnd'	=> '',
 			'order'				=> 'users.surname ASC, users.name ASC',
 			'tablePrefix'		=> ''
-		);
+		];
 	}
 
 
@@ -56,25 +56,24 @@ class Users extends Core {
 	public static function getUsersFromCompaniesCode() 
 	{
 		//echo 'code'.self::$UserCompaniesCode;
-		$foo = array();
+		$foo = [];
 		//Core::setDebugMode(1);
 		self::$queryParams['tables'] = 	Sql::getTablePrefix().'ass_companies_code_users AS ass INNER JOIN '.self::$dbTable.' AS users ON (ass.users_id = users.id)';
-		self::$queryParams['fieldsValues'] = array(
+		self::$queryParams['fieldsValues'] = [
 			'ass.*',
 			'users.*',
 			'(SELECT comuni.nome FROM '.Sql::getTablePrefix().'location_comuni AS comuni WHERE comuni.id = users.location_comuni_id) AS comune',
 			'(SELECT province.nome FROM '.Sql::getTablePrefix().'location_province AS province WHERE province.id = users.location_province_id) AS provincia',
 			'(SELECT nations.title_'.self::$langUser.' FROM '.Sql::getTablePrefix().'location_nations AS nations WHERE nations.id = users.location_nations_id) AS nations'
-		);
-		self::$queryParams['fieldsValues'] = array(self::$UserCompaniesCode);
+		];
+		self::$queryParams['fieldsValues'] = [self::$UserCompaniesCode];
   		self::$queryParams['whereClause'] = 'ass.companies_code = ?';
 
 		Sql::initQueryBasic(
 			self::$queryParams['tables'],
 			self::$queryParams['fields'],
 			self::$queryParams['fieldsValues'],
-			self::$queryParams['whereClause'],
-			self::$queryParams['order']
+			self::$queryParams['whereClause']
 		);
 
 		$pdoObject = Sql::getPdoObjRecords();
@@ -88,7 +87,7 @@ class Users extends Core {
 	public static function getUsersList() 
 	{
 		//Core::setDebugMode(1);
-		$obj = array();
+		$obj = [];
 
 		// nascondi root
 		if (self::$HideRootInQuery == true) {
@@ -98,7 +97,7 @@ class Users extends Core {
 
  		// nascondi levels_id_alias_ids
 		if (is_array(self::$HideLevelsIdAliasInQuery) && count(self::$HideLevelsIdAliasInQuery) > 0) {
-			$subwhere = array();
+			$subwhere = [];
 			foreach (self::$HideLevelsIdAliasInQuery As $value) {
 				$subwhere[] = self::$queryParams['tablePrefix'].'levels_id_alias <> ?';
 				self::$queryParams['fieldsValues'][] = $value;
@@ -111,7 +110,7 @@ class Users extends Core {
 
 		// visualizza solo  levels_id_alias_ids
 		if (is_array(self::$ViewLevelsIdAliasInQuery) && count(self::$ViewLevelsIdAliasInQuery) > 0) {
-			$subwhere = array();
+			$subwhere = [];
 			foreach (self::$ViewLevelsIdAliasInQuery As $value) {
 				$subwhere[] = self::$queryParams['tablePrefix'].'levels_id_alias = ?';
 				self::$queryParams['fieldsValues'][] = $value;
@@ -127,8 +126,7 @@ class Users extends Core {
 			self::$queryParams['tables'],
 			self::$queryParams['fields'],
 			self::$queryParams['fieldsValues'],
-			self::$queryParams['whereClause'],
-			self::$queryParams['order']
+			self::$queryParams['whereClause']
 		);
 
 		$pdoObject = Sql::getPdoObjRecords();
@@ -142,9 +140,9 @@ class Users extends Core {
 	public static function oldGetUsersList() 
 	{
 		//Core::setDebugMode(1);
-		$obj = array();
+		$obj = [];
 		$table = self::$dbTable.' AS users';
-		Sql::initQueryBasic($table,self::$fieldsDbSelect,self::$fieldsDbValues,self::$clauseQueryDb,'','',false);
+		Sql::initQueryBasic($table,self::$fieldsDbSelect,self::$fieldsDbValues,self::$clauseQueryDb);
 		$pdoObject = Sql::getPdoObjRecords();
 		if (Core::$resultOp->error > 0) { die('errore db get records users');	ToolsStrings::redirect(URL_SITE.'error/db'); }
 		while ($row = $pdoObject->fetch()) {
@@ -159,13 +157,13 @@ class Users extends Core {
 		$obj = new stdClass();
 		Sql::initQuery(
 			self::$dbTable.' AS users',
-			array(
+			[
 				'users.*',
 				'(SELECT comuni.nome FROM '.Sql::getTablePrefix().'location_comuni AS comuni WHERE comuni.id = users.location_comuni_id) AS comune',
 				'(SELECT province.nome FROM '.Sql::getTablePrefix().'location_province AS province WHERE province.id = users.location_province_id) AS provincia',
 				'(SELECT nations.title_'.self::$langUser.' FROM '.Sql::getTablePrefix().'location_nations AS nations WHERE nations.id = users.location_nations_id) AS nations'
-			),
-			array($id),
+			],
+			[$id],
 			'users.id = ?','','',false);		
 		$obj = Sql::getRecord();
 		//ToolsStrings::dump($obj);die();
@@ -180,14 +178,14 @@ class Users extends Core {
 		Sql::initQuery(
 			Sql::getTablePrefix().'ass_companies_code_users AS ass
 			INNER JOIN '.self::$dbTable.' AS users ON (ass.users_id = users.id)',
-			array(
+			[
 				'ass.*',
 				'users.*',
 				'(SELECT comuni.nome FROM '.Sql::getTablePrefix().'location_comuni AS comuni WHERE comuni.id = users.location_comuni_id) AS comune',
 				'(SELECT province.nome FROM '.Sql::getTablePrefix().'location_province AS province WHERE province.id = users.location_province_id) AS provincia',
 				'(SELECT nations.title_'.self::$langUser.' FROM '.Sql::getTablePrefix().'location_nations AS nations WHERE nations.id = users.location_nations_id) AS nations'
-			),
-			array($code),
+			],
+			[$code],
 			'ass.companies_code = ? and levels_id_alias = 0',
 			'',
 			'',
@@ -206,8 +204,8 @@ class Users extends Core {
 	public static function add() 
 	{
 		//Sql::setDebugMode(1);
-		$f = array();
-		$fv = array();
+		$f = [];
+		$fv = [];
 	
 		foreach (self::$details AS $key=>$value) {
 			$f[] = $key;
@@ -221,16 +219,16 @@ class Users extends Core {
 		Sql::insertRecord();		
 	}
 
-	public static function parseEmailText($text,$opt=array()) {
-		$optDef = array('customFields'=>array(),'customFieldsValue'=>array());	
+	public static function parseEmailText($text,$opt=[]) {
+		$optDef = ['customFields'=>[],'customFieldsValue'=>[]];	
 		$opt = array_merge($optDef,$opt);	
-		$text = preg_replace('/%SITENAME%/',SITE_NAME,$text);
+		$text = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $text);
 		if ((is_array($opt['customFields']) && count($opt['customFields'])) 
 			&& (is_array($opt['customFieldsValue']) && count($opt['customFieldsValue'])) 
 			&& (count($opt['customFields']) == count($opt['customFieldsValue']))
 			) {			
 			foreach ($opt['customFields'] AS $key=>$value) {
-				$text = preg_replace('/'.$opt['customFields'][$key].'/',$opt['customFieldsValue'][$key],$text);
+				$text = preg_replace('/'.$opt['customFields'][$key].'/',(string) $opt['customFieldsValue'][$key],$text);
 			}
 		}
 		if (isset(self::$details->username)) $text = preg_replace('/%USERNAME%/',self::$details->username,$text);

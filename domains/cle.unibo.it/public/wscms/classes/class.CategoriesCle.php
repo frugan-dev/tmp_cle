@@ -6,7 +6,7 @@ class CategoriesCle extends Core {
 	static $treeResult = '';
 	static $level = 0;
 	private static $pagination;
-	private static $arrayTitle = array(); /* gestione titoli parent sub categorie */
+	private static $arrayTitle = []; /* gestione titoli parent sub categorie */
 
 	public function __construct(){
 		parent::__construct();
@@ -17,7 +17,7 @@ class CategoriesCle extends Core {
 		$table = (isset($opz['table']) && $opz['table'] != '' ? $opz['table'] : '');
       $fieldRif = (isset($opz['fieldRif']) && $opz['fieldRif'] != '' ? $opz['fieldRif'] : 'id_cat');
       $valueRif = (isset($opz['valueRif']) && $opz['valueRif'] != '' ? $opz['valueRif'] : '');      
-		Sql::initQuery($table,array('id'),array($valueRif),$fieldRif.' = ?');
+		Sql::initQuery($table,['id'],[$valueRif],$fieldRif.' = ?');
 		$count = Sql::countRecord();
 		if (Sql::$error == 0) {
 			if ($count > 0) $check = true;
@@ -114,9 +114,9 @@ class CategoriesCle extends Core {
           		$fieldTitleMeta = 'title_meta_';  
           		
 					/* gestione multilingua */  
-          		$valueTitle = Multilanguage::getLocaleObjectValue($value,$fieldTitle,$langSuffix,array());
-          		$valueTitleSeo = Multilanguage::getLocaleObjectValue($value,$fieldTitleSeo,$langSuffix,array());
-          		$valueTitleMeta = Multilanguage::getLocaleObjectValue($value,$fieldTitleMeta,$langSuffix,array());
+          		$valueTitle = Multilanguage::getLocaleObjectValue($value,$fieldTitle,$langSuffix,[]);
+          		$valueTitleSeo = Multilanguage::getLocaleObjectValue($value,$fieldTitleSeo,$langSuffix,[]);
+          		$valueTitleMeta = Multilanguage::getLocaleObjectValue($value,$fieldTitleMeta,$langSuffix,[]);
           		
           		   
           		if(self::$level == 0) $classLi = $classMainLi; 
@@ -141,11 +141,11 @@ class CategoriesCle extends Core {
 			 		$hrefValue = $pagesModule;		
 			 				 		
           		/* sostituisce l'id e altro */
-	      		$hrefValue = preg_replace('/{{ID}}/',$value->id,$hrefValue);
-	      		$hrefValue = preg_replace('/{{SEO}}/',$valueTitleSeo,$hrefValue);
-	      		$hrefValue = preg_replace('/{{SEOCLEAN}}/', ToolsStrings::url_slug($valueTitleSeo,array()),$hrefValue);
-	      		$hrefValue = preg_replace('/{{SEOENCODE}}/', urlencode($valueTitleSeo),$hrefValue);  
-	      		$hrefValue = preg_replace('/{{TITLE}}/', urlencode($valueTitleSeo),$hrefValue);     
+	      		$hrefValue = preg_replace('/{{ID}}/',(string) $value->id,(string) $hrefValue);
+	      		$hrefValue = preg_replace('/{{SEO}}/',(string) $valueTitleSeo,$hrefValue);
+	      		$hrefValue = preg_replace('/{{SEOCLEAN}}/', ToolsStrings::url_slug($valueTitleSeo,[]),$hrefValue);
+	      		$hrefValue = preg_replace('/{{SEOENCODE}}/', urlencode((string) $valueTitleSeo),$hrefValue);  
+	      		$hrefValue = preg_replace('/{{TITLE}}/', urlencode((string) $valueTitleSeo),$hrefValue);     
 	      		     		              
 					self::$treeResult .= '<li'.$strShowLiId.' class="'.$classLi.'">'."\n";					
 					self::$treeResult .= '<a'.$strShowHrefId.' class="'.$classAref.'" href="'.$hrefValue.'"';
@@ -199,17 +199,17 @@ class CategoriesCle extends Core {
 				
 	public static function getCategoryDetails($id,$table,$opz) {
 		$obj =  new stdClass;
-		$findOne = (isset($opz['findOne']) ? $opz['findOne'] : true);
-		$actived = (isset($opz['actived']) ? $opz['actived'] : true);							
+		$findOne = ($opz['findOne'] ?? true);
+		$actived = ($opz['actived'] ?? true);							
 		/* prende la categoria indicata */
 		$clause = 'id = ?';
 		if ($actived == true) $clause .= ' AND active = 1';
-		Sql::initQuery($table,array('*'),array($id),$clause);
+		Sql::initQuery($table,['*'],[$id],$clause);
 		$obj = Sql::getItemData();		
 		if (!isset($obj->id) || (isset($obj->id) && (int)$obj->id == 0)) {
 			if($findOne == true) {
 				/* prende la prima disponibile */
-				Sql::initQuery($table,array('*'),array());
+				Sql::initQuery($table,['*'],[]);
 				$obj = Sql::getItemData();
 				}			
 			}
@@ -218,13 +218,13 @@ class CategoriesCle extends Core {
 		
 
 	public static function getCategoryType($id,$table){	
-		Sql::initQuery($table,array('type'),array($id),'id = ?');
+		Sql::initQuery($table,['type'],[$id],'id = ?');
 		$itemData = Sql::getItemData();	
 		return $itemData->type;	
 		}
 		
 	public static function checkIssetCategory($table,$opz){	
-		Sql::initQuery($table,array('id'));
+		Sql::initQuery($table,['id']);
 		$count = Sql::countRecord();
 		if (self::$resultOp->type == 0) {
 			return ($count == 0 ? false : true);
@@ -234,7 +234,7 @@ class CategoriesCle extends Core {
 		}
 	
 	public static function checkIssetOwner($table,$id,$opz){	
-		Sql::initQuery($table,array('id'),array($id),'id = ?');
+		Sql::initQuery($table,['id'],[$id],'id = ?');
 		$count = Sql::countRecord();
 		if(Sql::$error == 0) {
 			return ($count == 0 ? false : true);

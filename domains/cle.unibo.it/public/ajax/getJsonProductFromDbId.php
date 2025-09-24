@@ -40,7 +40,7 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 /* avvio sessione */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
@@ -49,8 +49,8 @@ $App->mySessionVars = $_MY_SESSION_VARS;
 $App->params->tables['products'] = DB_TABLE_PREFIX.'products';
 
 $id = intval($_POST['id']); //This is the textbox value
-if ($id != '') {
-    Sql::initQuery($App->params->tables['products'],array('*'),array($id),'id = ?');
+if ($id != 0) {
+    Sql::initQuery($App->params->tables['products'],['*'],[$id],'id = ?');
     $obj = Sql::getRecord();	
     echo json_encode($obj);	
 }

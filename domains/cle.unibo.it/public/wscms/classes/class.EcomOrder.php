@@ -4,9 +4,9 @@
 class EcomOrder extends Core {
 	
 	/* campi tabella order_customer per form */
-	private static $order_customers_fields = array('id_order','name','surname','street','city','zip_code','province','id_state','name_dest','surname_dest','street_dest','city_dest','zip_code_dest','province_dest','id_state_dest','telephone','email','mobile','fax','codice_fiscale','partita_iva');		
-	private static $order_fields = array('id','total','created','note','done','deleted','lang');	
-	private static $order_products_fields = array('id_order','title','quantity','price');		
+	private static $order_customers_fields = ['id_order','name','surname','street','city','zip_code','province','id_state','name_dest','surname_dest','street_dest','city_dest','zip_code_dest','province_dest','id_state_dest','telephone','email','mobile','fax','codice_fiscale','partita_iva'];		
+	private static $order_fields = ['id','total','created','note','done','deleted','lang'];	
+	private static $order_products_fields = ['id_order','title','quantity','price'];		
 	
 	private static $site_states;
 
@@ -54,7 +54,7 @@ class EcomOrder extends Core {
 			self::setOrderBasket();		
 			if (isset(self::$basket->products) && is_array(self::$basket->products) && count(self::$basket->products) > 0) {
 				foreach (self::$basket->products AS $key=>$value) {
-					$fielsValue = array(self::$orderId,$value->title,$value->quantity,$value->price);				
+					$fielsValue = [self::$orderId,$value->title,$value->quantity,$value->price];				
 					Sql::initQuery(DB_TABLE_PREFIX.'ec_order_products',self::$order_products_fields,$fielsValue,'');
 					Sql::insertRecord();
 					if (Core::$resultOp->error == 1) break;
@@ -67,12 +67,12 @@ class EcomOrder extends Core {
 		if (Core::$resultOp->error == 0) {		
 			//self::$orderId = time(); /* RIMUOVERE IN PRODUZIONE */
 			/* controlla se esiste un'altro ordine con lo stesso id */
-			if (Sql::countRecordQry(DB_TABLE_PREFIX.'ec_orders','id','id LIKE ?',array(self::$orderId)) == 0) {
+			if (Sql::countRecordQry(DB_TABLE_PREFIX.'ec_orders','id','id LIKE ?',[self::$orderId]) == 0) {
 				self::setOrderBasket();
 							
 				self::$orderData = date('Y-m-d H:i:s');
 				self::$orderTotal = self::$basket->total;
-				$fielsValue = array(self::$orderId,self::$orderTotal,self::$orderData,$_POST['note'],0,0,self::$sessionValues['front-end']['lang']);
+				$fielsValue = [self::$orderId,self::$orderTotal,self::$orderData,$_POST['note'],0,0,self::$sessionValues['front-end']['lang']];
 				Sql::initQuery(DB_TABLE_PREFIX.'ec_orders',self::$order_fields,$fielsValue,'');
 				Sql::insertRecord();
 				} else {
@@ -99,7 +99,7 @@ class EcomOrder extends Core {
 				/* memorizza in sessione database */
 				$my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 				$my_session->my_session_start();
-				self::$sessionValues = array();
+				self::$sessionValues = [];
 				self::$sessionValues = $my_session->my_session_read();
 				$my_session->addSessionsModuleSingleVar(self::$sessionValues,'ecomm','orderid',self::$orderId);
 				//echo 'action setOrderId<br>orderId: '.self::$orderId;
@@ -112,7 +112,7 @@ class EcomOrder extends Core {
 			/* memorizza in sessione database */
 			$my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 			$my_session->my_session_start();
-			self::$sessionValues = array();
+			self::$sessionValues = [];
 			self::$sessionValues = $my_session->my_session_read();
 			$my_session->addSessionsModuleSingleVar(self::$sessionValues,'ecomm','orderid','');		
 			//echo 'action resetOrderSession';
@@ -126,14 +126,14 @@ class EcomOrder extends Core {
 			}		
 		}	
 		
-	public static function sendOrderEmailConfirmToCustomer($globalSettings,$lang,$opt=array()) {
+	public static function sendOrderEmailConfirmToCustomer($globalSettings,$lang,$opt=[]) {
 		if (Core::$resultOp->error == 0 && self::$orderId != '') {
-			$opt = array();
+			$opt = [];
 			/* manda la email di conferma ordine al cliente */								
 			$subject = $lang['ecom - cliente - soggetto email conferma ordine'];			
-			$opt['subject'] = SiteMails::parseEmailContent($subject,$_POST,$opt1=array());				
+			$opt['subject'] = SiteMails::parseEmailContent($subject,$_POST,$opt1=[]);				
 			$content = $lang['ecom - cliente - contenuto email conferma ordine'];
-			$opt['content'] = SiteMails::parseEmailContent($content,$_POST,$opzz=array());	
+			$opt['content'] = SiteMails::parseEmailContent($content,$_POST,$opzz=[]);	
 			//FIXED - DKIM requirements							
 			$opt['from email'] = $_ENV['MAIL_FROM_EMAIL'] ?? $globalSettings['ecom - from email'];
 			$opt['from label'] = $globalSettings['ecom - from email label'];
@@ -152,7 +152,7 @@ class EcomOrder extends Core {
 			}		
 		}	
 		
-	public static function sendOrderEmailToShop($globalSettings,$lang,$opt=array()) {
+	public static function sendOrderEmailToShop($globalSettings,$lang,$opt=[]) {
 		
 		//echo 'orderId: '.self::$orderId;
 		//echo 'orderData: '.self::$orderData;
@@ -160,14 +160,14 @@ class EcomOrder extends Core {
 		//print_r(self::$sessionValues);
 		
 		if (Core::$resultOp->error == 0 && self::$orderId != '') {
-			$optDef = array('orderid'=>'','orderdata'=>'','ordertotal'=>'');
+			$optDef = ['orderid'=>'','orderdata'=>'','ordertotal'=>''];
 			$opt = array_merge($optDef,$opt);
 			/* manda la email di conferma ordine al cliente */						
 			$subject = $lang['ecom - staff - soggetto email conferma ordine'];			
-			$opt['subject'] = SiteMails::parseEmailContent($subject,$_POST,$opt1=array());				
+			$opt['subject'] = SiteMails::parseEmailContent($subject,$_POST,$opt1=[]);				
 			$content = $lang['ecom - staff - contenuto email conferma ordine'];
 			$ulradminorder = '<a href="'.URL_SITE_ADMIN.'ecommerce/viewOrdi/'.self::$orderId.'" target="_blank">'.self::$orderId.'</a>';			
-			$opt1 = array();
+			$opt1 = [];
 			$opt1['others']['%URLADMINORDER%'] = $ulradminorder;
 			$opt1['others']['%ORDERDATA%'] = self::$orderData;
 			$opt1['others']['%ORDERTOTAL%'] = number_format(self::$orderTotal,0,',',',');
@@ -205,11 +205,11 @@ class EcomOrder extends Core {
 	
 	public function getSiteStates() {
 		/* trova gli stati */
-		Sql::initQuery(DB_TABLE_PREFIX.'site_states',array('*'),array(),'');
-		Sql::setOptions(array('fieldTokeyObj'=>'id'));
+		Sql::initQuery(DB_TABLE_PREFIX.'site_states',['*'],[],'');
+		Sql::setOptions(['fieldTokeyObj'=>'id']);
 		$obj = Sql::getRecords();
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $key=>$value) {	
 				$field = 'title_'.$_lang['user'];	

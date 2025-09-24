@@ -31,7 +31,7 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 /* avvio sessione */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
@@ -52,11 +52,11 @@ $itemsForPage = 3;
 if (isset($_REQUEST['categories_id'])) $home_news_categories_id = intval($_REQUEST['categories_id']);
 if (isset($_REQUEST['page'])) $home_news_page = intval($_REQUEST['page']);
 
-$news = array();
+$news = [];
 Config::initQueryParams();
 Config::$queryParams['tables'] = DB_TABLE_PREFIX.'news';
-Config::$queryParams['fields'] = array('*');
-Config::$queryParams['fieldsVal'] = array();
+Config::$queryParams['fields'] = ['*'];
+Config::$queryParams['fieldsVal'] = [];
 Config::$queryParams['where'] = 'active = 1';
 Config::$queryParams['and'] = ' and ';
 
@@ -74,19 +74,19 @@ $pdoObject = Sql::getPdoObjRecords();
 $news_pagination = Utilities::getPagination($home_news_page,Sql::getTotalsItems(),$itemsForPage);
 //ToolsStrings::dump($App->news_pagination); die();
 while ($row = $pdoObject->fetch()) {
-    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
-    $row->summary = Multilanguage::getLocaleObjectValue($row,'summary_',Config::$langVars['user'],array('htmLawed'=>1,'parse'=>1)); 
-    $row->dataformatted = DateFormat::getDateTimeIsoFormatString($row->datatimeins,'%DAY% %STRINGMONTH% %YEAR%',array()); 
+    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
+    $row->summary = Multilanguage::getLocaleObjectValue($row,'summary_',Config::$langVars['user'],['htmLawed'=>1,'parse'=>1]); 
+    $row->dataformatted = DateFormat::getDateTimeIsoFormatString($row->datatimeins,'%DAY% %STRINGMONTH% %YEAR%',[]); 
     // preleva la categoria
-    Sql::initQuery(DB_TABLE_PREFIX.'news_cat',array('*'),array($row->id_cat),'id = ?','');
+    Sql::initQuery(DB_TABLE_PREFIX.'news_cat',['*'],[$row->id_cat],'id = ?','');
     $foo = Sql::getRecord();
-    $row->category = Multilanguage::getLocaleObjectValue($foo,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
+    $row->category = Multilanguage::getLocaleObjectValue($foo,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
 
     // modifica dati embedded
     $row->video = '';
     if (isset($row->embedded) && $row->embedded != '') {
         $row->video = $row->embedded;
-        $row->video = preg_replace('/(width)="\d*"\s/',"",$row->video);
+        $row->video = preg_replace('/(width)="\d*"\s/',"",(string) $row->video);
         $row->video = preg_replace('/(height)="\d*"\s/',"",$row->video);
         $row->video = preg_replace('/iframe/','iframe width="100%" height="100%"',$row->video);
 
@@ -139,7 +139,7 @@ title="'.Config::$langVars['precedente'].'" aria-label="Previous" class="setHome
 
 if (is_array($news_pagination->pagePrevious) && count($news_pagination->pagePrevious) >0) {
     foreach($news_pagination->pagePrevious AS $value) {
-        $label = preg_replace('/%ITEM%/',$value,Config::$langVars['vai alla pagina %ITEM%']);
+        $label = preg_replace('/%ITEM%/',(string) $value,(string) Config::$langVars['vai alla pagina %ITEM%']);
         $html .= '<li class="page-item"><a data-rif="'.$value.'" class="setHomeNewsPage page-link" title="'.$label.'" href="javascript:void(0);">'.$value.'</a>
         </li>';
     }
@@ -149,7 +149,7 @@ $html .= '<li class="page-item active"><a class="page-link" href="javascript:voi
 
 if (is_array($news_pagination->pageNext) && count($news_pagination->pageNext) >0) {
     foreach($news_pagination->pageNext AS $value) {
-        $label = preg_replace('/%ITEM%/',$value,Config::$langVars['vai alla pagina %ITEM%']);
+        $label = preg_replace('/%ITEM%/',(string) $value,(string) Config::$langVars['vai alla pagina %ITEM%']);
         $html .= '<li class="page-item"><a data-rif="'.$value.'" class="setHomeNewsPage page-link" title="'.$label.'" href="javascript:void(0);">'.$value.'</a>
         </li>';
     }

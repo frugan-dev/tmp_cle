@@ -10,8 +10,8 @@
 
 class DateFormat extends Core  {
 
-	private static $dateVars = array();
-	private static $timeVars = array();
+	private static $dateVars = [];
+	private static $timeVars = [];
 	private static $year = 2000;
 	private static $month = 1;
 	private static $day = 1;
@@ -88,7 +88,7 @@ class DateFormat extends Core  {
 		$sum_time = '00:00:00';
 		if (isset($times) && is_array($times) && count($times) > 0) {
 		   foreach ($times as $time) {
-			  list($hour,$minute,$second) = explode(':', $time);
+			  [$hour, $minute, $second] = explode(':', (string) $time);
 			  $seconds += $hour*3600;
 			  $seconds += $minute*60;
 			  $seconds += $second;
@@ -107,7 +107,7 @@ class DateFormat extends Core  {
 		// check Day -> (0[1-9]|[1-2][0-9]|3[0-1])
 		// check Month -> (0[1-9]|1[0-2])
 		// check Year -> [0-9]{4} or \d{4}
-		$patterns = array(
+		$patterns = [
 			'/\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3,8}Z\b/' => 'Y-m-d\TH:i:s.u\Z', // format DATE ISO 8601
 			'/\b\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])\b/' => 'Y-m-d',
 			'/\b\d{4}-(0[1-9]|[1-2][0-9]|3[0-1])-(0[1-9]|1[0-2])\b/' => 'Y-d-m',
@@ -135,9 +135,9 @@ class DateFormat extends Core  {
 			'/\b(?:1[012]|0[0-9]):[0-5][0-9]\b/' => 'h:i',
 	
 			'/\.\d{3}\b/' => '.v'
-		);
+		];
 		//$d = preg_replace('/\b\d{2}:\d{2}\b/', 'H:i',$d);
-		$d = preg_replace( array_keys( $patterns ), array_values( $patterns ), $d );
+		$d = preg_replace( array_keys( $patterns ), array_values( $patterns ), (string) $d );
 		return preg_match( '/\d/', $d ) ? $null : $d;
 	}
 	
@@ -157,7 +157,7 @@ class DateFormat extends Core  {
 	}
 
 	// layout
-	public static function getDateTimeIsoFormatString($datetimeIso='',$format='',$opt) 
+	public static function getDateTimeIsoFormatString($datetimeIso='',$format='',$opt = null) 
 	{
 		if ($datetimeIso != '') self::explodeDateTimeIso($datetimeIso);
 		$s = self::getDateString($format);
@@ -171,48 +171,33 @@ class DateFormat extends Core  {
 		$month = intval(self::$month);
 		$day = intval(self::$day);
 
-		$format = preg_replace('/%DAY%/',self::$day,$format);
-		$format = preg_replace('/%STRINGMONTH%/',ucfirst(Config::$langVars['lista mesi'][$month]),$format);
-		$format = preg_replace('/%STRINGDATADAY%/',self::getDayOfDate(Config::$langVars['lista giorni'],array()),$format);
-		$format = preg_replace('/%MONTH%/',self::$month,$format);
-		$format = preg_replace('/%YEAR%/',self::$year,$format);
-		$format = preg_replace('/%HH%/',self::$hours,$format);
-		$format = preg_replace('/%II%/',self::$minutes,$format);
+		$format = preg_replace('/%DAY%/',(string) self::$day,(string) $format);
+		$format = preg_replace('/%STRINGMONTH%/',ucfirst((string) Config::$langVars['lista mesi'][$month]),$format);
+		$format = preg_replace('/%STRINGDATADAY%/',(string) self::getDayOfDate(Config::$langVars['lista giorni'],[]),$format);
+		$format = preg_replace('/%MONTH%/',(string) self::$month,$format);
+		$format = preg_replace('/%YEAR%/',(string) self::$year,$format);
+		$format = preg_replace('/%HH%/',(string) self::$hours,$format);
+		$format = preg_replace('/%II%/',(string) self::$minutes,$format);
 		$s = $format;
 
-		switch ($format) {
-			case 'dd StringMonth YYYY':
-				$s = self::$day. ' '.ucfirst(Config::$langVars['lista giorni']).' '.self::$year;
-			break;
-			case 'StringDay StringMonth YYYY':
-				$s = self::$day. ' '.ucfirst(Config::$langVars['lista giorni']).' '.self::$year;
-			break;
-			case 'StringMonth dd, YYYY':
-				$s = ucfirst($langMonts[$month]).' '.self::$day. ', '.self::$year;
-			break;
-			case 'StringMonth':
-				$s = ucfirst($langMonts[$month]);
-			break;
-			case 'dd/mm/YYYY':
-				$s = self::$day.'/'.self::$month.'/'.self::$year;
-			break;
-			case 'hh:mm':
-				$s = self::$hours.':'.self::$minutes;
-			break;
-			case 'YYYY-mm-dd':
-				$s = self::$year.'-'.self::$month.'-'.self::$day;
-			break;
-			case 'dd':
-				$s = self::$day;
-			break;
-		}
+		$s = match ($format) {
+            'dd StringMonth YYYY' => self::$day. ' '.ucfirst((string) Config::$langVars['lista giorni']).' '.self::$year,
+            'StringDay StringMonth YYYY' => self::$day. ' '.ucfirst((string) Config::$langVars['lista giorni']).' '.self::$year,
+            'StringMonth dd, YYYY' => ucfirst((string) $langMonts[$month]).' '.self::$day. ', '.self::$year,
+            'StringMonth' => ucfirst((string) $langMonts[$month]),
+            'dd/mm/YYYY' => self::$day.'/'.self::$month.'/'.self::$year,
+            'hh:mm' => self::$hours.':'.self::$minutes,
+            'YYYY-mm-dd' => self::$year.'-'.self::$month.'-'.self::$day,
+            'dd' => self::$day,
+            default => $s,
+        };
 		return $s;
 	}
 
 	public static function explodeDateTimeIso($datetime) 
 	{
-		$d = explode(' ',$datetime);
-		list($date,$time) = $d;
+		$d = explode(' ',(string) $datetime);
+		[$date, $time] = $d;
 		self::$dateVars = explode('-',$date);
 		self::$timeVars =  explode(':',$time);
 		self::$day = self::$dateVars[2];
@@ -225,7 +210,7 @@ class DateFormat extends Core  {
 
 	public static function getDayOfDate($langDays,$opt) 
 	{
-		$optDef = array();
+		$optDef = [];
 		$opt = array_merge($optDef,$opt);
 		$dt = self::$year.'-'.self::$month.'-'.self::$day;
 		$date = DateTime::createFromFormat('Y-m-d',$dt);

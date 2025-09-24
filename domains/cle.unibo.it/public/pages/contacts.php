@@ -8,15 +8,15 @@ use Soundasleep\Html2Text;
 $App->moduleData = new stdClass();
 
 // preleva configurazione modulo
-Sql::initQuery(DB_TABLE_PREFIX.'contacts_config',array('*'),array(),'');	
+Sql::initQuery(DB_TABLE_PREFIX.'contacts_config',['*'],[],'');	
 $App->moduleConfig = Sql::getRecord();
-$App->moduleConfig->title = Multilanguage::getLocaleObjectValue($App->moduleConfig,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
-$App->moduleConfig->text_intro = Multilanguage::getLocaleObjectValue($App->moduleConfig,'text_intro_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
-$App->moduleConfig->page_content = Multilanguage::getLocaleObjectValue($App->moduleConfig,'page_content_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
+$App->moduleConfig->title = Multilanguage::getLocaleObjectValue($App->moduleConfig,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
+$App->moduleConfig->text_intro = Multilanguage::getLocaleObjectValue($App->moduleConfig,'text_intro_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
+$App->moduleConfig->page_content = Multilanguage::getLocaleObjectValue($App->moduleConfig,'page_content_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
 
-$App->moduleConfig->meta_title = Multilanguage::getLocaleObjectValue($App->moduleConfig,'meta_title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1));
-$App->moduleConfig->meta_description = Multilanguage::getLocaleObjectValue($App->moduleConfig,'meta_description_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1));
-$App->moduleConfig->meta_keywords = Multilanguage::getLocaleObjectValue($App->moduleConfig,'meta_keywords_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1));
+$App->moduleConfig->meta_title = Multilanguage::getLocaleObjectValue($App->moduleConfig,'meta_title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]);
+$App->moduleConfig->meta_description = Multilanguage::getLocaleObjectValue($App->moduleConfig,'meta_description_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]);
+$App->moduleConfig->meta_keywords = Multilanguage::getLocaleObjectValue($App->moduleConfig,'meta_keywords_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]);
 //ToolsStrings::dump($App->moduleConfig);
 
 // gestione titolo
@@ -29,7 +29,7 @@ $App->moduleData->orgImageheader = '';
 if ($App->moduleConfig->image_header != '') $App->moduleData->imageheader = $App->moduleConfig->image_header;
 if ($App->moduleConfig->org_image_header != '') $App->moduleData->orgImageheader = $App->moduleConfig->org_image_header;
 
-$App->moduleConfig->url_privacy_page = ToolsStrings:: parseHtmlContent($App->moduleConfig->url_privacy_page,array());
+$App->moduleConfig->url_privacy_page = ToolsStrings:: parseHtmlContent($App->moduleConfig->url_privacy_page,[]);
 
 
 switch (Core::$request->method) 
@@ -39,7 +39,7 @@ switch (Core::$request->method)
 
 		// controllo recaptcha 
 		if (!isset($_POST['recaptcha_response'])) {
-			echo json_encode(array('error'=>1,'message'=>'Recacptcha mancante! Il sistema ti ha identificato come robot!'));
+			echo json_encode(['error'=>1,'message'=>'Recacptcha mancante! Il sistema ti ha identificato come robot!']);
 			die();
 		} else {
 			$captcha = $_POST['recaptcha_response'];
@@ -47,65 +47,65 @@ switch (Core::$request->method)
 			$json = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=". $secret . "&response=" . $captcha), true);
 			
 			if (!$json['success']) {
-				echo json_encode(array('error'=>1,'message' =>'Recacptcha! Il sistema ti ha identificato come robot!'));
+				echo json_encode(['error'=>1,'message' =>'Recacptcha! Il sistema ti ha identificato come robot!']);
 				die();
 			}
 		}
 		// controllo recaptcha 
 		
 		// controllo POST
-		$fields = array(
+		$fields = [
 			
-			'message'						=> array(	
+			'message'						=> [	
 				'required'					=> true,
 				'name'						=> 'message',
-				'error message'             => preg_replace('/%ITEM%/',Config::$langVars['messaggio'],Config::$langVars['Devi inserire un %ITEM%!'])
-			),
+				'error message'             => preg_replace('/%ITEM%/',(string) Config::$langVars['messaggio'],(string) Config::$langVars['Devi inserire un %ITEM%!'])
+			],
 			
-			'name'						=> array(	
+			'name'						=> [	
 				'required'					=> true,
 				'name'						=> 'object',
-				'error message'             => preg_replace('/%ITEM%/',Config::$langVars['nome'],Config::$langVars['Devi inserire un %ITEM%!'])
-			),
+				'error message'             => preg_replace('/%ITEM%/',(string) Config::$langVars['nome'],(string) Config::$langVars['Devi inserire un %ITEM%!'])
+			],
 			
-			'object'						=> array(	
+			'object'						=> [	
 				'required'					=> true,
 				'field'						=> 'object',
-				'error message'             => preg_replace('/%ITEM%/',Config::$langVars['oggetto'],Config::$langVars['Devi inserire un %ITEM%!'])
-			),
-			'email'						=> array(	
+				'error message'             => preg_replace('/%ITEM%/',(string) Config::$langVars['oggetto'],(string) Config::$langVars['Devi inserire un %ITEM%!'])
+			],
+			'email'						=> [	
 				'required'					=> true,
 				'field'						=> 'email',
-				'error message'             => preg_replace('/%ITEM%/',Config::$langVars['indirizzo email valido'],Config::$langVars['Devi inserire un %ITEM%!']),
+				'error message'             => preg_replace('/%ITEM%/',(string) Config::$langVars['indirizzo email valido'],(string) Config::$langVars['Devi inserire un %ITEM%!']),
 				'validate'					=> 'isemail',
-			),
-			'privacy'						=> array(	
+			],
+			'privacy'						=> [	
 				'required'					=> true,
 				'field'						=> 'privacy',
 				'error message'             => Config::$langVars['Devi autorizzare il trattamento della privacy!'],
 				'validate'					=> 'issameintvalue',
 				'valuerif'					=> 1
-			),
+			],
 			
-		);
-		Form::parsePostByFields($fields,Config::$langVars,array('stripmagicfields'=>false));
+		];
+		Form::parsePostByFields($fields,Config::$langVars,['stripmagicfields'=>false]);
 		//ToolsStrings::dump(Core::$resultOp);
 		if (Core::$resultOp->error > 0) {
-			$result = array(
+			$result = [
 				'error' => 1,
 				'message' => implode('<br>',Core::$resultOp->messages)
-			);
+			];
 			//echo json_encode($result);
 			$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 			ToolsStrings::redirect(URL_SITE.Core::$request->action.'#systemMessageID');
 		}
 
 		// manda la email con il messaggio del modulo allo staff del sito
-		$opt = array();	
+		$opt = [];	
 		$subject = $App->moduleConfig->admin_email_subject;					
 		$content = $App->moduleConfig->admin_email_content;	
-		$subject = Mails::parseMailContent($_POST,$subject,$optt=array());
-		$content = Mails::parseMailContent($_POST,$content,$optt=array());	
+		$subject = Mails::parseMailContent($_POST,$subject,$optt=[]);
+		$content = Mails::parseMailContent($_POST,$content,$optt=[]);	
 		//echo '<br>'.$subject;
 		//echo '<br>'.$content;	
 		$content_plain = Html2Text::convert($content);
@@ -118,21 +118,21 @@ switch (Core::$request->method)
 		$opt['sendDebugEmail'] = $App->moduleConfig->email_debug;
 		Mails::sendEmail($address,$subject,$content,$content_plain,$opt);
 		if (Core::$resultOp->error > 0) {
-			$result = array(
+			$result = [
 				'error' => 1,
 				'message' => Config::$langVars['Il tuo messaggio NON è stato spedito! Riprova.']
-			);
+			];
 			//echo json_encode($result); die();
 			$_SESSION['message'] = '1|'.Config::$langVars['Il tuo messaggio NON è stato spedito! Riprova.'];
 			ToolsStrings::redirect(URL_SITE.Core::$request->action);
 		}
 
 		// manda la email con il messaggio del modulo allo utente 
-		$opt = array();	
-		$subject = Multilanguage::getLocaleObjectValue($App->moduleConfig,'user_email_subject_',Config::$langVars['user'],array());			
-		$content = Multilanguage::getLocaleObjectValue($App->moduleConfig,'user_email_content_',Config::$langVars['user'],array());				
-		$subject = Mails::parseMailContent($_POST,$subject,$optt=array());
-		$content = Mails::parseMailContent($_POST,$content,$optt=array());	
+		$opt = [];	
+		$subject = Multilanguage::getLocaleObjectValue($App->moduleConfig,'user_email_subject_',Config::$langVars['user'],[]);			
+		$content = Multilanguage::getLocaleObjectValue($App->moduleConfig,'user_email_content_',Config::$langVars['user'],[]);				
+		$subject = Mails::parseMailContent($_POST,$subject,$optt=[]);
+		$content = Mails::parseMailContent($_POST,$content,$optt=[]);	
 		$content_plain = Html2Text::convert($content);
 		
 		/*
@@ -150,20 +150,20 @@ switch (Core::$request->method)
 		$opt['sendDebugEmail'] = $App->moduleConfig->email_debug;
 		Mails::sendEmail($address,$subject,$content,$content_plain,$opt);
 		if (Config::$resultOp->error > 0) {
-			$result = array(
+			$result = [
 				'error' => 1,
 				'message' => Config::$langVars['Il tuo messaggio di conferma NON è stato spedito! Riprova.']
-			);
+			];
 			//echo json_encode($result); die();	
 			$_SESSION['message'] = '1|'.Config::$langVars['Il tuo messaggio di conferma NON è stato spedito! Riprovaa.'];
 			ToolsStrings::redirect(URL_SITE.Core::$request->action);		
 		}
 
 		// procedura completata
-		$result = array(
+		$result = [
 			'error' => 0,
 			'message' => Config::$langVars['Il tuo messaggio è stato spedito! Riceverai un messaggio di conferma.']
-		);
+		];
 		//echo json_encode($result); die();
 		$_SESSION['message'] = '0|'.Config::$langVars['Il tuo messaggio è stato spedito! Riceverai un messaggio di conferma.'];
 		ToolsStrings::redirect(URL_SITE.Core::$request->action);
@@ -216,9 +216,9 @@ switch (Core::$request->method)
 			*/
 
 
-			$App->breadcrumbs->items[] = array('class'=>'breadcrumb-item active','url'=>'','title'=>strip_tags($App->moduleData->title));				
+			$App->breadcrumbs->items[] = ['class'=>'breadcrumb-item active','url'=>'','title'=>strip_tags((string) $App->moduleData->title)];				
 			$App->breadcrumbs->title = $App->moduleData->title;
-			$App->breadcrumbs->tree =  Utilities:: generateBreadcrumbsTree($App->breadcrumbs->items,$_lang,array('template'=>$templateBreadcrumbsBar));	
+			$App->breadcrumbs->tree =  Utilities:: generateBreadcrumbsTree($App->breadcrumbs->items,$_lang,['template'=>$templateBreadcrumbsBar]);	
 			
 			$App->metaTitlePage = $globalSettings['meta tags page']['title ini'].$App->moduleConfig->meta_title.$globalSettings['meta tags page']['title separator'].$globalSettings['meta tags page']['title end'];
 			$App->metaDescriptionPage .= ' '.$App->moduleConfig->meta_description;

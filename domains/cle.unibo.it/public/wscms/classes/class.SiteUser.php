@@ -10,10 +10,10 @@ class SiteUser extends Core {
 		}
 		
 	public static function getUserDetails($id,$opt) {
-		$optDef = array();
+		$optDef = [];
 		$opt = array_merge($optDef,$opt);	
 		if ($id > 0) {
-			Sql::initQuery(self::$dbtable,array('*'),array($id),'id = ? AND active = 1');
+			Sql::initQuery(self::$dbtable,['*'],[$id],'id = ? AND active = 1');
 			$obj = Sql::getRecord();
 			if (Core::$resultOp->error == 0) {
 				if (isset($obj->id) && $obj->id > 0) return $obj;
@@ -23,13 +23,13 @@ class SiteUser extends Core {
 		}
 
 	public static function checkUser($sessionvars,$_lang,$opz) {
-		$opzDef = array();
+		$opzDef = [];
 		$opz = array_merge($opzDef,$opz);	
 		$result = false;
 		/* controlla se ha 'id */
 		if (isset($sessionvars['id_user']) && $sessionvars['id_user'] > 0) {
 			/* controlla se esiste */
-			Sql::initQuery(self::$dbtable,array('id'),array($sessionvars['id_user']),'id = ? AND active = 1');
+			Sql::initQuery(self::$dbtable,['id'],[$sessionvars['id_user']],'id = ? AND active = 1');
 			$obj = Sql::getRecord();			
 				if (Core::$resultOp->error == 0) {
 					if (isset($obj->id) && $obj->id > 0) {
@@ -41,14 +41,14 @@ class SiteUser extends Core {
 		}
 		
 	public static function sendEmailUsernameUser($globalSettings,$_lang,$opz) {
-		$opzDef = array('to email'=>'','username'=>'');
+		$opzDef = ['to email'=>'','username'=>''];
 		$opz = array_merge($opzDef,$opz);	
-		$subject = (isset($_lang['utente - soggetto email recupero username']) ? $_lang['utente - soggetto email recupero username'] : $globalSettings['utente - soggetto email recupero username']);
-		$subject = preg_replace('/%SITENAME%/',SITE_NAME,$subject);	
-		$content = (isset($_lang['utente - contenuto email recupero username']) ? $_lang['utente - contenuto email recupero username'] : $globalSettings['utente - soggetto email recupero username']);
-		$content = preg_replace('/%USERNAME%/',$opz['username'],$content);
-		$content = preg_replace('/%EMAIL%/',$opz['to email'],$content);	
-		$content = preg_replace('/%SITENAME%/',SITE_NAME,$content);	
+		$subject = ($_lang['utente - soggetto email recupero username'] ?? $globalSettings['utente - soggetto email recupero username']);
+		$subject = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $subject);	
+		$content = ($_lang['utente - contenuto email recupero username'] ?? $globalSettings['utente - soggetto email recupero username']);
+		$content = preg_replace('/%USERNAME%/',(string) $opz['username'],(string) $content);
+		$content = preg_replace('/%EMAIL%/',(string) $opz['to email'],$content);	
+		$content = preg_replace('/%SITENAME%/',(string) SITE_NAME,$content);	
 		//echo '<br>subject: '.$subject;
 		//echo '<br>content: '.$content;							
 		$opz['content'] = $content;
@@ -64,15 +64,15 @@ class SiteUser extends Core {
 		}
 
 	public static function sendEmailPasswordUser($globalSettings,$_lang,$opz) {
-		$opzDef = array('to email'=>'','username'=>'','password'=>'');
+		$opzDef = ['to email'=>'','username'=>'','password'=>''];
 		$opz = array_merge($opzDef,$opz);	
-		$subject = (isset($_lang['utente - soggetto email recupero password']) ? $_lang['utente - soggetto email recupero password'] : $globalSettings['utente - soggetto email recupero password']);
-		$subject = preg_replace('/%SITENAME%/',SITE_NAME,$subject);	
-		$content = (isset($_lang['utente - contenuto email recupero password']) ? $_lang['utente - contenuto email recupero password'] : $globalSettings['utente - soggetto email recupero password']);
-		$content = preg_replace('/%PASSWORD%/',$opz['password'],$content);
-		$content = preg_replace('/%USERNAME%/',$opz['username'],$content);
-		$content = preg_replace('/%EMAIL%/',$opz['to email'],$content);
-		$content = preg_replace('/%SITENAME%/',SITE_NAME,$content);	
+		$subject = ($_lang['utente - soggetto email recupero password'] ?? $globalSettings['utente - soggetto email recupero password']);
+		$subject = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $subject);	
+		$content = ($_lang['utente - contenuto email recupero password'] ?? $globalSettings['utente - soggetto email recupero password']);
+		$content = preg_replace('/%PASSWORD%/',(string) $opz['password'],(string) $content);
+		$content = preg_replace('/%USERNAME%/',(string) $opz['username'],$content);
+		$content = preg_replace('/%EMAIL%/',(string) $opz['to email'],$content);
+		$content = preg_replace('/%SITENAME%/',(string) SITE_NAME,$content);	
 		//echo '<br>subject: '.$subject;
 		//echo '<br>content: '.$content;							
 		$opz['content'] = $content;
@@ -88,15 +88,15 @@ class SiteUser extends Core {
 		}
 		
 	public static function sendEmailRegistrationUser($globalSettings,$_lang,$opz) {
-		$opzDef = array();
+		$opzDef = [];
 		$opz = array_merge($opzDef,$opz);	
-		$subject = (isset($_lang['utente - soggetto email conferma registrazione']) ? $_lang['utente - soggetto email conferma registrazione'] : $globalSettings['utente - soggetto email conferma registrazione']);
-		$subject = preg_replace('/%SITENAME%/',SITE_NAME,$subject);	
-		$content = (isset($_lang['utente - contenuto email conferma registrazione']) ? $_lang['utente - contenuto email conferma registrazione'] : $globalSettings['utente - soggetto email conferma registrazione']);
-		$content = preg_replace('/%URLCONFIRM%/',$opz['urlconfirm'],$content);
-		$content = preg_replace('/%SITENAME%/',SITE_NAME,$content);
-		$content = preg_replace('/%USERNAME%/',$_POST['username'],$content);
-		$content = preg_replace('/%EMAIL%/',$_POST['email'],$content);	
+		$subject = ($_lang['utente - soggetto email conferma registrazione'] ?? $globalSettings['utente - soggetto email conferma registrazione']);
+		$subject = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $subject);	
+		$content = ($_lang['utente - contenuto email conferma registrazione'] ?? $globalSettings['utente - soggetto email conferma registrazione']);
+		$content = preg_replace('/%URLCONFIRM%/',(string) $opz['urlconfirm'],(string) $content);
+		$content = preg_replace('/%SITENAME%/',(string) SITE_NAME,$content);
+		$content = preg_replace('/%USERNAME%/',(string) $_POST['username'],$content);
+		$content = preg_replace('/%EMAIL%/',(string) $_POST['email'],$content);	
 		//echo '<br>subject: '.$subject;
 		//echo '<br>content: '.$content;							
 		$opz['content'] = $content;
@@ -112,15 +112,15 @@ class SiteUser extends Core {
 		}
 		
 	public static function sendEmailRegistrationStaff($globalSettings,$_lang,$opz) {
-		$opzDef = array();
+		$opzDef = [];
 		$opz = array_merge($opzDef,$opz);	
 		$subject = (isset($_lang['utente - soggetto email staff conferma registrazione']) ? $_lang['utente - soggetto email conferma registrazione'] : $globalSettings['utente - soggetto email staff conferma registrazione']);
-		$subject = preg_replace('/%SITENAME%/',SITE_NAME,$subject);	
-		$content = (isset($_lang['utente - contenuto email staff conferma registrazione']) ? $_lang['utente - contenuto email staff conferma registrazione'] : $globalSettings['utente - contenuto email staff conferma registrazione']);
-		$content = preg_replace('/%SITENAME%/',SITE_NAME,$content);
-		$content = preg_replace('/%USERNAME%/',$_POST['username'],$content);
-		$content = preg_replace('/%IDUSER%/',$_POST['id_user'],$content);
-		$content = preg_replace('/%EMAIL%/',$_POST['email'],$content);	
+		$subject = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $subject);	
+		$content = ($_lang['utente - contenuto email staff conferma registrazione'] ?? $globalSettings['utente - contenuto email staff conferma registrazione']);
+		$content = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $content);
+		$content = preg_replace('/%USERNAME%/',(string) $_POST['username'],$content);
+		$content = preg_replace('/%IDUSER%/',(string) $_POST['id_user'],$content);
+		$content = preg_replace('/%EMAIL%/',(string) $_POST['email'],$content);	
 		echo '<br>subject: '.$subject;
 		echo '<br>content: '.$content;							
 		$opz['content'] = $content;

@@ -46,10 +46,10 @@ $App->ifilUploadDir = $App->params->ifilUploadDir;
 $App->id = intval(Core::$request->param);
 if (isset($_POST['id'])) $App->id = intval($_POST['id']);
 
-switch(substr(Core::$request->method,-4,4)) {
+switch(substr((string) Core::$request->method,-4,4)) {
 	case 'Ifil':
 		$App->sessionName = $App->sessionName.'-files';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10'));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10']);
 		$Module = new Module($table,Core::$request->action,$_MY_SESSION_VARS[$App->sessionName]);	
 		include_once(PATH.'applications/'.Core::$request->action."/files.php");	
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.'applications/'.Core::$request->action.'/files.js"></script>';		
@@ -57,7 +57,7 @@ switch(substr(Core::$request->method,-4,4)) {
 
 	default;
 		$App->sessionName = $App->sessionName.'-page';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'25'));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'25']);
 		$Module = new Module($table,Core::$request->action,$_MY_SESSION_VARS[$App->sessionName]);	
 		
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.'templates/'.$App->templateUser.'/plugins/moment/js/moment-with-locales.min.js" type="text/javascript"></script>';

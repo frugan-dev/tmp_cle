@@ -31,7 +31,7 @@ $avatarInfo = '';
 $id = (isset($_GET['id']) ? intval($_GET['id']) : 0);
 if ($id > 0) 
 {	
-	Sql::initQuery(DB_TABLE_PREFIX.'users',array('*'),array($id),"id = ?");
+	Sql::initQuery(DB_TABLE_PREFIX.'users',['*'],[$id],"id = ?");
 	$App->item = Sql::getRecord();	
 	/* ToolsStrings::dump($App->item); */
 	if (isset($App->item->id))

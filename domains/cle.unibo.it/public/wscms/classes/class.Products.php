@@ -21,7 +21,7 @@ class Products extends Core {
 	private static $optGetCategoryOwner;
 
 
-	private static $optCustomTables = array();
+	private static $optCustomTables = [];
 	private static $subWhereToQuery = '';
 	private static $userRoot = 0;
 
@@ -40,15 +40,15 @@ class Products extends Core {
 		//Sql::setDebugMode(1);
 		Config::initQueryParams();
 		Config::$queryParams['tables'] = Config::$DatabaseTables['products attributes'];
-		Config::$queryParams['fields'] = array('*');
+		Config::$queryParams['fields'] = ['*'];
 		Config::$queryParams['where'] = 'active = 1';
 		Config::$queryParams['and'] = " AND ";
 		if ($companies_code != '') {
 			Config::$queryParams['where'] .= Config::$queryParams['and']."companies_code = ?";
 			Config::$queryParams['and'] = ' AND ';
-			Config::$queryParams['fieldsVal'] = array($companies_code);
+			Config::$queryParams['fieldsVal'] = [$companies_code];
 		}
-		Sql::$options = array('fieldTokeyObj' => 'id');
+		Sql::$options = ['fieldTokeyObj' => 'id'];
 		Sql::initQueryBasic(Config::$queryParams['tables'],Config::$queryParams['fields'],Config::$queryParams['fieldsVal'],Config::$queryParams['where']);
 		$foo = Sql::getRecords();
 		if (Core::$resultOp->error > 0) { die('errore lettura attributi');die(); }
@@ -60,8 +60,8 @@ class Products extends Core {
 	public static function getProductDetails($id)
 	{
 		//Sql::setDebugMode(1);
-		$f = array('prod.*');
-		$fv = array($id,intval($id));
+		$f = ['prod.*'];
+		$fv = [$id,intval($id)];
 		
 		Sql::initQuery(self::$dbTable.' AS prod',$f,$fv,'prod.alias = ? OR prod.id = ?' );
 		$obj = Sql::getRecord();
@@ -73,13 +73,13 @@ class Products extends Core {
 
 	public static function getListino($categories_id){
 		//Sql::setDebugMode(1);
-		$obj = array();
+		$obj = [];
 		Config::initQueryParams();
 		Config::$queryParams['tables'] = self::$DatabaseTables['products'] . ' AS prod';
 		Config::$queryParams['tables'] .= ' INNER JOIN '.self::$DatabaseTables['categories'] . ' AS cat ON (prod.categories_id = cat.id)';
 		//Config::$queryParams['tables'] .= '	INNER JOIN '.self::$DatabaseTables['products attributes types'] . ' AS proatt ON (proatt.id = prod.attribute_types_id)';			
 			
-		Config::$queryParams['fields'] = array('prod.*');
+		Config::$queryParams['fields'] = ['prod.*'];
 		Config::$queryParams['fields'][] = 'cat.title AS category,cat.alias AS category_alias';
 		//Config::$queryParams['fields'][] = 'proatt.title As attribute';
 
@@ -113,7 +113,7 @@ class Products extends Core {
 		while ($row = $pdoObject->fetch()) {
 			if (
 				self::$hideProductForUsers == false ||
-				(self::$hideProductForUsers == true && strpos($row->hide_users_ids, self::$hideProductForUsersId) == false)
+				(self::$hideProductForUsers == true && !str_contains((string) $row->hide_users_ids, (string) self::$hideProductForUsersId))
 			) {
 				$obj[] = $row;		
 			}					
@@ -125,10 +125,10 @@ class Products extends Core {
 	public static function getProductsList($id,$initClause = '') 
 	{
 		//Sql::setDebugMode(1);
-		$obj = array();
-		$f = array('prod.*');
+		$obj = [];
+		$f = ['prod.*'];
 		//$f = array('prod.id,prod.title,prod.hide_users_ids');
-		$fv = array();
+		$fv = [];
 		$clause = '';
 		$and = '';
 		if ($initClause != '') {
@@ -186,7 +186,7 @@ class Products extends Core {
 		while ($row = $pdoObject->fetch()) {
 			if (
 				self::$hideProductForUsers == false ||
-				(self::$hideProductForUsers == true && strpos($row->hide_users_ids, $hideProductForUsersId) == false)
+				(self::$hideProductForUsers == true && !str_contains((string) $row->hide_users_ids, $hideProductForUsersId))
 			) 
 			{
 				$row = self::addProductFields($row);
@@ -203,7 +203,7 @@ class Products extends Core {
 		if (isset( $proobject->summary)) {
 			$proobject->summary_nop = preg_replace('/<p[^>]*>(.*)<\/p[^>]*>/i', '$1', $proobject->summary);
 		}
-		$proobject->content_nop = preg_replace('/<p[^>]*>(.*)<\/p[^>]*>/i', '$1', $proobject->content);
+		$proobject->content_nop = preg_replace('/<p[^>]*>(.*)<\/p[^>]*>/i', '$1', (string) $proobject->content);
 		return $proobject;
 	}
 
@@ -212,8 +212,8 @@ class Products extends Core {
 		$obj = NULL;	
 		if ($id > 0) {
 			$t = Config::$DatabaseTables['product attributes'].' AS a INNER JOIN '.Config::$DatabaseTables['products attribute types'].' AS at ON (at.id = a.products_attribute_types_id)';			
-			$f = array('a.*','at.title As attribute');
-			Sql::initQuery($t,$f,array($id),'a.products_id = ? AND a.active = 1');
+			$f = ['a.*','at.title As attribute'];
+			Sql::initQuery($t,$f,[$id],'a.products_id = ? AND a.active = 1');
 			$obj = Sql::getRecords();
 			//print_r($obj);
 		}
@@ -222,7 +222,7 @@ class Products extends Core {
 
 	public static function addCategoryOwnerFields($id) {
 		Subcategories::$langUser = self::$langUser;
-		$obj = Subcategories::getCategoryDetails($id,self::$dbTableCat,array('findOne'=>true));
+		$obj = Subcategories::getCategoryDetails($id,self::$dbTableCat,['findOne'=>true]);
 		return $obj;
 	}
 

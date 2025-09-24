@@ -21,12 +21,12 @@ class ToolsUpload extends Config {
 	static public $imageSize;
 	static $fileType = '';
 	static $fieldPostImage = 'filename';
-	static $filenameFormat = array();
+	static $filenameFormat = [];
 	public function __construct(){
 		parent::__construct();
 	}
 
-	public static function getFilenameFromFormArray($id=0,$key) 
+	public static function getFilenameFromFormArray($id=0,$key = null) 
 	{
 		if (isset($_FILES[self::$fieldPostImage])) {
 
@@ -35,7 +35,7 @@ class ToolsUpload extends Config {
 				self::$tempFilename = $FILES['tmp_name'][$key];
 				self::$filename = (isset($FILES['name'][$key]) && $FILES['name'][$key] != '') ? $FILES['name'][$key] : '';
 				self::$orgFilename = self::$filename;
-				self::$filename = str_replace(" ", "",strip_tags(trim(self::$filename)));
+				self::$filename = str_replace(" ", "",strip_tags(trim((string) self::$filename)));
 				self::$fileExtension = strtolower(substr(strrchr(self::$filename ,"."),1));
 
 				if (strnatcmp(phpversion(),'5.3.6') >= 0) {
@@ -56,7 +56,7 @@ class ToolsUpload extends Config {
 				/* trova dimensione immagine */
 				if (getimagesize(self::$tempFilename)) {
 					$imagesize = getimagesize(self::$tempFilename);
-					list($width, $height, $type, $attr) = $imagesize;
+					[$width, $height, $type, $attr] = $imagesize;
 					self::$imageSize = $width.'x'.$height;
 				} else {
 					self::$imageSize = '';
@@ -98,7 +98,7 @@ class ToolsUpload extends Config {
 			self::$tempFilename = SanitizeStrings::stripMagic($FILES['tmp_name']);
 			self::$filename = (isset($FILES['name']) && $FILES['name'] != '') ? SanitizeStrings::stripMagic($FILES['name']) : '';
 			self::$orgFilename = self::$filename;
-			self::$filename = str_replace(" ", "",strip_tags(trim(self::$filename)));
+			self::$filename = str_replace(" ", "",strip_tags(trim((string) self::$filename)));
 			//echo self::$orgFilename;
 			if (strnatcmp(phpversion(),'5.3.6') >= 0) {
 				# equal or newer
@@ -119,7 +119,7 @@ class ToolsUpload extends Config {
 			/* trova dimensione immagine */
 			if (getimagesize(self::$tempFilename)) {
 				$imagesize = getimagesize(self::$tempFilename);
-				list($width, $height, $type, $attr) = $imagesize;
+				[$width, $height, $type, $attr] = $imagesize;
 				self::$imageSize = $width.'x'.$height;
 			} else {
 				self::$imageSize = '';
@@ -180,7 +180,7 @@ class ToolsUpload extends Config {
 			$folder_name = '';
 			$file = '';
 			$itemData = new stdClass;
-			Sql::initQuery($table,array('*'),array($id),'id = ?');
+			Sql::initQuery($table,['*'],[$id],'id = ?');
 			$itemData = Sql::getRecord();
 
 		//ToolsStrings::dump($itemData);
@@ -193,7 +193,7 @@ class ToolsUpload extends Config {
 			if($fieldFolderName != '' && isset($itemData->$fieldFolderName)) $folder_name = $itemData->$fieldFolderName;
 			if($folderName !='') $folder_name = $folderName;
 
-			$file = basename($itemData->$fieldFileName);
+			$file = basename((string) $itemData->$fieldFileName);
 			$orgfile = $itemData->$fieldOrgFileName;
 			$file_extension = strtolower(substr(strrchr($file,'.'),1));
 
@@ -262,29 +262,28 @@ class ToolsUpload extends Config {
 		}
 
 	public static function getFileTypeExtension($fileExtension) {
-		switch ($fileExtension) {
-			case 'ogg': $ctype = 'application/ogg'; break;
-			case 'pdf': $ctype = 'application/pdf'; break;
-	      case 'exe': $ctype = 'application/octet-stream'; break;
-	      case 'zip': $ctype = 'application/zip'; break;
-	      case 'doc': $ctype = 'application/msword'; break;
-	      case 'xls': $ctype = 'application/vnd.ms-excel'; break;
-	      case 'ppt': $ctype = 'application/vnd.ms-powerpoint'; break;
-	      case 'gif': $ctype = 'image/gif'; break;
-	      case 'png': $ctype = 'image/png'; break;
-	      case 'jpe': case 'jpeg':
-	      case 'jpg': $ctype='image/jpg'; break;
-		   default: $ctype='application/force-download';
-		  	}
+		$ctype = match ($fileExtension) {
+            'ogg' => 'application/ogg',
+            'pdf' => 'application/pdf',
+            'exe' => 'application/octet-stream',
+            'zip' => 'application/zip',
+            'doc' => 'application/msword',
+            'xls' => 'application/vnd.ms-excel',
+            'ppt' => 'application/vnd.ms-powerpoint',
+            'gif' => 'image/gif',
+            'png' => 'image/png',
+            'jpe', 'jpeg', 'jpg' => 'image/jpg',
+            default => 'application/force-download',
+        };
 
 		return $ctype;
 		}
 
-	public static function create_zip($files = array(),$destination = '',$overwrite = false) {
+	public static function create_zip($files = [],$destination = '',$overwrite = false) {
 		//if the zip file already exists and overwrite is false, return false
 		if(file_exists($destination) && !$overwrite) { return false; }
 		//vars
-		$valid_files = array();
+		$valid_files = [];
 		//if files were passed in...
 		if(is_array($files)) {
 			//cycle through each file
@@ -344,11 +343,11 @@ class ToolsUpload extends Config {
 
  	/* */
 
- 	public static function checkFilenameFormat($value = array()){
+ 	public static function checkFilenameFormat($value = []){
 		return self::$filenameFormat = $value;
 		}
 
-	public static function clearAll($value = array()){
+	public static function clearAll($value = []){
 		self::$tempFilename ='';
 		self::$filename = '';
 		self::$orgFilename = '';

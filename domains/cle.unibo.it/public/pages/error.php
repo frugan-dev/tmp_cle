@@ -35,9 +35,9 @@ switch(Core::$request->method) {
 
 // BREADCRUMBS
 
-$App->breadcrumbs->items = array();
-$App->breadcrumbs->items[] = array('class'=>'home','url'=>URL_SITE,'title'=>'Home');
-$App->breadcrumbs->items[] = array('class'=>'active','title'=>$App->error_subtitle);		
+$App->breadcrumbs->items = [];
+$App->breadcrumbs->items[] = ['class'=>'home','url'=>URL_SITE,'title'=>'Home'];
+$App->breadcrumbs->items[] = ['class'=>'active','title'=>$App->error_subtitle];		
 $App->breadcrumbs->title = $App->error_title ;
 		
 // SEO

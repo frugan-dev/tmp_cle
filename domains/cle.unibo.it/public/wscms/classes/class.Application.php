@@ -8,7 +8,7 @@ class Application extends Core {
 		}
 		
 	public function getParentCategories($obj,$parent,$idcat) {
-		Sql::initQuery(Sql::getTablePrefix($str = Multilanguage::getLocaleObjectValue($obj,$value,$lang,array('xss'=>true))).'catalogo_prodotti_cat',array('id,parent,title_seo_it,title_it'),array($parent),'parent = ? AND active = 1');
+		Sql::initQuery(Sql::getTablePrefix().'catalogo_prodotti_cat',['id,parent,title_seo_it,title_it'],[$parent],'parent = ? AND active = 1');
 		$listData = Sql::getRecordsData();
 		if(count($listData) > 0) {
 			foreach ($listData AS $key=>$value) {
@@ -21,13 +21,13 @@ class Application extends Core {
 		
 		
 	public function getPageHtmlContent($str) {
-		$str = $this->filterHtmlContent($str,array('parse'=>true));
+		$str = $this->filterHtmlContent($str,['parse'=>true]);
 		return $str;
 		}
 		
 	public function getHtmlContent($obj,$value,$opz) {
 		$str = 'error object value';
-		$opzDef = array('parse'=>true);	
+		$opzDef = ['parse'=>true];	
 		$opz = array_merge($opzDef,$opz);		
 		if (isset($obj->$value)) $str = $obj->$value;	
 		$str = $this->filterHtmlContent($str,$opz);

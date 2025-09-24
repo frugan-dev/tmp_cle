@@ -7,11 +7,11 @@ if(isset($_POST['searchFromTable'])) $_MY_SESSION_VARS = $my_session->addSession
 if (isset($_POST['id_cat']) && (int)$_POST['id_cat'] >= 0) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'id_cat',(int)$_POST['id_cat']);
 
 /* GESTIONE CATEGORIE */
-$App->id_cat = (isset($_MY_SESSION_VARS[$App->sessionName]['id_cat']) ? $_MY_SESSION_VARS[$App->sessionName]['id_cat'] : 0);
+$App->id_cat = ($_MY_SESSION_VARS[$App->sessionName]['id_cat'] ?? 0);
 
 if ($App->params->categories == 1) {
-	Sql::initQuery($App->tableIndCat,array('id','title_it'),array());
-	Sql::setOptions(array('fieldTokeyObj'=>'id'));
+	Sql::initQuery($App->tableIndCat,['id','title_it'],[]);
+	Sql::setOptions(['fieldTokeyObj'=>'id']);
 	$App->item_cats = Sql::getRecords();
 	if (Core::$resultOp->error > 0) {echo Core::$resultOp->message; die;}
 	if (!is_array($App->item_cats) || (is_array($App->item_cats) && count($App->item_cats) == 0)) {
@@ -25,7 +25,7 @@ switch(Core::$request->method) {
 
 	case 'activeInd':
 	case 'disactiveInd':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-3),$App->tableInd,$App->id,array('label'=>$_lang['voce'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-3),$App->tableInd,$App->id,['label'=>$_lang['voce'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listInd');	
 	break;
@@ -33,14 +33,14 @@ switch(Core::$request->method) {
 	
 	case 'deleteInd':
 		if ($App->id > 0) {
-			Sql::initQuery($App->tableInd,array(),array($App->id),'id = ?');
+			Sql::initQuery($App->tableInd,[],[$App->id],'id = ?');
 			Sql::deleteRecord();
 			if (Core::$resultOp->error == 0) {
 				/* cancella i riferimenti cat->ind */
-				Sql::initQuery($App->tableRifCatInd,array(),array($App->id),'id_ind = ?');
+				Sql::initQuery($App->tableRifCatInd,[],[$App->id],'id_ind = ?');
 				Sql::deleteRecord();
 				if (Core::$resultOp->error == 0) {
-					Core::$resultOp->message = ucfirst($App->labels['ind']['item']).' cancellat'.$App->labels['ind']['itemSex'].'!';
+					Core::$resultOp->message = ucfirst((string) $App->labels['ind']['item']).' cancellat'.$App->labels['ind']['itemSex'].'!';
 					}			
 				}
 			}		
@@ -62,7 +62,7 @@ switch(Core::$request->method) {
 				Core::$resultOp->error = 1;
 				Core::$resultOp->message = 'Devi scegliere almeno un'.$App->labels['ownerSex'].' '.$App->labels['owner'].'!';	
 				} else {
-					if ($App->params->categories == 0) $_POST['id_cats'] = array('0');
+					if ($App->params->categories == 0) $_POST['id_cats'] = ['0'];
 					}
 						
 			if (Core::$resultOp->error == 0) {			
@@ -77,7 +77,7 @@ switch(Core::$request->method) {
 						if (isset($_POST['id_cats']) && is_array($_POST['id_cats']) && count($_POST['id_cats']) > 0) {
 							foreach ($_POST['id_cats'] AS $value) {
 								/* salva i riferimenti cat->ind */	
-								Sql::initQuery($App->tableRifCatInd,array('id_cat','id_ind'),array(intval($value),$id_item));
+								Sql::initQuery($App->tableRifCatInd,['id_cat','id_ind'],[intval($value),$id_item]);
 								Sql::insertRecord();
 								}
 							}
@@ -92,7 +92,7 @@ switch(Core::$request->method) {
 			$App->viewMethod = 'formNew';
 			} else {
 				$App->viewMethod = 'list';
-				Core::$resultOp->message = ucfirst($App->labels['ind']['item']).' inserit'.$App->labels['ind']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['ind']['item']).' inserit'.$App->labels['ind']['itemSex'].'!';				
 				}		
 	break;
 
@@ -111,7 +111,7 @@ switch(Core::$request->method) {
 				Core::$resultOp->error = 1;
 				Core::$resultOp->message = 'Devi scegliere almeno un'.$App->labels['ownerSex'].' '.$App->labels['owner'].'!';	
 				} else {
-					if ($App->params->categories == 0) $_POST['id_cats'] = array('0');
+					if ($App->params->categories == 0) $_POST['id_cats'] = ['0'];
 					}
 					
 			if (Core::$resultOp->error == 0) {	
@@ -122,13 +122,13 @@ switch(Core::$request->method) {
 					Sql::updateRawlyPost($App->fieldsInd,$App->tableInd,'id',$App->id);
 					if (Core::$resultOp->error == 0) {		
 						/* cancella i vecchi riferimenti */
-						Sql::initQuery($App->tableRifCatInd,array(),array($App->id),'id_ind = ?');
+						Sql::initQuery($App->tableRifCatInd,[],[$App->id],'id_ind = ?');
 						Sql::deleteRecord();
 						if (Core::$resultOp->error == 0) {										
 							if (isset($_POST['id_cats']) && is_array($_POST['id_cats']) && count($_POST['id_cats']) > 0) {
 								foreach ($_POST['id_cats'] AS $value) {
 									/* salva i riferimenti cat->ind */	
-									Sql::initQuery($App->tableRifCatInd,array('id_cat','id_ind'),array(intval($value),$App->id));
+									Sql::initQuery($App->tableRifCatInd,['id_cat','id_ind'],[intval($value),$App->id]);
 									Sql::insertRecord();
 									}
 								}
@@ -145,7 +145,7 @@ switch(Core::$request->method) {
 			} else {
 				if (isset($_POST['submitForm'])) {	
 					$App->viewMethod = 'list';
-					Core::$resultOp->message = ucfirst($App->labels['ind']['item']).' modificat'.$App->labels['ind']['itemSex'].'!';								
+					Core::$resultOp->message = ucfirst((string) $App->labels['ind']['item']).' modificat'.$App->labels['ind']['itemSex'].'!';								
 					} else {						
 						if (isset($_POST['id'])) {
 							$App->id = $_POST['id'];
@@ -167,7 +167,7 @@ switch(Core::$request->method) {
 	
 	case 'messageInd':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';		
 	break;
 	
@@ -177,21 +177,21 @@ switch(Core::$request->method) {
 	
 	case 'expDBInd':
 		include_once(PATH."classes/class.Dumper.php");
-		$user = (isset(Core::$dbConfig['user']) ? Core::$dbConfig['user'] : 'nd');
-		$password = (isset( Core::$dbConfig['password']) ? Core::$dbConfig['password'] : 'nd');
-		$host = (isset(Core::$dbConfig['host']) ? Core::$dbConfig['host'] : 'nd');
-		$name = (isset(Core::$dbConfig['name']) ? Core::$dbConfig['name'] : 'nd');
+		$user = (Core::$dbConfig['user'] ?? 'nd');
+		$password = (Core::$dbConfig['password'] ?? 'nd');
+		$host = (Core::$dbConfig['host'] ?? 'nd');
+		$name = (Core::$dbConfig['name'] ?? 'nd');
 		
 		$filename = $App->params->uploadPathDirs['backup']."newsletter".Config::$nowDateIso.'.sql';
 		
 		try {
-		$world_dumper = Shuttle_Dumper::create(array(
+		$world_dumper = Shuttle_Dumper::create([
 			'host' => $host,
 			'username' => $user,
 			'password' => $password,
 			'db_name' => $name,
-			'include_tables' => array($App->params->tables['indcat'],$App->params->tables['rifcatind'],$App->params->tables['ind']),
-			));
+			'include_tables' => [$App->params->tables['indcat'],$App->params->tables['rifcatind'],$App->params->tables['ind']],
+			]);
 		$world_dumper->dump($filename);
 
 		if (file_exists($filename)) {
@@ -215,19 +215,19 @@ switch(Core::$request->method) {
 		ini_set('memory_limit', '-1'); //memoria infinita
 		header('Content-type: text/html; charset=utf-8');
 		$filename = 'newsletter-indirizzi.csv';
-		Sql::initQuery($App->params->tables['ind'],array('*'),array());
+		Sql::initQuery($App->params->tables['ind'],['*'],[]);
 		$obj = Sql::getRecords();
 		
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		foreach ($obj AS $value) {
 			$categorie = '';
 			/* prelevio le categorie associate al indirizzo */
-			Sql::initQuery($App->params->tables['rifcatind'],array('*'),array($value->id),'id_ind = ?');
+			Sql::initQuery($App->params->tables['rifcatind'],['*'],[$value->id],'id_ind = ?');
 			$objcat = Sql::getRecords();
 			foreach ($objcat AS $valuecat) {
 				/* preleva i titolo della categoria */
-				Sql::initQuery($App->params->tables['indcat'],array('*'),array($valuecat->id_cat),'id = ?');
+				Sql::initQuery($App->params->tables['indcat'],['*'],[$valuecat->id_cat],'id = ?');
 				$objcattit = Sql::getRecord();
 				if (isset($objcattit->title_it)) $categorie .= $objcattit->title_it.'; ';
 				}
@@ -238,7 +238,7 @@ switch(Core::$request->method) {
 		if (Core::$resultOp->error == 0) {			
 			$cols = Sql::getTableFields($App->params->tables['ind']);
 			/* crea la prina riga */
-			$riga0 = array();
+			$riga0 = [];
 			foreach ($cols AS $value) {
            	$riga0[] = $value['name'];
          	}	
@@ -248,13 +248,13 @@ switch(Core::$request->method) {
 			header('Content-Disposition: attachment; filename="'.$filename.'"');
 			header("Pragma: no-cache");
 			header("Expires: 0");			  
-			fputcsv($fp,$riga0,'|'); 	
+			fputcsv($fp,$riga0,'|', escape: '\\'); 	
 			foreach ($obj AS $value) {
-				$riga = array();
+				$riga = [];
 				foreach ($value AS $value1) {
 					$riga[] = ($value1 != '' ? $value1 : 'n.d.');
 					}				
-            fputcsv($fp,$riga,'|');
+            fputcsv($fp,$riga,'|', escape: '\\');
          	}
 			}
 		die();
@@ -273,7 +273,7 @@ switch((string)$App->viewMethod) {
 		$App->item->confirmed = 1;			
 		$App->item->active = 1;
 
-		$App->item->cats = array();
+		$App->item->cats = [];
 
 		$App->templateApp = 'formInd.html';
 		$App->methodForm = 'insertInd';	
@@ -281,12 +281,12 @@ switch((string)$App->viewMethod) {
 	
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->tableInd,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tableInd,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 
-		$App->item->cats = array();
+		$App->item->cats = [];
 		$obj = new stdClass;	
-		Sql::initQuery($App->tableRifCatInd,array('*'),array($App->id),'id_ind = ?');
+		Sql::initQuery($App->tableRifCatInd,['*'],[$App->id],'id_ind = ?');
 		$obj = Sql::getRecords();
 		if (isset($obj) && is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {
@@ -303,11 +303,11 @@ switch((string)$App->viewMethod) {
 	case 'list':
 		//Config::$debugMode = 1;
 		$App->items = new stdClass;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
-		$qryFields = array(' DISTINCT ci.id_ind,i.*');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();	
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
+		$qryFields = [' DISTINCT ci.id_ind,i.*'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];	
 		/* preleva gli indirizzi in base alla categoria selezionata */
 
 		//echo $App->id_cat;
@@ -315,10 +315,10 @@ switch((string)$App->viewMethod) {
 		$clause = 'confirmed = 1';		
 		if ($App->id_cat > 0) {
 			$clause .= ' AND ci.id_cat = ?';
-			$qryFieldsValues = array($App->id_cat);
+			$qryFieldsValues = [$App->id_cat];
 			}
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsInd,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsInd,'');
 			}		
 		if (isset($sessClause) && $sessClause != '') $clause .= ' AND ('.$sessClause.')';
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {

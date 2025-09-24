@@ -14,7 +14,7 @@ class Mails extends Core {
 		
 	public static function sendEmail($address,$subject,$content,$text_content,$opt) 
 	{
-		$optDef = array('sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>'');	
+		$optDef = ['sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>''];	
 		$opt = array_merge($optDef,$opt);
 		if (self::$globalSettings['use send mail class'] == 1) {
 			self::sendMailClass($address,$subject,$content,$text_content,$opt);
@@ -28,7 +28,7 @@ class Mails extends Core {
 	
 	public static function sendMailClass($address,$subject,$content,$text_content,$opt) 
 	{
-		$optDef = array('sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>'');
+		$optDef = ['sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>''];
 		$opt = array_merge($optDef,$opt);	
 		$transport = '';
 		switch (self::$globalSettings['mail server']) {
@@ -46,7 +46,7 @@ class Mails extends Core {
 		try {
 			$mailer = new Swift_Mailer($transport);
 			// Create a message
-			$message = (new Swift_Message($subject))
+			$message = new Swift_Message($subject)
 	  			->setFrom([$opt['fromEmail']=>$opt['fromLabel']])
 	  			->setTo([$address])
 	  			->setBody($content, 'text/html')
@@ -55,14 +55,11 @@ class Mails extends Core {
 			// Send the message
 			try {
 				$mailer->send($message);
-				} catch (\Swift_TransportException $e) {
+				} catch (\Swift_TransportException) {
 					Core::$resultOp->error = 1;
 					//echo $e->getMessage();
 					}       
-	    	} catch (Swift_TransportException $e) {
-	        	//return $e->getMessage();
-	        	Core::$resultOp->error = 1;
-	    	} catch (Exception $e) {
+	    	} catch (Swift_TransportException|Exception) {
 	      	//return $e->getMessage();
 	      	Core::$resultOp->error = 1;
 	    		}
@@ -74,7 +71,7 @@ class Mails extends Core {
 		include_once("class.phpmailer.php");
 		include_once("class.pop3.php");
 		include_once("class.smtp.php");
-		$optDef = array('replyTo'=>array(),'addBCC'=>array(),'sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>'','classMailer'=>'');	
+		$optDef = ['replyTo'=>[],'addBCC'=>[],'sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>'','classMailer'=>''];	
 		$opt = array_merge($optDef,$opt);	
 	
 		$mail = new PHPMailer();
@@ -127,7 +124,7 @@ class Mails extends Core {
 		
 	public static function sendMailPHP($address,$subject,$content,$text_content,$opt) 
 	{
-		$optDef = array('sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>'');	
+		$optDef = ['sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>''];	
 		$opt = array_merge($optDef,$opt);	
 		$mail_boundary = "=_NextPart_" . md5(uniqid(time()));	
 		$headers = "From: ".$opt['fromLabel']." <".$opt['fromEmail'].">\n";
@@ -152,7 +149,7 @@ class Mails extends Core {
 		// Imposta il Return-Path (funziona solo su hosting Windows)
 		ini_set("sendmail_from", $sender); 
 		// Invia il messaggio, il quinto parametro "-f$sender" imposta il Return-Path su hosting Linux
-		$result = mail($address,$subject,$msg,$headers, "-f$sender");		
+		$result = mail((string) $address,(string) $subject,$msg,$headers, "-f$sender");		
 		if (!$result) {   
     		//echo "Error";
     		Core::$resultOp->error = 1;  
@@ -163,11 +160,11 @@ class Mails extends Core {
 	}
 
 				
-	public static function parseMailContent($post,$content,$opt=array()) 
+	public static function parseMailContent($post,$content,$opt=[]) 
 	{
-		$optDef = array('customFields'=>array(),'customFieldsValue'=>array());	
+		$optDef = ['customFields'=>[],'customFieldsValue'=>[]];	
 		$opt = array_merge($optDef,$opt);
-		$content = preg_replace('/%SITENAME%/',SITE_NAME,$content);
+		$content = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $content);
 
 
 		$content = preg_replace('/{{/','%',$content);
@@ -187,7 +184,7 @@ class Mails extends Core {
 			&& (count($opt['customFields']) == count($opt['customFieldsValue']))
 			) {			
 			foreach ($opt['customFields'] AS $key=>$value) {
-				$content = preg_replace('/'.$opt['customFields'][$key].'/',$opt['customFieldsValue'][$key],$content);
+				$content = preg_replace('/'.$opt['customFields'][$key].'/',(string) $opt['customFieldsValue'][$key],$content);
 			}
 		}
 		return $content;

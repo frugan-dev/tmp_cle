@@ -22,24 +22,24 @@ class SanitizeStrings extends Core {
 			$regex4 = '/[-]+$/'; //remove ending "-"
 			/* return... */
 			$str = mb_strtolower(preg_replace(
-						array($regex1,$regex2,$regex3,$regex4),
-						array('-','-','',''),
-						$str
+						[$regex1,$regex2,$regex3,$regex4],
+						['-','-','',''],
+						(string) $str
 					  ));
 			return $str;	
 			}
 	
 		public static function addUrlScheme($url, $scheme = 'http://') {
-			return parse_url($url, PHP_URL_SCHEME) === null ? $scheme . $url : $url;
+			return parse_url((string) $url, PHP_URL_SCHEME) === null ? $scheme . $url : $url;
 			}
 		
 			
 	public static function deleteIniEndTagP($str) {
-    	return preg_replace('/<p[^>]*>(.*)<\/p[^>]*>/i', '$1', $str);
+    	return preg_replace('/<p[^>]*>(.*)<\/p[^>]*>/i', '$1', (string) $str);
 		}
 		
 	public static function base64url_encode($data) {
-    	return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    	return rtrim(strtr(base64_encode((string) $data), '+/', '-_'), '=');
 		}
 
 	public static function base64url_decode($data) {
@@ -47,29 +47,29 @@ class SanitizeStrings extends Core {
 		}
 		
 	public static function getAliasString($str,$opz) {
-		$str = self::urlslug($str,array('delimiter' => '','transliterate' =>true));
+		$str = self::urlslug($str,['delimiter' => '','transliterate' =>true]);
 		$regex1 = '/[^a-zA-Z0-9]/'; //remove anything but letters and numbers
 		$regex2 = '/[\-]+/'; //remove multiple "-"'s in a row
 		$regex3 = '/^[-]+/'; //remove starting "-"
 		$regex4 = '/[-]+$/'; //remove ending "-"
 		/* return... */
 		$str = mb_strtolower(preg_replace(
-			array($regex1,$regex2,$regex3,$regex4),
-			array('-','-','',''),
-			$str
+			[$regex1,$regex2,$regex3,$regex4],
+			['-','-','',''],
+			(string) $str
 			));
 		return $str;	
 		}
 				
 	public static function htmlout($str) {
-		$str = htmlspecialchars($str,ENT_QUOTES,'UTF-8');
+		$str = htmlspecialchars((string) $str,ENT_QUOTES,'UTF-8');
 		$str = str_replace("&amp;","&",$str);
 		$str = str_replace("'","&#39;",$str);
 		return $str;
 		}
 	
 	public static function cleanForFormInput($str) {
-		$str = htmlentities(stripslashes($str),ENT_QUOTES,'UTF-8');
+		$str = htmlentities(stripslashes((string) $str),ENT_QUOTES,'UTF-8');
 		$str = str_replace("&amp;","&",$str);
 		$str = str_replace("'","&#39;",$str);
 		return $str;
@@ -86,7 +86,7 @@ class SanitizeStrings extends Core {
 	public static function xssClean($data)
 		{
 		// Fix &entity\n;
-		$data = str_replace(array('&amp;','&lt;','&gt;'), array('&amp;amp;','&amp;lt;','&amp;gt;'), $data);
+		$data = str_replace(['&amp;','&lt;','&gt;'], ['&amp;amp;','&amp;lt;','&amp;gt;'], $data);
 		$data = preg_replace('/(&#*\w+)[\x00-\x20]+;/u', '$1;', $data);
 		$data = preg_replace('/(&#x*[0-9A-F]+);*/iu', '$1;', $data);
 		$data = html_entity_decode($data, ENT_COMPAT, 'UTF-8');
@@ -95,23 +95,23 @@ class SanitizeStrings extends Core {
 		$data = preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $data);
 		
 		// Remove javascript: and vbscript: protocols
-		$data = preg_replace('#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([`\'"]*)[\x00-\x20]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2nojavascript...', $data);
-		$data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2novbscript...', $data);
-		$data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*-moz-binding[\x00-\x20]*:#u', '$1=$2nomozbinding...', $data);
+		$data = preg_replace('#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([`\'"]*)[\x00-\x20]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2nojavascript...', (string) $data);
+		$data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2novbscript...', (string) $data);
+		$data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*-moz-binding[\x00-\x20]*:#u', '$1=$2nomozbinding...', (string) $data);
 		
 		// Only works in IE: <span style="width: expression(alert('Ping!'));"></span>
-		$data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?expression[\x00-\x20]*\([^>]*+>#i', '$1>', $data);
-		$data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?behaviour[\x00-\x20]*\([^>]*+>#i', '$1>', $data);
-		$data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*+>#iu', '$1>', $data);
+		$data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?expression[\x00-\x20]*\([^>]*+>#i', '$1>', (string) $data);
+		$data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?behaviour[\x00-\x20]*\([^>]*+>#i', '$1>', (string) $data);
+		$data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*+>#iu', '$1>', (string) $data);
 		
 		// Remove namespaced elements (we do not need them)
-		$data = preg_replace('#</*\w+:\w[^>]*+>#i', '', $data);
+		$data = preg_replace('#</*\w+:\w[^>]*+>#i', '', (string) $data);
 		
 		do
 		{
 		    // Remove really unwanted tags
 		    $old_data = $data;
-		    $data = preg_replace('#</*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|i(?:frame|layer)|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|title|xml)[^>]*+>#i', '', $data);
+		    $data = preg_replace('#</*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|i(?:frame|layer)|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|title|xml)[^>]*+>#i', '', (string) $data);
 		}
 		while ($old_data !== $data);
 		
@@ -138,29 +138,29 @@ class SanitizeStrings extends Core {
 
 	public static function RemoveSpecialChar(
 		$str,
-		$listchars=array( '\'', '"',',' , ';', '<', '>' ),
-		$replaced
+		$listchars=[ '\'', '"',',' , ';', '<', '>' ],
+		$replaced = null
 	) {
 		$res = str_ireplace( $listchars,$replaced, $str);
 		return $res;
 	}
 	
-	public static function urlslug($str, $options = array()) {
+	public static function urlslug($str, $options = []) {
 		// Make sure string is in UTF-8 and strip invalid UTF-8 characters
 		$str = mb_convert_encoding((string)$str, 'UTF-8', mb_list_encodings());
 		
-		$defaults = array(
+		$defaults = [
 			'delimiter' => '-',
 			'limit' => null,
 			'lowercase' => true,
-			'replacements' => array(),
+			'replacements' => [],
 			'transliterate' => false,
-		);
+		];
 		
 		// Merge options
 		$options = array_merge($defaults, $options);
 		
-		$char_map = array(
+		$char_map = [
 			// Latin
 			'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'AE', 'Ç' => 'C', 
 			'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 
@@ -217,10 +217,10 @@ class SanitizeStrings extends Core {
 			'Š' => 'S', 'Ū' => 'u', 'Ž' => 'Z',
 			'ā' => 'a', 'č' => 'c', 'ē' => 'e', 'ģ' => 'g', 'ī' => 'i', 'ķ' => 'k', 'ļ' => 'l', 'ņ' => 'n',
 			'š' => 's', 'ū' => 'u', 'ž' => 'z'
-		);
+		];
 		
 		// Make custom replacements
-		$str = preg_replace(array_keys($options['replacements']), $options['replacements'], $str);
+		$str = preg_replace(array_keys($options['replacements']), (string) $options['replacements'], $str);
 		
 		// Transliterate characters to ASCII
 		if ($options['transliterate']) {
@@ -228,13 +228,13 @@ class SanitizeStrings extends Core {
 		}
 		
 		// Replace non-alphanumeric characters with our delimiter
-		$str = preg_replace('/[^\p{L}\p{Nd}]+/u', $options['delimiter'], $str);
+		$str = preg_replace('/[^\p{L}\p{Nd}]+/u', (string) $options['delimiter'], (string) $str);
 		
 		// Remove duplicate delimiters
-		$str = preg_replace('/(' . preg_quote($options['delimiter'], '/') . '){2,}/', '$1', $str);
+		$str = preg_replace('/(' . preg_quote((string) $options['delimiter'], '/') . '){2,}/', '$1', (string) $str);
 		
 		// Truncate slug to max. characters
-		$str = mb_substr($str, 0, ($options['limit'] ? $options['limit'] : mb_strlen($str, 'UTF-8')), 'UTF-8');
+		$str = mb_substr((string) $str, 0, ($options['limit'] ?: mb_strlen((string) $str, 'UTF-8')), 'UTF-8');
 		
 		// Remove delimiter from ends
 		$str = trim($str, $options['delimiter']);
@@ -246,8 +246,8 @@ class SanitizeStrings extends Core {
 	
 	public static function validateEmail($email) {
 		//by Femi Hasani [www.vision.to]
-		if(!preg_match ("/^[\w\.-]{1,}\@([\da-zA-Z-]{1,}\.){1,}[\da-zA-Z-]+$/", $email)) return false;
-		list($prefix, $domain) = preg_split("/@/",$email);
+		if(!preg_match ("/^[\w\.-]{1,}\@([\da-zA-Z-]{1,}\.){1,}[\da-zA-Z-]+$/", (string) $email)) return false;
+		[$prefix, $domain] = preg_split("/@/",(string) $email);
 		if (function_exists("getmxrr") && getmxrr($domain, $mxhosts)) {
 			return true;
 			}

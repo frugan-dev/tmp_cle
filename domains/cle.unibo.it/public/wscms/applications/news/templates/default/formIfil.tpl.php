@@ -24,7 +24,7 @@
 		<?php endif; ?>
 	</div>
 	<div class="col-md-10"> 
-		<big><?php echo htmlspecialchars($this->App->ownerData->title_it,ENT_QUOTES,'UTF-8'); ?></big>
+		<big><?php echo htmlspecialchars((string) $this->App->ownerData->title_it,ENT_QUOTES,'UTF-8'); ?></big>
 	</div>
 </div>
 
@@ -47,11 +47,11 @@
 					<!-- sezione dati base dinamica lingue -->
 								<?php foreach($this->globalSettings['languages'] AS $lang): 
 									$titleField = 'title_'.$lang;
-									$titleValue = (isset($this->App->item->$titleField) ? $this->App->item->$titleField : '');			?>		
+									$titleValue = ($this->App->item->$titleField ?? '');			?>		
 									<div class="form-group">
-										<label for="title_<?php echo $lang; ?>ID" class="col-md-2 control-label">Titolo <?php echo ucfirst($lang); ?> </label>
+										<label for="title_<?php echo $lang; ?>ID" class="col-md-2 control-label">Titolo <?php echo ucfirst((string) $lang); ?> </label>
 										<div class="col-md-7">
-											<input<?php if ($lang == 'it') echo ' required'; ?> type="text" class="form-control" name="title_<?php echo $lang; ?>" placeholder="Inserisci un titolo <?php echo ucfirst($lang); ?>" id="title_<?php echo $lang; ?>ID" rows="3" value="<?php echo htmlspecialchars($titleValue,ENT_QUOTES,'UTF-8'); ?>">
+											<input<?php if ($lang == 'it') echo ' required'; ?> type="text" class="form-control" name="title_<?php echo $lang; ?>" placeholder="Inserisci un titolo <?php echo ucfirst((string) $lang); ?>" id="title_<?php echo $lang; ?>ID" rows="3" value="<?php echo htmlspecialchars($titleValue,ENT_QUOTES,'UTF-8'); ?>">
 										</div>
 									</div>
 								<?php endforeach; ?>

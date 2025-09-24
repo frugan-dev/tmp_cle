@@ -9,18 +9,18 @@ $paramsuploadDirs = $App->params->uploadDirs['item'];
 $App->params = new stdClass();
 $App->params->label = "Pagine";
 /* prende i dati del modulo */
-Sql::initQuery(DB_TABLE_PREFIX.'modules',array('label','help_small','help'),array('pages'),'name = ?');
+Sql::initQuery(DB_TABLE_PREFIX.'modules',['label','help_small','help'],['pages'],'name = ?');
 $obj = Sql::getRecord();
 if (Core::$resultOp->error == 0 && isset($obj) && count((array)$obj) > 1) $App->params = $obj;
 
 $App->params->template['uploadpathdir'] = $paramsuploadPaths;
 $App->params->template['defuploaddir'] = $paramsuploadDirs;
 
-$App->params->tables = array();
-$App->params->fields = array();
-$App->params->uploadPaths = array();
-$App->params->uploadDirs = array();
-$App->params->orderTypes = array();
+$App->params->tables = [];
+$App->params->fields = [];
+$App->params->uploadPaths = [];
+$App->params->uploadDirs = [];
+$App->params->orderTypes = [];
 
 $App->params->codeVersion = ' 3.5.4.';
 $App->params->pageTitle = $App->params->label;
@@ -33,25 +33,25 @@ $App->params->orderTypes['item'] = 'ASC';
 $App->params->uploadPaths['item'] = ADMIN_PATH_UPLOAD_DIR."pages/";
 $App->params->uploadDirs['item'] = UPLOAD_DIR."pages/";
 $App->params->tables['item'] = $App->params->tableRif;
-$App->params->fields['item'] = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'autoinc','primary'=>true),
-	'id_user'=>array('label'=>$_lang['proprietario'],'searchTable'=>false,'required'=>true,'type'=>'int','defValue'=>$App->userLoggedData->id),
-	'parent'=>array('label'=>'Parent','searchTable'=>false,'required'=>false,'type'=>'varchar','defValue'=>0),
-	'id_template'=>array('label'=>$_lang['template'],'searchTable'=>false,'required'=>false,'type'=>'int'),
-	'ordering'=>array('label'=>$_lang['ordinamento'],'required'=>false,'type'=>'int|8','validate'=>'int','defValue'=>1),
-	'menu'=>array('label'=>'In menu?','searchTable'=>false,'required'=>false,'type'=>'int','defValue'=>0),
-	'alias'=>array('label'=>'Alias','searchTable'=>true,'required'=>true,'type'=>'varchar'),
-	'url'=>array('URL'=>'Alias','searchTable'=>true,'required'=>false,'type'=>'varchar'),
-	'target'=>array('label'=>'Target','searchTable'=>true,'required'=>false,'type'=>'varchar'),
-	'jscript_init_code'=>array('label'=>'Codice Javascript inizio BODY','required'=>false,'type'=>'varchar','defValue'=>''),
-	'filename'=>array('label'=>'File','searchTable'=>false,'required'=>false,'type'=>'varchar'),
-	'org_filename'=>array('label'=>'Nome Originale','searchTable'=>true,'required'=>false,'type'=>'varchar','defValue'=>''),
-	'filename1'=>array('label'=>$_lang['immagine bottom'],'searchTable'=>false,'required'=>false,'type'=>'varchar|255','defValue'=>''),
+$App->params->fields['item'] = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'autoinc','primary'=>true],
+	'id_user'=>['label'=>$_lang['proprietario'],'searchTable'=>false,'required'=>true,'type'=>'int','defValue'=>$App->userLoggedData->id],
+	'parent'=>['label'=>'Parent','searchTable'=>false,'required'=>false,'type'=>'varchar','defValue'=>0],
+	'id_template'=>['label'=>$_lang['template'],'searchTable'=>false,'required'=>false,'type'=>'int'],
+	'ordering'=>['label'=>$_lang['ordinamento'],'required'=>false,'type'=>'int|8','validate'=>'int','defValue'=>1],
+	'menu'=>['label'=>'In menu?','searchTable'=>false,'required'=>false,'type'=>'int','defValue'=>0],
+	'alias'=>['label'=>'Alias','searchTable'=>true,'required'=>true,'type'=>'varchar'],
+	'url'=>['URL'=>'Alias','searchTable'=>true,'required'=>false,'type'=>'varchar'],
+	'target'=>['label'=>'Target','searchTable'=>true,'required'=>false,'type'=>'varchar'],
+	'jscript_init_code'=>['label'=>'Codice Javascript inizio BODY','required'=>false,'type'=>'varchar','defValue'=>''],
+	'filename'=>['label'=>'File','searchTable'=>false,'required'=>false,'type'=>'varchar'],
+	'org_filename'=>['label'=>'Nome Originale','searchTable'=>true,'required'=>false,'type'=>'varchar','defValue'=>''],
+	'filename1'=>['label'=>$_lang['immagine bottom'],'searchTable'=>false,'required'=>false,'type'=>'varchar|255','defValue'=>''],
 
 
 		
 
-	'galleriesimages_categories_id' =>array(
+	'galleriesimages_categories_id' =>[
 		'label'									=> $_lang['proprietario'],
 		'searchTable'							=> false,
 		'required'								=> true,
@@ -59,23 +59,23 @@ $App->params->fields['item'] = array(
 		'defValue'                              => 0,
 		'forcedValue'                           => 0,
 		'validate'								=> 0
-	),
+	],
 
 
-	'org_filename1'=>array('label'=>$_lang['immagine bottom'],'searchTable'=>true,'required'=>false,'type'=>'varchar|255','defValue'=>''),
-	'access_read'=>array('label'=>$_lang['accesso lettura'],'searchTable'=>false,'required'=>false,'type'=>'text','defValue'=>'none'),
-	'access_write'=>array('label'=>$_lang['accesso scrittura'],'searchTable'=>false,'required'=>false,'type'=>'text','defValue'=>'none'),
+	'org_filename1'=>['label'=>$_lang['immagine bottom'],'searchTable'=>true,'required'=>false,'type'=>'varchar|255','defValue'=>''],
+	'access_read'=>['label'=>$_lang['accesso lettura'],'searchTable'=>false,'required'=>false,'type'=>'text','defValue'=>'none'],
+	'access_write'=>['label'=>$_lang['accesso scrittura'],'searchTable'=>false,'required'=>false,'type'=>'text','defValue'=>'none'],
 
-	'created'                                   => array (
+	'created'                                   =>  [
 		'label'                                 => Config::$langVars['creazione'],
 		'searchTable'                           => false,
 		'required'                              => false,
 		'type'                                  => 'datatime',
 		'defValue'                              => Config::$nowDateTimeIso,
 		'forcedValue'                           => Config::$nowDateTimeIso
-	),
+	],
 
-	'updated'                                   => array (
+	'updated'                                   =>  [
 		'label'                                 => Config::$langVars['aggiornamento'],
 		'searchTable'                           => false,
 		'required'                              => false,
@@ -83,34 +83,34 @@ $App->params->fields['item'] = array(
 		'defValue'                              => Config::$nowDateTimeIso,
 		'forcedValue'                           => Config::$nowDateTimeIso,
 		'validate'								=> 'datetimepicker'
-	),
+	],
 
-	'show_updated'                            						=> array (
+	'show_updated'                            						=>  [
 		'label'                                 						=> 'Mostra updated',
 		'required'                              						=> false,
 		'type'                                  						=> 'int|1',
 		'defValue'                              						=> 0,
 		'forcedValue'                           						=> 0
-	),
+	],
 
-	'active'                                    => array (
+	'active'                                    =>  [
 		'label'                                 => Config::$langVars['attiva'],
 		'required'                              => false,
 		'type'                                  => 'int|1',
 		'defValue'                              => 0,
 		'forcedValue'                           => 0
-	)
-);	
+	]
+];	
 foreach($globalSettings['languages'] AS $lang) {
 	$required = ($lang == $_lang['user'] ? true : false);
 	
-	$App->params->fields['item']['meta_title_'.$lang] = array('label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
-	$App->params->fields['item']['meta_description_'.$lang] = array('label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300');
-	$App->params->fields['item']['meta_keyword_'.$lang] = array('label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
-	$App->params->fields['item']['title_seo_'.$lang] = array('label'=>'Titolo SEO '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
+	$App->params->fields['item']['meta_title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
+	$App->params->fields['item']['meta_description_'.$lang] = ['label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300'];
+	$App->params->fields['item']['meta_keyword_'.$lang] = ['label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
+	$App->params->fields['item']['title_seo_'.$lang] = ['label'=>'Titolo SEO '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
 
-	$App->params->fields['item']['title_'.$lang] = array('label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar',
-	'forcedValue'                           => '');
+	$App->params->fields['item']['title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar',
+	'forcedValue'                           => ''];
 	}
 	
 /* BLOCKS */
@@ -118,73 +118,73 @@ $App->params->uploadPaths['iblo'] = ADMIN_PATH_UPLOAD_DIR."pages/blocks/";
 $App->params->uploadDirs['iblo'] = UPLOAD_DIR."pages/blocks/";
 $App->params->orderTypes['iblo'] = 'DESC';
 $App->params->tables['iblo'] = $App->params->tableRif.'_blocks';
-$App->params->fields['iblo'] = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'autoinc','primary'=>true),
-	'id_owner'=>array('label'=>'IDOwner','required'=>false,'searchTable'=>false,'type'=>'int'),
-	'filename'=>array('label'=>'File','searchTable'=>false,'required'=>false,'type'=>'varchar'),
-	'org_filename'=>array('label'=>'Nome Originale','searchTable'=>true,'required'=>false,'type'=>'varchar'),
-	'url'=>array('URL'=>'Alias','searchTable'=>true,'required'=>false,'type'=>'varchar|255','defValue'=>''),
-	'target'=>array('label'=>'Target','searchTable'=>true,'required'=>false,'type'=>'varchar|20','defValue'=>''),
-	'ordering'=>array('label'=>$_lang['ordinamento'],'required'=>false,'type'=>'int|8','validate'=>'int','defValue'=>1),
-	'created'                                   => array (
+$App->params->fields['iblo'] = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'autoinc','primary'=>true],
+	'id_owner'=>['label'=>'IDOwner','required'=>false,'searchTable'=>false,'type'=>'int'],
+	'filename'=>['label'=>'File','searchTable'=>false,'required'=>false,'type'=>'varchar'],
+	'org_filename'=>['label'=>'Nome Originale','searchTable'=>true,'required'=>false,'type'=>'varchar'],
+	'url'=>['URL'=>'Alias','searchTable'=>true,'required'=>false,'type'=>'varchar|255','defValue'=>''],
+	'target'=>['label'=>'Target','searchTable'=>true,'required'=>false,'type'=>'varchar|20','defValue'=>''],
+	'ordering'=>['label'=>$_lang['ordinamento'],'required'=>false,'type'=>'int|8','validate'=>'int','defValue'=>1],
+	'created'                                   =>  [
 		'label'                                 => Config::$langVars['creazione'],
 		'searchTable'                           => false,
 		'required'                              => false,
 		'type'                                  => 'datatime',
 		'defValue'                              => Config::$nowDateTimeIso,
 		'forcedValue'                           => Config::$nowDateTimeIso
-	),
-	'active'                                    => array (
+	],
+	'active'                                    =>  [
 		'label'                                 => Config::$langVars['attiva'],
 		'required'                              => false,
 		'type'                                  => 'int|1',
 		'defValue'                              => 1,
 		'forcedValue'                           => 1
-	)
-);	
+	]
+];	
 foreach($globalSettings['languages'] AS $lang) {
 	$required = ($lang == $_lang['user'] ? true : false);
-	$App->params->fields['iblo']['title_'.$lang] = array('label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar',
+	$App->params->fields['iblo']['title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar',
 	'forcedValue'                           => ''
-);
-	$App->params->fields['iblo']['content_'.$lang] = array('label'=>$_lang['contenuto'].'  '.$lang,'searchTable'=>false,'required'=>false,'type'=>'longtext',
-	'forcedValue'                           => '');
+];
+	$App->params->fields['iblo']['content_'.$lang] = ['label'=>$_lang['contenuto'].'  '.$lang,'searchTable'=>false,'required'=>false,'type'=>'longtext',
+	'forcedValue'                           => ''];
 	}
 	
 /* RESOURCES */
-$App->params->fields['resources'] = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'autoinc','primary'=>true),
-	'id_owner'=>array('label'=>'IDOwner','required'=>true,'searchTable'=>false,'type'=>'int'),
-	'resource_type'=>array('label'=>'Type resource','required'=>true,'searchTable'=>false,'type'=>'int'),
-	'filename'=>array('label'=>'File','searchTable'=>false,'required'=>true,'type'=>'varchar'),
-	'org_filename'=>array('label'=>'Nome Originale','searchTable'=>true,'required'=>false,'type'=>'varchar'),
-	'extension'=>array('label'=>'Ext','searchTable'=>false,'required'=>false,'type'=>'varchar'),
-	'code'=>array('label'=>'Code','searchTable'=>false,'required'=>false,'type'=>'varchar'),
-	'size_file'=>array('label'=>'Dimensione','searchTable'=>false,'required'=>false,'type'=>'varchar'),
-	'size_image'=>array('label'=>'Dimensione','searchTable'=>false,'required'=>false,'type'=>'varchar'),
-	'type'=>array('label'=>'Tipo','searchTable'=>true,'required'=>false,'type'=>'varchar'),
-	'ordering'=>array('label'=>$_lang['ordinamento'],'required'=>false,'type'=>'int|8','validate'=>'int','defValue'=>1),
-	'created'                                   => array (
+$App->params->fields['resources'] = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'autoinc','primary'=>true],
+	'id_owner'=>['label'=>'IDOwner','required'=>true,'searchTable'=>false,'type'=>'int'],
+	'resource_type'=>['label'=>'Type resource','required'=>true,'searchTable'=>false,'type'=>'int'],
+	'filename'=>['label'=>'File','searchTable'=>false,'required'=>true,'type'=>'varchar'],
+	'org_filename'=>['label'=>'Nome Originale','searchTable'=>true,'required'=>false,'type'=>'varchar'],
+	'extension'=>['label'=>'Ext','searchTable'=>false,'required'=>false,'type'=>'varchar'],
+	'code'=>['label'=>'Code','searchTable'=>false,'required'=>false,'type'=>'varchar'],
+	'size_file'=>['label'=>'Dimensione','searchTable'=>false,'required'=>false,'type'=>'varchar'],
+	'size_image'=>['label'=>'Dimensione','searchTable'=>false,'required'=>false,'type'=>'varchar'],
+	'type'=>['label'=>'Tipo','searchTable'=>true,'required'=>false,'type'=>'varchar'],
+	'ordering'=>['label'=>$_lang['ordinamento'],'required'=>false,'type'=>'int|8','validate'=>'int','defValue'=>1],
+	'created'                                   =>  [
 		'label'                                 => Config::$langVars['creazione'],
 		'searchTable'                           => false,
 		'required'                              => false,
 		'type'                                  => 'datatime',
 		'defValue'                              => Config::$nowDateTimeIso,
 		'forcedValue'                           => Config::$nowDateTimeIso
-	),
-	'active'                                    => array (
+	],
+	'active'                                    =>  [
 		'label'                                 => Config::$langVars['attiva'],
 		'required'                              => false,
 		'type'                                  => 'int|1',
 		'defValue'                              => 1,
 		'forcedValue'                           => 1
-	)
-);
+	]
+];
 foreach($globalSettings['languages'] AS $lang) {
 	$searchTable = true;
 	$required = ($lang == $_lang['user'] ? true : false);
-	$App->params->fields['resources']['title_'.$lang] = array('label'=>'Titolo '.$lang,'searchTable'=>$searchTable,'required'=>$required,'type'=>'varchar');
-	$App->params->fields['resources']['content_'.$lang] = array('label'=>$_lang['contenuto'].'  '.$lang,'searchTable'=>true,'required'=>false,'type'=>'text','defValue'=>'');	
+	$App->params->fields['resources']['title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>$searchTable,'required'=>$required,'type'=>'varchar'];
+	$App->params->fields['resources']['content_'.$lang] = ['label'=>$_lang['contenuto'].'  '.$lang,'searchTable'=>true,'required'=>false,'type'=>'text','defValue'=>''];	
 	}
 	
 /* ITEM IMAGES  type = 1 */

@@ -17,44 +17,44 @@ if (isset($_POST['id'])) $App->id = intval($_POST['id']);
 
 $App->templateBase = 'struttura-login.html';
 
-$section = preg_replace('/%ITEM%/',$_lang['login'],$_lang['torna al %ITEM%']);
-$section1 = '<a href="'.URL_SITE_ADMIN.'" title="'.ucfirst($section).'">'.ucfirst($_lang['login']).'</a>';
-$App->returnlink = ucfirst(preg_replace('/%ITEM%/',$section1,$_lang['torna al %ITEM%']));
+$section = preg_replace('/%ITEM%/',(string) $_lang['login'],(string) $_lang['torna al %ITEM%']);
+$section1 = '<a href="'.URL_SITE_ADMIN.'" title="'.ucfirst($section).'">'.ucfirst((string) $_lang['login']).'</a>';
+$App->returnlink = ucfirst(preg_replace('/%ITEM%/',$section1,(string) $_lang['torna al %ITEM%']));
 
 if (isset($_POST['submit'])) {	
 	if ($_POST['username'] == "") {
 		Core::$resultOp->error = 1;
-		Core::$resultOp->message = preg_replace('/%ITEM%/',$_lang['nome utente'],$_lang['Devi inserire un %ITEM%!']);
+		Core::$resultOp->message = preg_replace('/%ITEM%/',(string) $_lang['nome utente'],(string) $_lang['Devi inserire un %ITEM%!']);
 		} else {
-			$username = SanitizeStrings::stripMagic(strip_tags($_POST['username']));
+			$username = SanitizeStrings::stripMagic(strip_tags((string) $_POST['username']));
 			}
 	if (Core::$resultOp->error == 0) {	
 		/* legge username dalla email */
 		/* (tabella,campi(array),valori campi(array),where clause, limit, order, option , pagination(default false)) */
-		Sql::initQuery(DB_TABLE_PREFIX.'users',array('id','username','email'),array($username),"username = ? AND active = 1");
+		Sql::initQuery(DB_TABLE_PREFIX.'users',['id','username','email'],[$username],"username = ? AND active = 1");
 		$App->item = Sql::getRecord();		
 		if(Core::$resultOp->error == 0) {
 			if (Sql::getFoundRows() > 0) {
 				/* crea la nuova password */	
 				$passw = ToolsStrings::setNewPassword('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',8);
 				//$passw = 'master'; // per test
-				$criptPassw = password_hash($passw, PASSWORD_DEFAULT);			
+				$criptPassw = password_hash((string) $passw, PASSWORD_DEFAULT);			
 				$titolo = $_lang['titolo email sezione richiesta password'];
-				$titolo = preg_replace('/%SITENAME%/',SITE_NAME,$titolo);
+				$titolo = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $titolo);
 				$testo = $_lang['testo email sezione richiesta password'];
-				$testo = preg_replace('/%SITENAME%/',SITE_NAME,$testo);
-				$testo = preg_replace('/%PASSWORD%/',$passw,$testo);
-				$testo = preg_replace('/%USERNAME%/',$App->item->username,$testo);
+				$testo = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $testo);
+				$testo = preg_replace('/%PASSWORD%/',(string) $passw,$testo);
+				$testo = preg_replace('/%USERNAME%/',(string) $App->item->username,$testo);
 				$text_plain = Html2Text::convert($testo);
 				//echo '<br>titolo: '.$titolo;	
 				//echo '<br>testo: '.$testo; 	
 				//die();			
 				/* aggiorno la password nel db */						
 				/* (tabella,campi(array),valori campi(array),where clause, limit, order, option , pagination(default false)) */
-				Sql::initQuery(DB_TABLE_PREFIX.'users',array('password'),array($criptPassw,$App->item->id),"id = ?");
+				Sql::initQuery(DB_TABLE_PREFIX.'users',['password'],[$criptPassw,$App->item->id],"id = ?");
 				Sql::updateRecord();
 				if (Core::$resultOp->error == 0) {	
-					$opt = array();
+					$opt = [];
 					//FIXED - DKIM requirements
 					$opt['fromEmail'] = $_ENV['MAIL_FROM_EMAIL'] ?? $globalSettings['default email'];
 					$opt['fromLabel'] = $globalSettings['default email label'];	

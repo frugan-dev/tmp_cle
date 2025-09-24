@@ -1,57 +1,57 @@
 <?php
-$DatabaseTables = array();
-$DatabaseTablesFields = array();
+$DatabaseTables = [];
+$DatabaseTablesFields = [];
 
 
 // galleries images
 $DatabaseTables['galleriesimages categories'] = DB_TABLE_PREFIX.'galleriesimages_categories';
-$DatabaseTablesFields['galleriesimages categories'] = array(
-		'id'									=> array(
+$DatabaseTablesFields['galleriesimages categories'] = [
+		'id'									=> [
 		'label'									=> 'ID',
 		'required'								=> false,
 		'type'									=> 'autoinc',
 		'primary'								=> true
-	),		
-	'created'                                   => array(
+	],		
+	'created'                                   => [
 		'label'                                 => Config::$langVars['creazione'],
 		'searchTable'                           => false,
 		'required'                              => false,
 		'type'                                  => 'datatime',
 		'defValue'                              => Config::$nowDateTimeIso,
 		'forcedValue'                           => Config::$nowDateTimeIso
-	),
-	'active'                                    => array(
+	],
+	'active'                                    => [
 		'label'                                 => Config::$langVars['attiva'],
 		'required'                              => false,
 		'type'                                  => 'int|1',
 		'defValue'                              => 1,
 		'forcedValue'                           => 1
-	)
-);
+	]
+];
 foreach(Config::$globalSettings['languages'] AS $lang) {
 	$required = ($lang == Config::$langVars['user'] ? true : false);
-	$DatabaseTablesFields['galleriesimages categories']['title_'.$lang] = array('label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>$required,'type'=>'varchar');
+	$DatabaseTablesFields['galleriesimages categories']['title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>$required,'type'=>'varchar'];
 }
 
 $DatabaseTables['galleriesimages'] = DB_TABLE_PREFIX.'galleriesimages';
-$DatabaseTablesFields['galleriesimages']  = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'int|8','autoinc'=>true,'primary'=>true),
-	'categories_id'=>array('label'=>'ID '.Config::$langVars['categoria'],'searchTable'=>false,'required'=>true,'type'=>'int|8','defValue'=>0,
+$DatabaseTablesFields['galleriesimages']  = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'int|8','autoinc'=>true,'primary'=>true],
+	'categories_id'=>['label'=>'ID '.Config::$langVars['categoria'],'searchTable'=>false,'required'=>true,'type'=>'int|8','defValue'=>0,
 	'forcedValue'                           			=> 0	
-	),
+	],
 	/*
 	'id_user'=>array('label'=>Config::$langVars['proprietario'],'searchTable'=>false,'required'=>true,'type'=>'int|8','defValue'=>0),*/
-	'filename'=>array('label'=>'Nome File','searchTable'=>false,'required'=>false,'type'=>'varchar|255','defValue'=>''),
-	'org_filename'=>array('label'=>'','searchTable'=>true,'required'=>false,'type'=>'varchar255','defValue'=>''),
-	'ordering'=>array('label'=>'Ord','required'=>false,'type'=>'int|8','defValue'=>1,
+	'filename'=>['label'=>'Nome File','searchTable'=>false,'required'=>false,'type'=>'varchar|255','defValue'=>''],
+	'org_filename'=>['label'=>'','searchTable'=>true,'required'=>false,'type'=>'varchar255','defValue'=>''],
+	'ordering'=>['label'=>'Ord','required'=>false,'type'=>'int|8','defValue'=>1,
 	'forcedValue'                           			=> 0
-	),
-	'id_tags'											=> array(
+	],
+	'id_tags'											=> [
 		'label'											=> 'Id Tags',
 		'searchTable'									=> false,
 		'required'										=> false,
 		'type'											=> 'text'
-	),
+	],
 	/*
 	'url'=>array('URL'=>'Alias','searchTable'=>true,'required'=>false,'type'=>'varchar|255','defValue'=>''),
 	'target'=>array('label'=>'Target','searchTable'=>true,'required'=>false,'type'=>'varchar|20','defValue'=>''),
@@ -59,327 +59,327 @@ $DatabaseTablesFields['galleriesimages']  = array(
 	'access_read'=>array('label'=>Config::$langVars['accesso lettura'],'searchTable'=>false,'required'=>false,'type'=>'text','defValue'=>'none'),
 	'access_write'=>array('label'=>Config::$langVars['accesso scrittura'],'searchTable'=>false,'required'=>false,'type'=>'text','defValue'=>'none'),
 	*/
-	'created'                                   		=> array (
+	'created'                                   		=>  [
 		'label'                                 		=> Config::$langVars['creazione'],
 		'searchTable'                           		=> false,
 		'required'                              		=> false,
 		'type'                                  		=> 'datatime',
 		'defValue'                              		=> Config::$nowDateTimeIso,
 		'forcedValue'                           		=> Config::$nowDateTimeIso
-	),
-	'active'                                    		=> array (
+	],
+	'active'                                    		=>  [
 		'label'                                 		=> Config::$langVars['attiva'],
 		'required'                              		=> false,
 		'type'                                  		=> 'int|1',
 		'defValue'                              		=> 1,
 		'forcedValue'                           		=> 1
-	)
-);
+	]
+];
 
 foreach(Config::$globalSettings['languages'] AS $lang) {
 	$required = ($lang == Config::$langVars['user'] ? true : false);
-	$DatabaseTablesFields['galleriesimages']['title_'.$lang] = array('label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>$required,'type'=>'varchar|255','defValue'=>'');
+	$DatabaseTablesFields['galleriesimages']['title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>$required,'type'=>'varchar|255','defValue'=>''];
 }
-	
+
 $DatabaseTables['galleriesimages tags'] = DB_TABLE_PREFIX.'galleriesimages_tags';
-$DatabaseTablesFields['galleriesimages tags'] = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'int|8','autoinc'=>true,'primary'=>true),
-	'created'                                   		=> array(
+$DatabaseTablesFields['galleriesimages tags'] = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'int|8','autoinc'=>true,'primary'=>true],
+	'created'                                   		=> [
 		'label'                                 		=> Config::$langVars['creazione'],
 		'searchTable'                           		=> false,
 		'required'                              		=> false,
 		'type'                                  		=> 'datatime',
 		'defValue'                              		=> Config::$nowDateTimeIso,
 		'forcedValue'                           		=> Config::$nowDateTimeIso
-	),
-	'active'                                   			=> array(
+	],
+	'active'                                   			=> [
 		'label'                                 		=> Config::$langVars['attiva'],
 		'required'                              		=> false,
 		'type'                                  		=> 'int|1',
 		'defValue'                              		=> 1,
 		'forcedValue'                           		=> 1
-	)
-);	
+	]
+];	
 foreach(Config::$globalSettings['languages'] AS $lang) {
 	$required = ($lang == Config::$langVars['user'] ? true : false);
-	$DatabaseTablesFields['galleriesimages tags']['title_'.$lang] = array(
+	$DatabaseTablesFields['galleriesimages tags']['title_'.$lang] = [
 		'label'											=> 'Titolo '.$lang,
 		'searchTable'									=> true,
 		'required'										=> $required,
 		'type'											=> 'varchar|255',
 		'defValue'										=> '',
-		'error message'									=> preg_replace('/%ITEM%/',Config::$langVars['titolo'],Config::$langVars['Devi inserire un %ITEM%!'])
-	);
+		'error message'									=> preg_replace('/%ITEM%/',(string) Config::$langVars['titolo'],(string) Config::$langVars['Devi inserire un %ITEM%!'])
+	];
 }
 
 // HOMEINFOBOX
 $DatabaseTables['home info box'] = DB_TABLE_PREFIX.'homeinfobox';
-$DatabaseTablesFields['home info box'] = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'int|8','autoinc'=>true,'primary'=>true),
-	'created'                                   		=> array(
+$DatabaseTablesFields['home info box'] = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'int|8','autoinc'=>true,'primary'=>true],
+	'created'                                   		=> [
 		'label'                                 		=> Config::$langVars['creazione'],
 		'searchTable'                           		=> false,
 		'required'                              		=> false,
 		'type'                                  		=> 'datatime',
 		'defValue'                              		=> Config::$nowDateTimeIso,
 		'forcedValue'                           		=> Config::$nowDateTimeIso
-	),
-	'active'                                   			=> array(
+	],
+	'active'                                   			=> [
 		'label'                                 		=> Config::$langVars['attiva'],
 		'required'                              		=> false,
 		'type'                                  		=> 'int|1',
 		'defValue'                              		=> 1,
 		'forcedValue'                           		=> 1
-	)
-);
+	]
+];
 foreach(Config::$globalSettings['languages'] AS $lang) {
 	$required = ($lang == Config::$langVars['user'] ? true : false);
 
-	$DatabaseTablesFields['home info box']['title_'.$lang] = array(
+	$DatabaseTablesFields['home info box']['title_'.$lang] = [
 		'label'											=> 'Titolo '.$lang,
 		'searchTable'									=> true,
 		'required'										=> $required,
 		'type'											=> 'varchar|255',
 		'defValue'										=> '',
-		'error message'									=> preg_replace('/%ITEM%/',Config::$langVars['titolo'],Config::$langVars['Devi inserire un %ITEM%!'])
-	);
-	$DatabaseTablesFields['home info box']['content_'.$lang] = array(
+		'error message'									=> preg_replace('/%ITEM%/',(string) Config::$langVars['titolo'],(string) Config::$langVars['Devi inserire un %ITEM%!'])
+	];
+	$DatabaseTablesFields['home info box']['content_'.$lang] = [
 		'label'											=> Config::$langVars['descrizione'].' '.$lang,
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'mediumtext',
 		'defValue'										=> ''
-	);
+	];
 
-	$DatabaseTablesFields['home info box']['url_'.$lang] = array(
+	$DatabaseTablesFields['home info box']['url_'.$lang] = [
 		'label'											=> Config::$langVars['url'],
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar|255',
 		'defValue'										=> ''
-	);
-	$DatabaseTablesFields['home info box']['target_'.$lang] = array(
+	];
+	$DatabaseTablesFields['home info box']['target_'.$lang] = [
 		'label'											=> Config::$langVars['target'],
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar|20',
 		'defValue'										=> ''
-	);
+	];
 }
 
 // TEAM
 $DatabaseTables['team'] = DB_TABLE_PREFIX.'team';
-$DatabaseTablesFields['team'] = array(
-	'id'												=> array(
+$DatabaseTablesFields['team'] = [
+	'id'												=> [
 		'label'											=> 'ID',
 		'required'										=> false,
 		'type'											=> 'int|8',
 		'autoinc'										=> true,
 		'primary'										=> true
-	),
-	'name' 												=> array (
+	],
+	'name' 												=>  [
 		'label'											=> Config::$langVars['nome'],
 		'searchTable'									=> true,
 		'required'										=> true,
 		'type'											=> 'varchar|255',
 		'defValue'										=> '',
-		'error message'									=> preg_replace('/%ITEM%/',Config::$langVars['nome'],Config::$langVars['Devi inserire un %ITEM%!'])
-	),
-	'email' 											=> array (
+		'error message'									=> preg_replace('/%ITEM%/',(string) Config::$langVars['nome'],(string) Config::$langVars['Devi inserire un %ITEM%!'])
+	],
+	'email' 											=>  [
 		'label'											=> Config::$langVars['indirizzo email'],
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar|255',
 		'defValue'										=> '',
 		'validate'										=> 'isemail',
-		'error message'									=> preg_replace('/%ITEM%/',Config::$langVars['indirizzo email'],Config::$langVars['Devi inserire un %ITEM%!']),
+		'error message'									=> preg_replace('/%ITEM%/',(string) Config::$langVars['indirizzo email'],(string) Config::$langVars['Devi inserire un %ITEM%!']),
 		'error validate message'						=> Config::$langVars['Devi inserire un indirizzo email valido!']
-	),
-	'url'											 	=> array(
+	],
+	'url'											 	=> [
 		'label'											=> Config::$langVars['url'],
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar|255',
 		'defValue'										=> ''
-	),
-	'target'											=> array(
+	],
+	'target'											=> [
 		'label'											=> Config::$langVars['target'],
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar|20',
 		'defValue'										=> ''
-	),
-	'filename'											=> array(
+	],
+	'filename'											=> [
 		'label'											=> 'Nome File',
 		'searchTable'									=> false,
 		'required'										=> false,
 		'type'											=> 'varchar|255',
 		'defValue'										=> ''
-	),
-	'org_filename'										=> array(
+	],
+	'org_filename'										=> [
 		'label'											=> '',
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar255',
 		'defValue'										=> ''
-	),
-	'ordering'											=> array(
+	],
+	'ordering'											=> [
 		'label'											=> Config::$langVars['ordinamento'],
 		'required'										=> false,
 		'type'											=> 'int|8',
 		'defValue'										=> 1,
 		'forcedValue'                           		=> 0
-	),
-	'created'                                   		=> array(
+	],
+	'created'                                   		=> [
 		'label'                                 		=> Config::$langVars['creazione'],
 		'searchTable'                           		=> false,
 		'required'                              		=> false,
 		'type'                                  		=> 'datatime',
 		'defValue'                              		=> Config::$nowDateTimeIso,
 		'forcedValue'                           		=> Config::$nowDateTimeIso
-	),
-	'active'                                   			=> array(
+	],
+	'active'                                   			=> [
 		'label'                                 		=> Config::$langVars['attiva'],
 		'required'                              		=> false,
 		'type'                                  		=> 'int|1',
 		'defValue'                              		=> 1,
 		'forcedValue'                           		=> 1
-	)
-);
+	]
+];
 foreach(Config::$globalSettings['languages'] AS $lang) {
 	$required = ($lang == Config::$langVars['user'] ? true : false);
-	
-	$DatabaseTablesFields['team']['role_'.$lang] = array(
+
+	$DatabaseTablesFields['team']['role_'.$lang] = [
 		'label'											=> Config::$langVars['ruolo'].' '.$lang,
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar|100',
 		'defValue'										=> '',
-		'error message'									=> preg_replace('/%ITEM%/',Config::$langVars['ruolo'],Config::$langVars['Devi inserire un %ITEM%!'])
-	);
+		'error message'									=> preg_replace('/%ITEM%/',(string) Config::$langVars['ruolo'],(string) Config::$langVars['Devi inserire un %ITEM%!'])
+	];
 
-	$DatabaseTablesFields['team']['universita_'.$lang] = array(
+	$DatabaseTablesFields['team']['universita_'.$lang] = [
 		'label'											=> 'Università '.$lang,
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar|100',
 		'defValue'										=> '',
-		'error message'									=> preg_replace('/%ITEM%/','università',Config::$langVars['Devi inserire una %ITEM%!'])
-	);
+		'error message'									=> preg_replace('/%ITEM%/','università',(string) Config::$langVars['Devi inserire una %ITEM%!'])
+	];
 
-	$DatabaseTablesFields['team']['summary_'.$lang] = array(
+	$DatabaseTablesFields['team']['summary_'.$lang] = [
 		'label'											=> Config::$langVars['descrizione'].' lista '.$lang,
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'text',
 		'defValue'										=> ''
-	);
+	];
 
-	$DatabaseTablesFields['team']['content_'.$lang] = array(
+	$DatabaseTablesFields['team']['content_'.$lang] = [
 		'label'											=> Config::$langVars['descrizione'].' dettaglio '.$lang,
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'mediumtext',
 		'defValue'										=> ''
-	);
+	];
 }
 
 $DatabaseTables['team config'] = DB_TABLE_PREFIX.'team_config';
-$DatabaseTablesFields['team config'] = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'int','primary'=>true),
-	'image_header'											=> array(
+$DatabaseTablesFields['team config'] = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'int','primary'=>true],
+	'image_header'											=> [
 		'label'											=> Config::$langVars['immagine'].' header',
 		'searchTable'									=> false,
 		'required'										=> false,
 		'type'											=> 'varchar|255',
 		'defValue'										=> ''
-	),
-	'org_image_header'									=> array(
+	],
+	'org_image_header'									=> [
 		'label'											=> '',
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar255',
 		'defValue'										=> ''
-	),
-);
+	],
+];
 foreach(Config::$globalSettings['languages'] AS $lang) {
-	$DatabaseTablesFields['team config']['title_'.$lang] = array('label'=>ucfirst(Config::$langVars['titolo']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text');
+	$DatabaseTablesFields['team config']['title_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['titolo']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text'];
 
-	$DatabaseTablesFields['team config']['text_intro_'.$lang] = array('label'=>ucfirst(Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text');
-	$DatabaseTablesFields['team config']['page_content_'.$lang] = array('label'=>ucfirst(Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext');	
-	
-	$DatabaseTablesFields['team config']['meta_title_'.$lang] = array('label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
-	$DatabaseTablesFields['team config']['meta_description_'.$lang] = array('label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300');
-	$DatabaseTablesFields['team config']['meta_keywords_'.$lang] = array('label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
+	$DatabaseTablesFields['team config']['text_intro_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text'];
+	$DatabaseTablesFields['team config']['page_content_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext'];	
+
+	$DatabaseTablesFields['team config']['meta_title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
+	$DatabaseTablesFields['team config']['meta_description_'.$lang] = ['label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300'];
+	$DatabaseTablesFields['team config']['meta_keywords_'.$lang] = ['label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
 }
 
 // NEWS
 $DatabaseTables['news config'] = DB_TABLE_PREFIX.'news_config';
-$DatabaseTablesFields['news config'] = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'int','primary'=>true),
-	'image_header'											=> array(
+$DatabaseTablesFields['news config'] = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'int','primary'=>true],
+	'image_header'											=> [
 		'label'											=> Config::$langVars['immagine'].' header',
 		'searchTable'									=> false,
 		'required'										=> false,
 		'type'											=> 'varchar|255',
 		'defValue'										=> ''
-	),
-	'org_image_header'									=> array(
+	],
+	'org_image_header'									=> [
 		'label'											=> '',
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar255',
 		'defValue'										=> ''
-	),
-);
+	],
+];
 foreach(Config::$globalSettings['languages'] AS $lang) {
-	$DatabaseTablesFields['news config']['title_'.$lang] = array('label'=>ucfirst(Config::$langVars['titolo']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text');
+	$DatabaseTablesFields['news config']['title_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['titolo']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text'];
 
-	$DatabaseTablesFields['news config']['text_intro_'.$lang] = array('label'=>ucfirst(Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text');
-	$DatabaseTablesFields['news config']['page_content_'.$lang] = array('label'=>ucfirst(Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext');	
-	
-	$DatabaseTablesFields['news config']['meta_title_'.$lang] = array('label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
-	$DatabaseTablesFields['news config']['meta_description_'.$lang] = array('label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300');
-	$DatabaseTablesFields['news config']['meta_keywords_'.$lang] = array('label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
+	$DatabaseTablesFields['news config']['text_intro_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text'];
+	$DatabaseTablesFields['news config']['page_content_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext'];	
+
+	$DatabaseTablesFields['news config']['meta_title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
+	$DatabaseTablesFields['news config']['meta_description_'.$lang] = ['label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300'];
+	$DatabaseTablesFields['news config']['meta_keywords_'.$lang] = ['label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
 }
 
 // FAQ
 $DatabaseTables['faq config'] = DB_TABLE_PREFIX.'faq_config';
-$DatabaseTablesFields['faq config'] = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'int','primary'=>true),
-	'image_header'											=> array(
+$DatabaseTablesFields['faq config'] = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'int','primary'=>true],
+	'image_header'											=> [
 		'label'											=> Config::$langVars['immagine'].' header',
 		'searchTable'									=> false,
 		'required'										=> false,
 		'type'											=> 'varchar|255',
 		'defValue'										=> ''
-	),
-	'org_image_header'									=> array(
+	],
+	'org_image_header'									=> [
 		'label'											=> '',
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar255',
 		'defValue'										=> ''
-	),
-);
+	],
+];
 foreach(Config::$globalSettings['languages'] AS $lang) {
-	$DatabaseTablesFields['faq config']['title_'.$lang] = array('label'=>ucfirst(Config::$langVars['titolo']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text');
+	$DatabaseTablesFields['faq config']['title_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['titolo']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text'];
 
-	$DatabaseTablesFields['faq config']['text_intro_'.$lang] = array('label'=>ucfirst(Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text');
-	$DatabaseTablesFields['faq config']['page_content_'.$lang] = array('label'=>ucfirst(Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext');	
-	
-	$DatabaseTablesFields['faq config']['meta_title_'.$lang] = array('label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
-	$DatabaseTablesFields['faq config']['meta_description_'.$lang] = array('label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300');
-	$DatabaseTablesFields['faq config']['meta_keywords_'.$lang] = array('label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
+	$DatabaseTablesFields['faq config']['text_intro_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text'];
+	$DatabaseTablesFields['faq config']['page_content_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext'];	
+
+	$DatabaseTablesFields['faq config']['meta_title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
+	$DatabaseTablesFields['faq config']['meta_description_'.$lang] = ['label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300'];
+	$DatabaseTablesFields['faq config']['meta_keywords_'.$lang] = ['label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
 }
 
 // CONTACTS
 $DatabaseTables['contacts config'] = DB_TABLE_PREFIX.'contacts_config';
-$DatabaseTablesFields['contacts config'] = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'int','primary'=>true),
-	'email_address'=>array('label'=>'Indirizzo email','searchTable'=>false,'required'=>true,'type'=>'varchar|255','defValue'=>''),
-	'label_email_address'=>array('Etichetta email'=>'Totale','required'=>true,'type'=>'float(10,2)','defValue'=>''),
-	'send_email_debug'					=> array(
+$DatabaseTablesFields['contacts config'] = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'int','primary'=>true],
+	'email_address'=>['label'=>'Indirizzo email','searchTable'=>false,'required'=>true,'type'=>'varchar|255','defValue'=>''],
+	'label_email_address'=>['Etichetta email'=>'Totale','required'=>true,'type'=>'float(10,2)','defValue'=>''],
+	'send_email_debug'					=> [
 		'label'							=> 'Invia email per debug',
 		'searchTable'					=> false,
 		'required'						=> false,
@@ -387,71 +387,71 @@ $DatabaseTablesFields['contacts config'] = array(
 		'validate'						=> 'int',
 		'defValue'						=> '0',
 		'forcedValue'                   => 0
-	),
-	'email_debug'=>array('label'=>'Email per debug','searchTable'=>false,'required'=>true,'type'=>'varchar|255'),
-	'admin_email_subject'=>array('label'=>'soggetto email admin','searchTable'=>false,'required'=>true,'type'=>'varchar|255'),
-	'admin_email_content'=>array('label'=>'contenuto email admin','searchTable'=>false,'required'=>true,'type'=>'mediumtext'),
-	'map_latitude'=>array('label'=>'latitudine','searchTable'=>false,'required'=>false,'type'=>'varchar|20'),
-	'map_longitude'=>array('label'=>'longitudine','searchTable'=>false,'required'=>false,'type'=>'varchar|20'),
-	'url_privacy_page'=>array('label'=>'url privacy page','searchTable'=>false,'required'=>false,'type'=>'varchar|255'),
-	'image_header'											=> array(
+	],
+	'email_debug'=>['label'=>'Email per debug','searchTable'=>false,'required'=>true,'type'=>'varchar|255'],
+	'admin_email_subject'=>['label'=>'soggetto email admin','searchTable'=>false,'required'=>true,'type'=>'varchar|255'],
+	'admin_email_content'=>['label'=>'contenuto email admin','searchTable'=>false,'required'=>true,'type'=>'mediumtext'],
+	'map_latitude'=>['label'=>'latitudine','searchTable'=>false,'required'=>false,'type'=>'varchar|20'],
+	'map_longitude'=>['label'=>'longitudine','searchTable'=>false,'required'=>false,'type'=>'varchar|20'],
+	'url_privacy_page'=>['label'=>'url privacy page','searchTable'=>false,'required'=>false,'type'=>'varchar|255'],
+	'image_header'											=> [
 		'label'											=> Config::$langVars['immagine'].' header',
 		'searchTable'									=> false,
 		'required'										=> false,
 		'type'											=> 'varchar|255',
 		'defValue'										=> ''
-	),
-	'org_image_header'									=> array(
+	],
+	'org_image_header'									=> [
 		'label'											=> '',
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar255',
 		'defValue'										=> ''
-	)
-);	
-	
+	]
+];	
+
 foreach(Config::$globalSettings['languages'] AS $lang) {
-	$DatabaseTablesFields['contacts config']['user_email_subject_'.$lang] = array('label'=>'soggetto email utente'.' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'varchar|255');
-	$DatabaseTablesFields['contacts config']['user_email_content_'.$lang] = array('label'=>'contenuto email utente'.' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext');
-	
-	$DatabaseTablesFields['contacts config']['title_'.$lang] = array('label'=>ucfirst(Config::$langVars['titolo']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text');
-	
-	$DatabaseTablesFields['contacts config']['text_intro_'.$lang] = array('label'=>ucfirst(Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text');
-	$DatabaseTablesFields['contacts config']['page_content_'.$lang] = array('label'=>ucfirst(Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext');	
-	
-	$DatabaseTablesFields['contacts config']['meta_title_'.$lang] = array('label'=>ucfirst(Config::$langVars['titolo']).' '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
-	$DatabaseTablesFields['contacts config']['meta_description_'.$lang] = array('label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300');
-	$DatabaseTablesFields['contacts config']['meta_keywords_'.$lang] = array('label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
+	$DatabaseTablesFields['contacts config']['user_email_subject_'.$lang] = ['label'=>'soggetto email utente'.' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'varchar|255'];
+	$DatabaseTablesFields['contacts config']['user_email_content_'.$lang] = ['label'=>'contenuto email utente'.' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext'];
+
+	$DatabaseTablesFields['contacts config']['title_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['titolo']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text'];
+
+	$DatabaseTablesFields['contacts config']['text_intro_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text'];
+	$DatabaseTablesFields['contacts config']['page_content_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext'];	
+
+	$DatabaseTablesFields['contacts config']['meta_title_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['titolo']).' '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
+	$DatabaseTablesFields['contacts config']['meta_description_'.$lang] = ['label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300'];
+	$DatabaseTablesFields['contacts config']['meta_keywords_'.$lang] = ['label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
 }
-	
+
 // NEWSLETTER
 $DatabaseTables['newsletter config'] = DB_TABLE_PREFIX.'newsletter_config';
-$DatabaseTablesFields['newsletter config'] = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'int','primary'=>true),
-	'image_header'											=> array(
+$DatabaseTablesFields['newsletter config'] = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'int','primary'=>true],
+	'image_header'											=> [
 		'label'											=> Config::$langVars['immagine'].' header',
 		'searchTable'									=> false,
 		'required'										=> false,
 		'type'											=> 'varchar|255',
 		'defValue'										=> ''
-	),
-	'org_image_header'									=> array(
+	],
+	'org_image_header'									=> [
 		'label'											=> '',
 		'searchTable'									=> true,
 		'required'										=> false,
 		'type'											=> 'varchar255',
 		'defValue'										=> ''
-	),
-);
+	],
+];
 foreach(Config::$globalSettings['languages'] AS $lang) {
-	$DatabaseTablesFields['newsletter config']['title_'.$lang] = array('label'=>ucfirst(Config::$langVars['titolo']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text');
+	$DatabaseTablesFields['newsletter config']['title_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['titolo']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text'];
 
-	$DatabaseTablesFields['newsletter config']['text_intro_'.$lang] = array('label'=>ucfirst(Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text');
-	$DatabaseTablesFields['newsletter config']['page_content_'.$lang] = array('label'=>ucfirst(Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext');	
-	
-	$DatabaseTablesFields['newsletter config']['meta_title_'.$lang] = array('label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
-	$DatabaseTablesFields['newsletter config']['meta_description_'.$lang] = array('label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300');
-	$DatabaseTablesFields['newsletter config']['meta_keywords_'.$lang] = array('label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255');
+	$DatabaseTablesFields['newsletter config']['text_intro_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'text'];
+	$DatabaseTablesFields['newsletter config']['page_content_'.$lang] = ['label'=>ucfirst((string) Config::$langVars['contenuto']).' '.$lang,'searchTable'=>false,'required'=>false,'type'=>'mediumtext'];	
+
+	$DatabaseTablesFields['newsletter config']['meta_title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
+	$DatabaseTablesFields['newsletter config']['meta_description_'.$lang] = ['label'=>'Descrizione META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|300'];
+	$DatabaseTablesFields['newsletter config']['meta_keywords_'.$lang] = ['label'=>'Keyword META '.$lang,'searchTable'=>true,'required'=>false,'type'=>'varchar|255'];
 }
 
 

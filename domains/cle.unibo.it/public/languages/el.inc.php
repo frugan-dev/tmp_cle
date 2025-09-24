@@ -5,7 +5,7 @@
 */
 
 
-$_lang = array_merge($_lang,array(
+$_lang = array_merge($_lang,[
 
 	'home' => 'home',
 	
@@ -78,5 +78,5 @@ $_lang = array_merge($_lang,array(
 	'Privacy Policy' => 'Privacy Policy',
 	'Cookie Policy' => 'Cookie Policy',
 	'Disclamier' => 'Disclamier',
-));
+]);
 ?>

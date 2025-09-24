@@ -41,7 +41,7 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 /* avvio sessione */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
@@ -56,7 +56,7 @@ if (isset($_POST['id'])) $id = intval($_POST['id']);
 
 $obj = new stdClass;	
 if (intval($id) > 0) {		
-	Sql::initQuery(DB_TABLE_PREFIX.'thirdparty',array('*'),array($id),'id = ?');	
+	Sql::initQuery(DB_TABLE_PREFIX.'thirdparty',['*'],[$id],'id = ?');	
 	$obj = Sql::getRecord();	
 	if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); }
 	if (!isset($obj->id) || (isset($obj->id) && $obj->id < 1)) { ToolsStrings::redirect(URL_SITE.'error/404'); }	

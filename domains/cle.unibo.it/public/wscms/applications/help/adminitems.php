@@ -9,29 +9,29 @@ $App->id_cat = 0;
 switch (Core::$request->method) {
 
 	case 'moreOrderingItem':
-		Utilities::increaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['item'],'orderingType'=>$App->params->ordersType['item'],'parent'=>0,'parentField'=>'','label'=>ucfirst($_lang['voce']).' '.$_lang['spostata']));
+		Utilities::increaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['item'],'orderingType'=>$App->params->ordersType['item'],'parent'=>0,'parentField'=>'','label'=>ucfirst((string) $_lang['voce']).' '.$_lang['spostata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 	break;
 	case 'lessOrderingItem':
-		Utilities::decreaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tables['item'],'orderingType'=>$App->params->ordersType['item'],'parent'=>0,'parentField'=>'','label'=>ucfirst($_lang['voce']).' '.$_lang['spostata']));
+		Utilities::decreaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tables['item'],'orderingType'=>$App->params->ordersType['item'],'parent'=>0,'parentField'=>'','label'=>ucfirst((string) $_lang['voce']).' '.$_lang['spostata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 	break;
 
 	case 'activeItem':
 	case 'disactiveItem':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tables['item'],$App->id,array('label'=>$_lang['voce'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tables['item'],$App->id,['label'=>$_lang['voce'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');	
 	break;
 	
 	case 'deleteItem':
 		if ($App->id > 0) {
-			Sql::initQuery($App->params->tables['item'],array('id'),array($App->id),'id = ?');
+			Sql::initQuery($App->params->tables['item'],['id'],[$App->id],'id = ?');
 			Sql::deleteRecord();
 			if(Core::$resultOp->error == 0) { 
-				Core::$resultOp->message = ucfirst($_lang['voce cancellata']).'!';		
+				Core::$resultOp->message = ucfirst((string) $_lang['voce cancellata']).'!';		
 				} else {					
 					}
 			}		
@@ -50,7 +50,7 @@ switch (Core::$request->method) {
 			Sql::setDebugMode(1);
 			ToolsStrings::dump($_POST);
 			
-			Form::parsePostByFields($App->params->fields['item'],$_lang,array());
+			Form::parsePostByFields($App->params->fields['item'],$_lang,[]);
 
 			ToolsStrings::dump($_POST);
 
@@ -62,7 +62,7 @@ switch (Core::$request->method) {
 			} else {
 				Core::$resultOp->error = 1;
 				} 		
-		list($id,$App->viewMethod,$App->pageSubTitle,Core::$resultOp->message) = Form::getInsertRecordFromPostResults(0,Core::$resultOp,$_lang,array());
+		[$id, $App->viewMethod, $App->pageSubTitle, Core::$resultOp->message] = Form::getInsertRecordFromPostResults(0,Core::$resultOp,$_lang);
 	break;
 
 	case 'modifyItem':				
@@ -74,7 +74,7 @@ switch (Core::$request->method) {
 		if ($_POST) {
 			if (!isset($_POST['ordering']) || (isset($_POST['ordering']) && $_POST['ordering'] == 0)) $_POST['ordering'] = Sql::getMaxValueOfField($App->params->tables['item'],'ordering','') + 1;
 			/* parsa i post in base ai campi */
-			Form::parsePostByFields($App->params->fields['item'],$_lang,array());			
+			Form::parsePostByFields($App->params->fields['item'],$_lang,[]);			
 			if (Core::$resultOp->error == 0) {						
 				Sql::updateRawlyPost($App->params->fields['item'],$App->params->tables['item'],'id',$App->id);
 				if(Core::$resultOp->error == 0) {
@@ -83,7 +83,7 @@ switch (Core::$request->method) {
 			} else {
 				Core::$resultOp->error = 1;
 				} 
-		list($id,$App->viewMethod,$App->pageSubTitle,Core::$resultOp->message) = Form::getUpdateRecordFromPostResults($App->id,Core::$resultOp,$_lang,array());	
+		[$id, $App->viewMethod, $App->pageSubTitle, Core::$resultOp->message] = Form::getUpdateRecordFromPostResults($App->id,Core::$resultOp,$_lang);	
 	break;
 	
 	case 'pageItem':
@@ -93,7 +93,7 @@ switch (Core::$request->method) {
 	
 	case 'messageItem':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';		
 	break;
 
@@ -123,7 +123,7 @@ switch((string)$App->viewMethod) {
 	
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->params->tables['item'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['item'],['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['item']);
 		$App->templateApp = 'formItem.html';
@@ -134,15 +134,15 @@ switch((string)$App->viewMethod) {
 	case 'list':
 		$App->items = new stdClass;
 		$App->item = new stdClass;				
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);				
-		$qryFields = array('*');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);				
+		$qryFields = ['*'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		$and = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['item'],'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['item'],'');
 			}		
 		if (isset($sessClause) && $sessClause != '') $clause .= $and.'('.$sessClause.')';
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {
@@ -155,7 +155,7 @@ switch((string)$App->viewMethod) {
 		Sql::setOrder('ordering '.$App->params->ordersType['item']);
 		if (Core::$resultOp->error <> 1) $obj = Sql::getRecords();
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (is_array($obj) && is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {	
 				$field = 'title_'.$_lang['user'];	
@@ -168,9 +168,9 @@ switch((string)$App->viewMethod) {
 		$App->items = $arr;		
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
-		$App->paginationTitle = preg_replace('/%START%/',$App->pagination->firstPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',$App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',$App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
 
 		$App->pageSubTitle = $_lang['lista delle voci'];
 		$App->templateApp = 'listadminItems.html';

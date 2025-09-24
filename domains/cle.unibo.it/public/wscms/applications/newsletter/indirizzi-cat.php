@@ -7,7 +7,7 @@ if(isset($_POST['searchFromTable'])) $_MY_SESSION_VARS = $my_session->addSession
 switch(Core::$request->method) {
 	case 'activeIndCat':
 	case 'disactiveIndCat':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-6),$App->tableIndCat,$App->id,ucfirst($App->labels['indcat']['item']),$App->labels['indcat']['itemSex']);
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-6),$App->tableIndCat,$App->id,ucfirst((string) $App->labels['indcat']['item']));
 		$App->viewMethod = 'list';		
 	break;
 	
@@ -15,7 +15,7 @@ switch(Core::$request->method) {
 		if ($App->id > 0) {
 			$delete = true;
 			/* controlla se ha indirizzi associati */
-			Sql::initQuery($App->tableRifCatInd,array('id'),array($App->id),'id_cat = ?');
+			Sql::initQuery($App->tableRifCatInd,['id'],[$App->id],'id_cat = ?');
 			$count = Sql::countRecord();
 			if($count > 0) {
 				Core::$resultOp->error = 2;
@@ -24,10 +24,10 @@ switch(Core::$request->method) {
 				}
 			
 			if ($delete == true && Core::$resultOp->error == 0) {
-				Sql::initQuery($App->tableIndCat,array(),array($App->id),'id = ?');
+				Sql::initQuery($App->tableIndCat,[],[$App->id],'id = ?');
 				Sql::deleteRecord();
 				if (Core::$resultOp->error == 0) {
-					Core::$resultOp->message = ucfirst($App->labels['indcat']['item']).' cancellat'.$App->labels['indcat']['itemSex'].'!';		
+					Core::$resultOp->message = ucfirst((string) $App->labels['indcat']['item']).' cancellat'.$App->labels['indcat']['itemSex'].'!';		
 					}
 				}
 			}			
@@ -63,7 +63,7 @@ switch(Core::$request->method) {
 			$App->viewMethod = 'formNew';
 			} else {
 				$App->viewMethod = 'list';
-				Core::$resultOp->message = ucfirst($App->labels['indcat']['item']).' inserit'.$App->labels['indcat']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['indcat']['item']).' inserit'.$App->labels['indcat']['itemSex'].'!';				
 				}		
 	break;
 
@@ -95,7 +95,7 @@ switch(Core::$request->method) {
 			} else {
 				if (isset($_POST['submitForm'])) {	
 					$App->viewMethod = 'list';
-					Core::$resultOp->message = ucfirst($App->labels['indcat']['item']).' modificat'.$App->labels['indcat']['itemSex'].'!';								
+					Core::$resultOp->message = ucfirst((string) $App->labels['indcat']['item']).' modificat'.$App->labels['indcat']['itemSex'].'!';								
 					} else {						
 						if (isset($_POST['id'])) {
 							$App->id = $_POST['id'];
@@ -116,7 +116,7 @@ switch(Core::$request->method) {
 	
 	case 'messageIndCat':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';		
 	break;
 	
@@ -142,7 +142,7 @@ switch((string)$App->viewMethod) {
 	case 'formMod':
 		$App->item = new stdClass;
 		$App->item->created = Config::$nowDateTimeIso;
-		Sql::initQuery($App->tableIndCat,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tableIndCat,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->fieldsIndCat);
 		$App->templateApp = 'formIndCat.tpl.php';
@@ -151,15 +151,15 @@ switch((string)$App->viewMethod) {
 
 	case 'list':
 		$App->items = new stdClass;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
-		$qryFields = array('c.*','(SELECT COUNT(i.id_ind) FROM '.$App->tableRifCatInd.' AS i WHERE i.id_cat = c.id) AS numitems');
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
+		$qryFields = ['c.*','(SELECT COUNT(i.id_ind) FROM '.$App->tableRifCatInd.' AS i WHERE i.id_cat = c.id) AS numitems'];
 		
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsIndCat,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsIndCat,'');
 			}		
 		if (isset($sessClause) && $sessClause != '') $clause .= $sessClause;
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {

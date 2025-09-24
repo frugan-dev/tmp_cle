@@ -15,8 +15,8 @@ $_lang['data format string'] = "%DAY%th, %STRINGMONTH% %YEAR%";
 $_lang['charset'] = 'hr-HR';
 $_lang['charset date'] = 'hr_HR';
 
-$_lang['lista giorni'] = array('N.D.','ponedjeljak','utorak','srijeda','četvrtak','petak','subota','nedjelja');
-$_lang['lista mesi'] = array('N.D.','siječanj','veljača','ožujak','travnja','svibanj','lipanj','srpanj','kolovoz','rujan','listopad','studeni','prosinac');
+$_lang['lista giorni'] = ['N.D.','ponedjeljak','utorak','srijeda','četvrtak','petak','subota','nedjelja'];
+$_lang['lista mesi'] = ['N.D.','siječanj','veljača','ožujak','travnja','svibanj','lipanj','srpanj','kolovoz','rujan','listopad','studeni','prosinac'];
 
 $_lang['lingue'] = "jezici";
 $_lang['lingua'] = "jezik";

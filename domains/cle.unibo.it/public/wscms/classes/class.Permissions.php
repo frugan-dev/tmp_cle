@@ -8,9 +8,9 @@
 
 class Permissions extends Core {
 	
-	static $accessModules = array();
-	static $userModules = array();
-	static $userModulestree = array();
+	static $accessModules = [];
+	static $userModules = [];
+	static $userModulestree = [];
 	
 	public function __construct() {
 		parent::__construct();
@@ -82,9 +82,9 @@ class Permissions extends Core {
 		return $result;
 	}
 
-	public static function checkExistsSessionCode($user_details,$session,$opt=array('exLevelsAliasId'=>'','exMdules'=>'','redirectModule'=>"home")) 
+	public static function checkExistsSessionCode($user_details,$session,$opt=['exLevelsAliasId'=>'','exMdules'=>'','redirectModule'=>"home"]) 
 	{
-		$optDef = array();	
+		$optDef = [];	
 		$opt = array_merge($optDef,$opt); 
 		$result = false;
 		if (isset($user_details->is_root) && $user_details->is_root == 1) {
@@ -96,9 +96,9 @@ class Permissions extends Core {
 		return $result;
 	}
 
-	public static function getQueryParamsForCompaniesCodeAccess($globalCompanyDefaultDetails_code,$user_details,$opt=array()) 
+	public static function getQueryParamsForCompaniesCodeAccess($globalCompanyDefaultDetails_code,$user_details,$opt=[]) 
 	{
-		$optDef = array();	
+		$optDef = [];	
 		$opt = array_merge($optDef,$opt); 
 		$tableAlias = (isset($opt['tableAlias']) &&  $opt['tableAlias'] != '' ? $opt['tableAlias'].'.' : '');
 		$where = '';
@@ -117,7 +117,7 @@ class Permissions extends Core {
 		} else {
 			if (!isset($item_details->companies_code)) {
 				// preleva il codice 
-				Sql::initQuery($item_table,array('companies_code'),array($item_id),'id = ?','');
+				Sql::initQuery($item_table,['companies_code'],[$item_id],'id = ?','');
 				$item_details = Sql::getRecord();	
 			}
 			// esite il codice e lo confronta
@@ -134,9 +134,9 @@ class Permissions extends Core {
 	{	
 		// carica array access modules
 		$table = Sql::getTablePrefix().'modules';
-		$fields = array('*');
-		Sql::initQuery($table,$fields,array(),'active = 1','');
-		Sql::setOptions(array('fieldTokeyObj'=>'name'));
+		$fields = ['*'];
+		Sql::initQuery($table,$fields,[],'active = 1','');
+		Sql::setOptions(['fieldTokeyObj'=>'name']);
 		Sql::setOrder('section ASC, ordering ASC');
 		$pdoObject = Sql::getPdoObjRecords();
 		return($pdoObject);
@@ -163,9 +163,9 @@ class Permissions extends Core {
 	public static function getLevelModulesRights($levels_id) 
 	{
 		$table = Sql::getTablePrefix().'modules_levels_access AS mla INNER JOIN '.Sql::getTablePrefix()."modules AS m ON (mla.modules_id = m.id)";
-		$fields = array('mla.*,m.name AS module_name');
-		Sql::initQuery($table,$fields,array($levels_id),'mla.levels_id = ?','');
-		Sql::setOptions(array('fieldTokeyObj'=>'module_name'));
+		$fields = ['mla.*,m.name AS module_name'];
+		Sql::initQuery($table,$fields,[$levels_id],'mla.levels_id = ?','');
+		Sql::setOptions(['fieldTokeyObj'=>'module_name']);
 		$obj = Sql::getRecords();	
 		return $obj;
 	
@@ -190,13 +190,13 @@ class Permissions extends Core {
 		//Sql::setDebugMode(1);
 		// carica array access modules
 		//echo '<br>carica db array access modules';
-		$levels_id = (isset($user->levels_id) ? $user->levels_id : 0);
+		$levels_id = ($user->levels_id ?? 0);
 
 		//echo '$levels_id: '.$levels_id;
 		$table = Sql::getTablePrefix().'modules_levels_access AS a INNER JOIN '.Sql::getTablePrefix().'modules AS m ON (a.modules_id = m.id)';
-		$fields = array('a.id AS id, a.read_access AS read_access, a.write_access AS write_access,m.name AS module');
-		Sql::initQuery($table,$fields,array($levels_id),'a.levels_id = ? AND m.active = 1','');
-		Sql::setOptions(array('fieldTokeyObj'=>'module'));
+		$fields = ['a.id AS id, a.read_access AS read_access, a.write_access AS write_access,m.name AS module'];
+		Sql::initQuery($table,$fields,[$levels_id],'a.levels_id = ? AND m.active = 1','');
+		Sql::setOptions(['fieldTokeyObj'=>'module']);
 		self::$accessModules = Sql::getRecords();	
 		//ToolsStrings::dump(self::$accessModules);
 	}
@@ -207,7 +207,7 @@ class Permissions extends Core {
 		return self::$accessModules;		
 	}
 	
-	public static function checkIfModulesIsReadable($module,$user,$opt=array())
+	public static function checkIfModulesIsReadable($module,$user,$opt=[])
 	{	
 		$result = false;
 		//echo '<br>modulo: '.$module;
@@ -259,10 +259,10 @@ class Permissions extends Core {
 
 	public static function getUserLevels()
 	{		
-		Sql::initQuery(Sql::getTablePrefix().'levels',array('*'),array(),'active = 1','title ASC');
-		Sql::setOptions(array('fieldTokeyObj'=>'id'));
+		Sql::initQuery(Sql::getTablePrefix().'levels',['*'],[],'active = 1','title ASC');
+		Sql::setOptions(['fieldTokeyObj'=>'id']);
 		$obj = Sql::getRecords();
-		$obj[0] = (object)array('id'=>0,'title'=>'Anonimo','modules'=>'','active'=>1);
+		$obj[0] = (object)['id'=>0,'title'=>'Anonimo','modules'=>'','active'=>1];
 		return $obj;		
 	}
 		
@@ -312,12 +312,12 @@ class Permissions extends Core {
 		}
 	}
 
-	public static function getSqlQueryItemPermissionForUser($userLoggedData,$opt=array()) 
+	public static function getSqlQueryItemPermissionForUser($userLoggedData,$opt=[]) 
 	{
-		$optDef = array('onlyuser'=>false,'fieldprefix'=>'');	
+		$optDef = ['onlyuser'=>false,'fieldprefix'=>''];	
 		$opt = array_merge($optDef,$opt); 
 		$clause = '';
-		$clauseValues = array();
+		$clauseValues = [];
 		
 		/* permissionfor user owner only */
 		$clause = $opt['fieldprefix'].'users_id = ?';
@@ -331,9 +331,9 @@ class Permissions extends Core {
 		/* se root azzerra tutto */
 		if (isset($userLoggedData->is_root) && intval($userLoggedData->is_root) === 1) {
 			$clause = '';
-			$clauseValues = array();
+			$clauseValues = [];
 		}
-		return array($clause,$clauseValues);
+		return [$clause,$clauseValues];
 	}
 		
 	public static function  checkReadWriteAccessOfItem($table,$id,$userLoggedData) 
@@ -343,7 +343,7 @@ class Permissions extends Core {
 		/* get item data */
 		if ($id > 0) {
 			$item = new stdClass;
-			Sql::initQuery($table,array('id,users_id,access_type'),array($id),'id = ?');
+			Sql::initQuery($table,['id,users_id,access_type'],[$id],'id = ?');
 			$item = Sql::getRecord();
 			if (isset($item->id) && $item->id > 0) {
 

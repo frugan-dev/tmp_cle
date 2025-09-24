@@ -102,21 +102,21 @@
 					$titleField = 'title_'.$lang;
 					$titleValue = (isset($this->App->item->$titleField) ? htmlspecialchars($this->App->item->$titleField,ENT_QUOTES,'UTF-8') : '');
 					$content1Field = 'content_'.$lang;
-					$content1Value = (isset($this->App->item->$content1Field) ? $this->App->item->$content1Field : '');
+					$content1Value = ($this->App->item->$content1Field ?? '');
 				?>		
 				<div class="tab-pane" id="contents-<?php echo $lang; ?>-tab">
 					<fieldset>
 						<div class="form-group">
-							<label for="title_<?php echo $lang; ?>ID" class="col-md-2 control-label">Titolo <?php echo ucfirst($lang); ?> </label>
+							<label for="title_<?php echo $lang; ?>ID" class="col-md-2 control-label">Titolo <?php echo ucfirst((string) $lang); ?> </label>
 							<div class="col-md-7">
-								<input<?php if ($lang == 'it') echo ' required'; ?> type="text" class="form-control" name="title_<?php echo $lang; ?>" placeholder="Inserisci un titolo <?php echo ucfirst($lang); ?>" id="title_<?php echo $lang; ?>ID" rows="3" value="<?php echo $titleValue; ?>">
+								<input<?php if ($lang == 'it') echo ' required'; ?> type="text" class="form-control" name="title_<?php echo $lang; ?>" placeholder="Inserisci un titolo <?php echo ucfirst((string) $lang); ?>" id="title_<?php echo $lang; ?>ID" rows="3" value="<?php echo $titleValue; ?>">
 							</div>
 						</div>
 					</fieldset>	
 					
 					<fieldset>
 						<div class="form-group">
-							<label for="content1_<?php echo $lang; ?>ID" class="col-md-2 control-label">Contenuto <?php echo ucfirst($lang); ?> </label>
+							<label for="content1_<?php echo $lang; ?>ID" class="col-md-2 control-label">Contenuto <?php echo ucfirst((string) $lang); ?> </label>
 							<div class="col-md-8">
 								<textarea name="content_<?php echo $lang; ?>" class="form-control editorHTML" id="content_<?php echo $lang; ?>ID" rows="5"><?php echo $content1Value; ?></textarea>
 							</div>

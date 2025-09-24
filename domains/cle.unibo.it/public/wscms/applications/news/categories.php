@@ -13,19 +13,19 @@ switch(Core::$request->method) {
 	
 	case 'activeCate':
 	case 'disactiveCate':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tableCate,$App->id,array('label'=>$_lang['categoria'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tableCate,$App->id,['label'=>$_lang['categoria'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listCate');
 		die();
 	break;
 
 	case 'moreOrderingCate':
-		Utilities::increaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tableCate,'orderingType'=>$App->params->orderingType,'parent'=>0,'parentField'=>'','label'=>ucfirst($_lang['categoria']).' '.$_lang['spostata']));
+		Utilities::increaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tableCate,'orderingType'=>$App->params->orderingType,'parent'=>0,'parentField'=>'','label'=>ucfirst((string) $_lang['categoria']).' '.$_lang['spostata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listCate');
 	break;
 	case 'lessOrderingCate':
-		Utilities::decreaseFieldOrdering($App->id,$_lang,array('table'=>$App->params->tableCate,'orderingType'=>$App->params->orderingType,'parent'=>0,'parentField'=>'','label'=>ucfirst($_lang['categoria']).' '.$_lang['spostata']));
+		Utilities::decreaseFieldOrdering($App->id,$_lang,['table'=>$App->params->tableCate,'orderingType'=>$App->params->orderingType,'parent'=>0,'parentField'=>'','label'=>ucfirst((string) $_lang['categoria']).' '.$_lang['spostata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listCate');
 	break;
@@ -34,7 +34,7 @@ switch(Core::$request->method) {
 		if ($App->id > 0) {
 			$delete = true;
 			/* controlla se ha voci associate */
-			Sql::initQuery($App->params->tableItem,array('id'),array($App->id),'id_cat = ?');
+			Sql::initQuery($App->params->tableItem,['id'],[$App->id],'id_cat = ?');
 			$count = Sql::countRecord();
 			if($count > 0) {
 				Core::$resultOp->error = 2;
@@ -43,15 +43,15 @@ switch(Core::$request->method) {
 				}
 			if ($delete == true && Core::$resultOp->error == 0) {
 				/* preleva il titolo_it per cancellare la cartella */
-				Sql::initQuery($App->params->tableCate,array('*'),array($App->id),'id = ?');
+				Sql::initQuery($App->params->tableCate,['*'],[$App->id],'id = ?');
 				$App->itemOld = Sql::getRecord();	
 				if (Core::$resultOp->error == 0) {	   		
-					Sql::initQuery($App->tableCate,array('*'),array($App->id),'id = ?');
+					Sql::initQuery($App->tableCate,['*'],[$App->id],'id = ?');
 					Sql::deleteRecord();
 					if (Core::$resultOp->error == 0) {
 						/* cancella la cartella galleria */
 		   			if (isset($App->itemOld->folder_name) && $App->itemOld->folder_name != '' && file_exists($App->itemUploadPathDir.$App->itemOld->folder_name)) rmdir($App->itemUploadPathDir.$App->itemOld->folder_name) or die('impossibile cancellare la cartella'.$App->itemUploadPathDir.$App->itemOld->folder_name);
-						Core::$resultOp->message = ucfirst($App->labels['cate']['item']).' cancellat'.$App->labels['cate']['itemSex'].'!';
+						Core::$resultOp->message = ucfirst((string) $App->labels['cate']['item']).' cancellat'.$App->labels['cate']['itemSex'].'!';
 						}
 					}					
 				}	
@@ -87,7 +87,7 @@ switch(Core::$request->method) {
 			$App->viewMethod = 'formNew';
 			} else {
 				$App->viewMethod = 'list';
-				Core::$resultOp->message = ucfirst($App->labels['cate']['item']).' inserit'.$App->labels['cate']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['cate']['item']).' inserit'.$App->labels['cate']['itemSex'].'!';				
 				}		
 	break;
 	
@@ -120,7 +120,7 @@ switch(Core::$request->method) {
 			} else {
 				if (isset($_POST['submitForm'])) {	
 					$App->viewMethod = 'list';
-					Core::$resultOp->message = ucfirst($App->labels['cate']['item']).' modificat'.$App->labels['cate']['itemSex'].'!';								
+					Core::$resultOp->message = ucfirst((string) $App->labels['cate']['item']).' modificat'.$App->labels['cate']['itemSex'].'!';								
 					} else {						
 						if (isset($_POST['id'])) {
 							$App->pageSubTitle = 'modifica '.$App->labels['cate']['item'];
@@ -141,7 +141,7 @@ switch(Core::$request->method) {
 	
 	case 'messageCate':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';
 	break;
 	
@@ -167,7 +167,7 @@ switch((string)$App->viewMethod) {
 	
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->tableCate,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tableCate,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->fieldsCate);
 		$App->templateApp = 'formCate.tpl.php';
@@ -176,14 +176,14 @@ switch((string)$App->viewMethod) {
 		
 	case 'list':
 		$App->items = new stdClass;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);	
-		$qryFields = array('c.*','(SELECT COUNT(i.id) FROM '.$App->tableItem.' AS i WHERE i.id_cat = c.id) AS numitems');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);	
+		$qryFields = ['c.*','(SELECT COUNT(i.id) FROM '.$App->tableItem.' AS i WHERE i.id_cat = c.id) AS numitems'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsCate,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsCate,'');
 			}		
 		if (isset($sessClause) && $sessClause != '') $clause .= $sessClause;
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {

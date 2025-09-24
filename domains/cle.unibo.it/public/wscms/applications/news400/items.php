@@ -9,16 +9,16 @@ if(isset($_POST['id_cat'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleSi
 if (Core::$request->method == 'listItem' && $App->id > 0) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'id_cat',$App->id);
 
 /* gestione sessione -> id_cat */	
-$App->id_cat = (isset($_MY_SESSION_VARS[$App->sessionName]['id_cat']) ? $_MY_SESSION_VARS[$App->sessionName]['id_cat'] : 0);
+$App->id_cat = ($_MY_SESSION_VARS[$App->sessionName]['id_cat'] ?? 0);
 
 
-Sql::initQuery($App->params->tables['cate'],array('*'),array(),'active = 1');
-Sql::setOptions(array('fieldTokeyObj'=>'id'));
+Sql::initQuery($App->params->tables['cate'],['*'],[],'active = 1');
+Sql::setOptions(['fieldTokeyObj'=>'id']);
 $obj = Sql::getRecords();
 if (Core::$resultOp->error > 0) {echo Core::$resultOp->message; die;}
 /* sistemo i dati */
 
-	$arr = array();
+	$arr = [];
 	if (is_array($obj) && is_array($obj) && count($obj) > 0) {
 		foreach ($obj AS $value) {	
 			$field = 'title_'.$_lang['user'];	
@@ -28,14 +28,14 @@ if (Core::$resultOp->error > 0) {echo Core::$resultOp->message; die;}
 		}
 $App->categories = $arr;
 if (!is_array($App->categories) || (is_array($App->categories) && count($App->categories) == 0)) {
-	ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/messageCate/2/'.urlencode($_lang['Devi creare o attivare almeno una categoria!']));
+	ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/messageCate/2/'.urlencode((string) $_lang['Devi creare o attivare almeno una categoria!']));
 	die();
 	}
 
 switch(Core::$request->method) {
 	case 'activeItem':
 	case 'disactiveItem':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->params->tables['item'],$App->id,array('label'=>$_lang['voce'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->params->tables['item'],$App->id,['label'=>$_lang['voce'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']]);
 		$App->viewMethod = 'list';		
 	break;
 	
@@ -44,47 +44,47 @@ switch(Core::$request->method) {
 			$delete = true;	
 			
 			/* controlla se ha immagini associate */
-			Sql::initQuery($App->params->tables['resources'],array('id'),array($App->id),'id_owner = ? AND resource_type = 1');
+			Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 1');
 			if (Sql::countRecord() > 0) {
 				Core::$resultOp->type = 2;
-				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',$_lang['immagini'],$_lang['Ci sono ancora %ITEM% associate!']));
+				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['immagini'],(string) $_lang['Ci sono ancora %ITEM% associate!']));
 				$delete = false;	
 				}						
 			/* controlla se ha files associati */			
-			Sql::initQuery($App->params->tables['resources'],array('id'),array($App->id),'id_owner = ? AND resource_type = 2');
+			Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 2');
 			if (Sql::countRecord() > 0) {
 				Core::$resultOp->type = 2;
-				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',$_lang['files'],$_lang['Ci sono ancora %ITEM% associati!']));
+				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['files'],(string) $_lang['Ci sono ancora %ITEM% associati!']));
 				$delete = false;	
 				}		
 				
 			/* controlla se ha immagini gallerie associate */
-			Sql::initQuery($App->params->tables['resources'],array('id'),array($App->id),'id_owner = ? AND resource_type = 3');
+			Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 3');
 			if (Sql::countRecord() > 0) {
 				Core::$resultOp->type = 2;
-				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',$_lang['immagini'],$_lang['Ci sono ancora %ITEM% associate!']));	
+				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['immagini'],(string) $_lang['Ci sono ancora %ITEM% associate!']));	
 				$delete = false;	
 				}						
 			/* controlla se ha video associati */			
-			Sql::initQuery($App->params->tables['resources'],array('id'),array($App->id),'id_owner = ? AND resource_type = 4');
+			Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 4');
 			if (Sql::countRecord() > 0) {
 				Core::$resultOp->type = 2;
-				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',$_lang['video'],$_lang['Ci sono ancora %ITEM% associati!']));	
+				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['video'],(string) $_lang['Ci sono ancora %ITEM% associati!']));	
 				$delete = false;
 				}	
 						
 			if ($delete == true && Core::$resultOp->error == 0) {					
 				$App->itemOld = new stdClass;
-				Sql::initQuery($App->params->tables['item'],array('filename'),array($App->id),'id = ?');
+				Sql::initQuery($App->params->tables['item'],['filename'],[$App->id],'id = ?');
 			   $App->itemOld = Sql::getRecord();
 				if (Core::$resultOp->error == 0) {
-					Sql::initQuery($App->params->tables['item'],array('id'),array($App->id),'id = ?');
+					Sql::initQuery($App->params->tables['item'],['id'],[$App->id],'id = ?');
 					Sql::deleteRecord();
 					if (Core::$resultOp->error == 0) {
 						if (isset($App->itemOld->filename) && file_exists($App->params->uploadPaths['item'].$App->itemOld->filename)) {
 							@unlink($App->params->uploadPaths['item'].$App->itemOld->filename);			
 							}
-						Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',$_lang['voce'],$_lang['%ITEM% cancellata'])).'!';
+						Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['voce'],(string) $_lang['%ITEM% cancellata'])).'!';
 						}
 					}
 				}
@@ -93,7 +93,7 @@ switch(Core::$request->method) {
 	break;
 	
 	case 'newItem':
-		$App->pageSubTitle = preg_replace('/%ITEM%/',$_lang['voce'],$_lang['inserisci %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['voce'],(string) $_lang['inserisci %ITEM%']);
 		$App->viewMethod = 'formNew';	
 	break;
 	
@@ -115,7 +115,7 @@ switch(Core::$request->method) {
 			$_POST['org_filename'] = ToolsUpload::getOrgFilename();
 			if (Core::$resultOp->error == 0) {   		
 				/* parsa i post in base ai campi */
-				Form::parsePostByFields($App->params->fields['item'],$_lang,array());
+				Form::parsePostByFields($App->params->fields['item'],$_lang,[]);
 				if (Core::$resultOp->error == 0) {					
 					/* se scadenza controllla le date */
 					if ($_POST['scadenza'] == 1) {
@@ -136,16 +136,12 @@ switch(Core::$request->method) {
 			} else {
 				Core::$resultOp->error = 1;
 				} 		
-		list($id,$App->viewMethod,$App->pageSubTitle,Core::$resultOp->message) = Form::getInsertRecordFromPostResults(0,Core::$resultOp,'',
-			array(		
-				'label inserted'=>preg_replace('/%ITEM%/',$_lang['voce'],$_lang['%ITEM% inserita']),
-				'label insert'=>preg_replace('/%ITEM%/',$_lang['voce'],$_lang['inserisci %ITEM%'])	
-			)
+		[$id, $App->viewMethod, $App->pageSubTitle, Core::$resultOp->message] = Form::getInsertRecordFromPostResults(0,Core::$resultOp,''
 		);
 	break;
 
 	case 'modifyItem':				
-		$App->pageSubTitle = preg_replace('/%ITEM%/',$_lang['voce'],$_lang['modifica %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['voce'],(string) $_lang['modifica %ITEM%']);
 		$App->viewMethod = 'formMod';
 	break;
 	
@@ -157,7 +153,7 @@ switch(Core::$request->method) {
 	   	if (Core::$resultOp->error == 0) {
 	   		
 				/* preleva filename vecchio */
-				Sql::initQuery($App->params->tables['item'],array('filename','org_filename'),array($App->id),'id = ?');
+				Sql::initQuery($App->params->tables['item'],['filename','org_filename'],[$App->id],'id = ?');
 				$App->itemOld = Sql::getRecord();
 				if (Core::$resultOp->error == 0) {							
 					/* preleva il filename dal form */	  
@@ -179,7 +175,7 @@ switch(Core::$request->method) {
 				   		$_POST['org_filename'] = ''; 	
 				   		}	   				
 						/* parsa i post in base ai campi */
-						Form::parsePostByFields($App->params->fields['item'],$_lang,array());			
+						Form::parsePostByFields($App->params->fields['item'],$_lang,[]);			
 						if (Core::$resultOp->error == 0) {		
 							/* se scadenza controllla le date */
 							if ($_POST['scadenza'] == 1) {
@@ -206,13 +202,7 @@ switch(Core::$request->method) {
 			} else {
 				Core::$resultOp->error = 1;
 				} 
-		list($id,$App->viewMethod,$App->pageSubTitle,Core::$resultOp->message) = Form::getUpdateRecordFromPostResults($App->id,Core::$resultOp,'',
-			array(
-				'label modified'=>preg_replace('/%ITEM%/',$_lang['voce'],$_lang['%ITEM% modificata']),
-				'label modify'=>preg_replace('/%ITEM%/',$_lang['voce'],$_lang['modifica %ITEM%']),
-				'label insert'=>preg_replace('/%ITEM%/',$_lang['voce'],$_lang['inserisci %ITEM%']),
-				'label modify applied'=>$_lang['modifiche applicate']
-			)
+		[$id, $App->viewMethod, $App->pageSubTitle, Core::$resultOp->message] = Form::getUpdateRecordFromPostResults($App->id,Core::$resultOp,''
 		);	
 	break;
 	
@@ -223,7 +213,7 @@ switch(Core::$request->method) {
 
 	case 'messageItem':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';
 	break;
 
@@ -257,7 +247,7 @@ switch((string)$App->viewMethod) {
 	
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->params->tables['item'],array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->params->tables['item'],['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();		
 		if (Core::$resultOp->error == 1) Utilities::setItemDataObjWithPost($App->item,$App->params->fields['item']);
 		if (!isset($App->item->datatimeins)) $App->item->datatimeins = $App->nowDateTime;
@@ -274,9 +264,9 @@ switch((string)$App->viewMethod) {
 		$App->item->datatimeins = $App->nowDateTime;	
 		$App->item->datatimescaini = $App->nowDateTime;
 		$App->item->datatimescaend = $App->nowDateTime;						
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);				
-		$qryFields = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);				
+		$qryFields = [];
 		$qryFields[] = 'ite.*';	
 		
 		$qryFields[] = "(SELECT COUNT(img.id) FROM ".$App->params->tables['resources']." AS img WHERE img.id_owner = ite.id AND resource_type = 1) AS images";
@@ -284,12 +274,12 @@ switch((string)$App->viewMethod) {
 		$qryFields[] = "(SELECT COUNT(gal.id) FROM ".$App->params->tables['resources']." AS gal WHERE gal.id_owner = ite.id AND resource_type = 3) AS gallery";		
 		$qryFields[] = "(SELECT COUNT(vid.id) FROM ".$App->params->tables['resources']." AS vid WHERE vid.id_owner = ite.id AND resource_type = 4) AS videos";	
 
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		$and = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['item'],'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['item'],'');
 			}	
 		if ($App->id_cat > 0) {
 			$clause .= "id_cat = ?";
@@ -307,7 +297,7 @@ switch((string)$App->viewMethod) {
 		Sql::setOrder('datatimeins '.$App->params->ordersType['item']);
 		if (Core::$resultOp->error <> 1) $obj = Sql::getRecords();
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (is_array($obj) && is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {	
 				$field = 'title_'.$_lang['user'];	
@@ -327,11 +317,11 @@ switch((string)$App->viewMethod) {
 		
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
-		$App->paginationTitle = preg_replace('/%START%/',$App->pagination->firstPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',$App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',$App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
 		
-		$App->pageSubTitle = preg_replace('/%ITEM%/',$_lang['voci'],$_lang['lista delle %ITEM%']);
+		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['voci'],(string) $_lang['lista delle %ITEM%']);
 		$App->templateApp = 'listItem.html';	
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.$App->pathApplications.Core::$request->action.'/templates/'.$App->templateUser.'/js/listItem.js"></script>';
 	break;	

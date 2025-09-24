@@ -9,7 +9,7 @@
 			<img src="<?php echo $App->params->template['defuploaddir']; ?><?php echo $template->filename; ?>" class="img-thumbnail" alt="<?php echo $template->filename; ?>">
 		</a>
 		<?php else: ?>
-			<img src="<?php echo $App->params->uploadDirs['item']; ?>default/image.png" class="img-thumbnail" alt="<?php ucfirst($App->lang['immagine di default']); ?>">
+			<img src="<?php echo $App->params->uploadDirs['item']; ?>default/image.png" class="img-thumbnail" alt="<?php ucfirst((string) $App->lang['immagine di default']); ?>">
 		<?php endif; ?>
 	</div>
 </div>

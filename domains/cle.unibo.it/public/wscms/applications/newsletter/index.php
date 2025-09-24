@@ -68,7 +68,7 @@ switch(Core::$request->method) {
 	case 'confirmIndSos':
 	case 'deleteOldIndSos':
 		$App->sessionName = 'newsletter-indirizzi-sos';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10'));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10']);
 		$Module = new Module($App->sessionName,$App->tableInd);	
 		include_once(PATH.'applications/'.Core::$request->action."/indirizzisos.php");
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.'applications/'.Core::$request->action.'/templates/'.$App->templateUser.'/js/indirizzisos.js"></script>';	
@@ -85,7 +85,7 @@ switch(Core::$request->method) {
 	case 'pageIndCat':
 	case 'messageIndCat':
 		$App->sessionName = 'newsletter-indirizzi-cat';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10'));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10']);
 		$Module = new Module($App->sessionName,$App->tableInd);	
 		include_once(PATH.'applications/'.Core::$request->action."/indirizzi-cat.php");	
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.'applications/'.Core::$request->action.'/templates/'.$App->templateUser.'/js/indirizzi-cat.js"></script>';
@@ -104,7 +104,7 @@ switch(Core::$request->method) {
 	case 'pageInd':
 	case 'messageInd':
 		$App->sessionName = 'newsletter-indirizzi';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10'));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10']);
 		$Module = new Module($App->sessionName,$App->tableInd);	
 		include_once(PATH.'applications/'.Core::$request->action."/indirizzi.php");	
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.'applications/'.Core::$request->action.'/templates/'.$App->templateUser.'/js/indirizzi.js"></script>';
@@ -116,7 +116,7 @@ switch(Core::$request->method) {
 	case 'ajaxMoveAddressToSendList':
 	case 'ajaxDeleteAddressToSendList';
 		$App->sessionName = 'newsletter-invio';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1]);
 		$Module = new Module($App->sessionName,$App->tableInd);
 		include_once(PATH.'applications/'.Core::$request->action."/invio.php");	
 		$App->defaultJavascript = "var appFolder = '".Core::$request->action."';";
@@ -129,7 +129,7 @@ switch(Core::$request->method) {
 	case 'ajaxMoveAddressCatToSendList':
 	case 'ajaxDeleteAddressCatToSendList';
 		$App->sessionName = 'newsletter-inviocat';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1]);
 		$Module = new Module($App->sessionName,$App->tableInd);
 		include_once(PATH.'applications/'.Core::$request->action."/invio-categories.php");	
 		$App->defaultJavascript = "var appFolder = '".Core::$request->action."';";
@@ -176,7 +176,7 @@ switch(Core::$request->method) {
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.'applications/'.Core::$request->action.'/templates/'.$App->templateUser.'/js/newsletter.js"></script>';
 	break;
 }
-switch(substr(Core::$request->method,-4,4)) {	
+switch(substr((string) Core::$request->method,-4,4)) {	
 	case 'Conf':
 		$Module = new Module(Core::$request->action,$App->params->tables['item']);
 		include_once(PATH.$App->pathApplications.Core::$request->action."/config.php");

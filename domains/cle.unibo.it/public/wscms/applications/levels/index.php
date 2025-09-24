@@ -8,7 +8,7 @@ include_once(PATH.$App->pathApplications.Core::$request->action."/classes/class.
 $App->params = new stdClass();
 $App->params->label = "Livelli utente";
 /* prende i dati del modulo */
-Sql::initQuery(DB_TABLE_PREFIX.'modules',array('label','help_small','help'),array('levels'),'name = ?');
+Sql::initQuery(DB_TABLE_PREFIX.'modules',['label','help_small','help'],['levels'],'name = ?');
 $obj = Sql::getRecord();
 if (Core::$resultOp->error == 0 && isset($obj) && count((array)$obj) > 1) $App->params = $obj; 
 
@@ -27,28 +27,28 @@ $App->module_home_id = 3;
 $App->id = intval(Core::$request->param);
 if (isset($_POST['id'])) $App->id = intval($_POST['id']);
 
-$App->fields = array(
-	'id'=>array('label'=>'ID','required'=>false,'type'=>'int|8','autoinc'=>true,'primary'=>true),
-	'title'=>array('label'=>$_lang['titolo'],'searchTable'=>true,'required'=>true,'type'=>'varchar|255'),
-	'modules'									=> array (
+$App->fields = [
+	'id'=>['label'=>'ID','required'=>false,'type'=>'int|8','autoinc'=>true,'primary'=>true],
+	'title'=>['label'=>$_lang['titolo'],'searchTable'=>true,'required'=>true,'type'=>'varchar|255'],
+	'modules'									=>  [
 		'label'									=> Config::$langVars['moduli'],
 		'searchTable'							=> false,
 		'type'									=> 'mediumtext',
 		'defValue'                              => '',
         'forcedValue'                           => ''
-	),
-	'active'                                    => array (
+	],
+	'active'                                    =>  [
         'label'                                 => Config::$langVars['attiva'],
         'required'                              => false,
         'type'                                  => 'int|1',
         'defValue'                              => 1,
         'forcedValue'                           => 1
-    )
-);
+    ]
+];
 
 $App->params->tables['ass-item'] = DB_TABLE_PREFIX.'modules_levels_access';
 
-if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>''));
+if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'']);
 
 if (isset($_POST['itemsforpage']) && isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) && $_MY_SESSION_VARS[$App->sessionName]['ifp'] != $_POST['itemsforpage']) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'ifp',$_POST['itemsforpage']);
 if (isset($_POST['searchFromTable']) && isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != $_POST['searchFromTable']) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'srcTab',$_POST['searchFromTable']);
@@ -59,16 +59,16 @@ switch(Core::$request->method) {
 
 	case 'active':
 	case 'disactive':
-		Sql::manageFieldActive(Core::$request->method,$App->tables,$App->id,array('label'=>$_lang['voce'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']));
+		Sql::manageFieldActive(Core::$request->method,$App->tables,$App->id,['label'=>$_lang['voce'],'attivata'=>$_lang['attivato'],'disattivata'=>$_lang['disattivato']]);
 		$App->viewMethod = 'list';		
 	break;
 	
 	case 'delete':
 		if ($App->id > 0) {
-			Sql::initQuery($App->tables,array('id'),array($App->id),'id = ?');
+			Sql::initQuery($App->tables,['id'],[$App->id],'id = ?');
 			Sql::deleteRecord();
 			if(Core::$resultOp->error == 0) {
-				Core::$resultOp->message = ucfirst($_lang['voce cancellata']).'!';
+				Core::$resultOp->message = ucfirst((string) $_lang['voce cancellata']).'!';
 				}
 			}		
 		$App->viewMethod = 'list';
@@ -77,7 +77,7 @@ switch(Core::$request->method) {
 	case 'new':		
 		$App->item = new stdClass;		
 		$App->item->active = 1;
-		$App->item->modules = array();	
+		$App->item->modules = [];	
 		$App->pageSubTitle = $_lang['inserisci voce'];
 		$App->viewMethod = 'formNew';	
 	break;
@@ -89,7 +89,7 @@ switch(Core::$request->method) {
 			$_POST['modules_read'][$App->module_home_id] = 1;
 			
 			// parsa i post in base ai campi
-			Form::parsePostByFields($App->fields,Core::$langVars,array());
+			Form::parsePostByFields($App->fields,Core::$langVars,[]);
 			if (Core::$resultOp->error > 0) {
 				$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 				ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/newItem');
@@ -102,24 +102,24 @@ switch(Core::$request->method) {
 			// prende ultimo id
 			$App->id = Sql::getLastInsertedIdVar();
 			// asserra i record con lo stesso livello
-			Sql::initQuery($App->params->tables['ass-item'],array(),array($App->id),'levels_id = ?');
+			Sql::initQuery($App->params->tables['ass-item'],[],[$App->id],'levels_id = ?');
 			Sql::deleteRecord();
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db');die(); }	
 			
 			// memorizzo associazioni
 			foreach($App->userModules AS $sectionKey=>$sectionModules) {
 				foreach($sectionModules AS $module) {					
-					$accessread = (isset($_POST['modules_read'][$module->id]) ? $_POST['modules_read'][$module->id] : 0);
-					$accesswrite = (isset($_POST['modules_write'][$module->id]) ? $_POST['modules_write'][$module->id] : 0);
+					$accessread = ($_POST['modules_read'][$module->id] ?? 0);
+					$accesswrite = ($_POST['modules_write'][$module->id] ?? 0);
 					
-					Sql::initQuery($App->params->tables['ass-item'],array('modules_id','users_id','levels_id','read_access','write_access'),array($module->id,'0',$App->id,$accessread,$accesswrite),'');
+					Sql::initQuery($App->params->tables['ass-item'],['modules_id','users_id','levels_id','read_access','write_access'],[$module->id,'0',$App->id,$accessread,$accesswrite],'');
 					Sql::insertRecord();
 					if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db');die(); }
 				}
 			}
 
 						
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['livello'],Core::$langVars['%ITEM% inserito']));
+			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['livello'],(string) Core::$langVars['%ITEM% inserito']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');				
 			
 		} else {
@@ -143,7 +143,7 @@ switch(Core::$request->method) {
 			$_POST['modules_read'][$App->module_home_id] = 1;
 						
 			// asserra i record con lo stesso livello
-			Sql::initQuery($App->params->tables['ass-item'],array(),array($App->id),'levels_id = ?');
+			Sql::initQuery($App->params->tables['ass-item'],[],[$App->id],'levels_id = ?');
 			Sql::deleteRecord();
 			if (Core::$resultOp->error > 0) { 
 				//ToolsStrings::redirect(URL_SITE.'error/db');
@@ -153,10 +153,10 @@ switch(Core::$request->method) {
 			// memorizzo associazioni
 			foreach($App->userModules AS $sectionKey=>$sectionModules) {
 				foreach($sectionModules AS $module) {					
-					$accessread = (isset($_POST['modules_read'][$module->id]) ? $_POST['modules_read'][$module->id] : 0);
-					$accesswrite = (isset($_POST['modules_write'][$module->id]) ? $_POST['modules_write'][$module->id] : 0);
+					$accessread = ($_POST['modules_read'][$module->id] ?? 0);
+					$accesswrite = ($_POST['modules_write'][$module->id] ?? 0);
 					
-					Sql::initQuery($App->params->tables['ass-item'],array('modules_id','users_id','levels_id','read_access','write_access'),array($module->id,'0',$App->id,$accessread,$accesswrite),'');
+					Sql::initQuery($App->params->tables['ass-item'],['modules_id','users_id','levels_id','read_access','write_access'],[$module->id,'0',$App->id,$accessread,$accesswrite],'');
 					Sql::insertRecord();
 					if (Core::$resultOp->error > 0) { 
 						//ToolsStrings::redirect(URL_SITE_ADMIN.'error/db');
@@ -165,7 +165,7 @@ switch(Core::$request->method) {
 				}
 			}
 						
-			Form::parsePostByFields($App->fields,Core::$langVars,array());
+			Form::parsePostByFields($App->fields,Core::$langVars,[]);
 			if (Core::$resultOp->error > 0) {
 				$_SESSION['message'] = '1|'.implode('<br>', Core::$resultOp->messages);
 				//ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyItem/'.$App->id);
@@ -180,7 +180,7 @@ switch(Core::$request->method) {
 			
 			//die('fatto');
 
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',Core::$langVars['livello'],Core::$langVars['%ITEM% modificato']));
+			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['livello'],(string) Core::$langVars['%ITEM% modificato']));
 			if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 				ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyItem/'.$App->id);
 			} else {
@@ -199,7 +199,7 @@ switch(Core::$request->method) {
 
 	case 'message':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';
 	break;
 
@@ -219,7 +219,7 @@ switch((string)$App->viewMethod) {
 	case 'formNew':
 		$App->item = new stdClass;		
 		$App->item->active = 1;
-		$App->item->modules = array();
+		$App->item->modules = [];
 		if (Core::$resultOp->error == 1) Utilities::setItemDataObjWithPost($App->item,$App->fields);
 		$App->templateApp = 'formItem.html';
 		$App->methodForm = 'insert';
@@ -228,10 +228,10 @@ switch((string)$App->viewMethod) {
 	
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->tables,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tables,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error == 1) Utilities::setItemDataObjWithPost($App->item,$App->fields);
-		$App->item->modules = explode(',', $App->item->modules);
+		$App->item->modules = explode(',', (string) $App->item->modules);
 		$App->templateApp = 'formItem.html';
 		$App->methodForm = 'update';	
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.$App->pathApplications. Core::$request->action.'/templates/'.$App->templateUser.'/js/formItem.js"></script>';
@@ -239,15 +239,15 @@ switch((string)$App->viewMethod) {
 
 	case 'list':
 		$App->item = new stdClass;						
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
-		$qryFields = array('*');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
+		$qryFields = ['*'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		$and = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fields,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fields,'');
 			}		
 		if (isset($sessClause) && $sessClause != '') $clause .= $and.'('.$sessClause.')';
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {
@@ -261,12 +261,12 @@ switch((string)$App->viewMethod) {
 
 		
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {	
 				
 				$App->level_modules = Permissions::getLevelModulesRights($value->id);
-				$modules = array();
+				$modules = [];
 				foreach ($App->level_modules AS $k1=>$v1) {	
 					if ($v1->read_access == 1 || $v1->write_access == 1) {
 						$modules[] = $k1;   	
@@ -284,9 +284,9 @@ switch((string)$App->viewMethod) {
 		
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
-		$App->paginationTitle = preg_replace('/%START%/',$App->pagination->firstPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',$App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',$App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
 
 		$App->pageSubTitle = $_lang['lista delle voci'];
 		$App->templateApp = 'listItems.html';	

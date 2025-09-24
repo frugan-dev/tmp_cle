@@ -31,33 +31,33 @@ if(isset($_POST['searchFromTable'])) $_MY_SESSION_VARS = $my_session->addSession
 
 switch(Core::$request->method) {
 	case 'moreOrdering':
-		$Utilities::increaseFieldOrdering($App->id,array('table'=>$App->table,'orderingType'=>$App->orderingType,'parent'=>false,'sexSuffix'=>$App->labels['main']['itemSex'],'labelItem'=>ucfirst($App->labels['main']['item'])));
+		$Utilities::increaseFieldOrdering($App->id,['table'=>$App->table,'orderingType'=>$App->orderingType,'parent'=>false,'sexSuffix'=>$App->labels['main']['itemSex'],'labelItem'=>ucfirst((string) $App->labels['main']['item'])]);
 		$App->viewMethod = 'list';	
 	break;
 	case 'lessOrdering':
-		$Utilities::decreaseFieldOrdering($App->id,array('table'=>$App->table,'orderingType'=>$App->orderingType,'parent'=>false,'sexSuffix'=>$App->labels['main']['itemSex'],'labelItem'=>ucfirst($App->labels['main']['item'])));
+		$Utilities::decreaseFieldOrdering($App->id,['table'=>$App->table,'orderingType'=>$App->orderingType,'parent'=>false,'sexSuffix'=>$App->labels['main']['itemSex'],'labelItem'=>ucfirst((string) $App->labels['main']['item'])]);
 		$App->viewMethod = 'list';		
 	break;
 
 	case 'active':
 	case 'disactive':
-		Sql::manageFieldActive(Core::$request->method,$App->table,$App->id,ucfirst($App->labels['main']['item']),$App->labels['main']['itemSex']);
+		Sql::manageFieldActive(Core::$request->method,$App->table,$App->id,ucfirst((string) $App->labels['main']['item']));
 		$App->viewMethod = 'list';		
 	break;
 		
 	case 'delete':
 		if ($App->id > 0) {
 			if (!isset($App->itemOld)) $App->itemOld = new stdClass;
-			Sql::initQuery($App->table,array('filename'),array($App->id),'id = ?');
+			Sql::initQuery($App->table,['filename'],[$App->id],'id = ?');
 		   $App->itemOld = Sql::getRecord();
 		   if (Core::$resultOp->error == 0) {
-				Sql::initQuery($App->table,array('id'),array($App->id),'id = ?');
+				Sql::initQuery($App->table,['id'],[$App->id],'id = ?');
 				Sql::deleteRecord();
 				if (Core::$resultOp->error == 0) {
 					if (isset($App->itemOld->filename) && file_exists($App->uploadPathDir.$App->itemOld->filename)) {			
 						@unlink($App->uploadPathDir.$App->itemOld->filename);			
 						}
-					Core::$resultOp->message = ucfirst($App->labels['main']['item']).' cancellat'.$App->labels['main']['itemSex'].'!';				
+					Core::$resultOp->message = ucfirst((string) $App->labels['main']['item']).' cancellat'.$App->labels['main']['itemSex'].'!';				
 					}
 				}
 			}			
@@ -75,7 +75,7 @@ switch(Core::$request->method) {
 	   	if (!isset($_POST['created'])) $_POST['created'] = $App->nowDateTime; 
 			if (!isset($_POST['ordering'])) $_POST['ordering'] = Sql::getMaxValueOfField($App->table,'ordering','') + 1;   		   	
 	   	/* preleva il filename dal form */	
-	   	ToolsUpload::setFilenameFormat(array('jpg','png'));   	
+	   	ToolsUpload::setFilenameFormat(['jpg','png']);   	
 	   	ToolsUpload::getFilenameFromForm();	   	
 	   	$_POST['filename'] = ToolsUpload::getFilenameMd5();
 	   	$_POST['org_filename'] = ToolsUpload::getOrgFilename();	
@@ -102,7 +102,7 @@ switch(Core::$request->method) {
 			$App->viewMethod = 'formNew';
 			} else {
 				$App->viewMethod = 'list';
-				Core::$resultOp->message = ucfirst($App->labels['main']['item']).' inserit'.$App->labels['main']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['main']['item']).' inserit'.$App->labels['main']['itemSex'].'!';				
 				}
 	break;
 	
@@ -118,11 +118,11 @@ switch(Core::$request->method) {
 			if (!isset($_POST['created'])) $_POST['created'] = $App->nowDateTime;
 			if (!isset($_POST['ordering'])) $_POST['ordering'] = Sql::getMaxValueOfField($App->table,'ordering','') + 1;
 			/* preleva filename vecchio */
-			Sql::initQuery($App->table,array('filename','org_filename'),array($App->id),'id = ?');
+			Sql::initQuery($App->table,['filename','org_filename'],[$App->id],'id = ?');
 	   	$App->itemOld = Sql::getRecord();
 	   	if (Core::$resultOp->error == 0) {
 				/* preleva il filename dal form */	
-				ToolsUpload::setFilenameFormat(array('jpg','png'));
+				ToolsUpload::setFilenameFormat(['jpg','png']);
 		   	ToolsUpload::getFilenameFromForm();	
 		   	if (Core::$resultOp->error == 0) {
 			   	$_POST['filename'] = ToolsUpload::getFilenameMd5();
@@ -157,7 +157,7 @@ switch(Core::$request->method) {
 			} else {
 				if (isset($_POST['submitForm'])) {	
 					$App->viewMethod = 'list';
-					Core::$resultOp->message = ucfirst($App->labels['main']['item']).' modificat'.$App->labels['main']['itemSex'].'!';								
+					Core::$resultOp->message = ucfirst((string) $App->labels['main']['item']).' modificat'.$App->labels['main']['itemSex'].'!';								
 					} else {						
 						if (isset($_POST['id'])) {
 							$App->id = $_POST['id'];
@@ -179,7 +179,7 @@ switch(Core::$request->method) {
 	
 	case 'message':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';		
 	break;
 
@@ -208,7 +208,7 @@ switch((string)$App->viewMethod) {
 	
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->table,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->table,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->fields);
 		$App->item->filenameRequired = (isset($App->item->filename) && $App->item->filename != '' ? false : true);
@@ -219,14 +219,14 @@ switch((string)$App->viewMethod) {
 	case 'list':
 		$App->items = new stdClass;
 		$App->item = new stdClass;						
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);				
-		$qryFields = array('*');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);				
+		$qryFields = ['*'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fields,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fields,'');
 			}		
 		if (isset($sessClause) && $sessClause != '') $clause .= $sessClause;
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {

@@ -85,7 +85,7 @@
 										</td>								
 										<td>{{ value.title }}</a></td>
 										<td>	
-											<a class="" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/downloadBfil/{{ value.id }}" title="<?php echo ucfirst($App->lang['scarica il file']); ?> {{ value.org_filename }}">
+											<a class="" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/downloadBfil/{{ value.id }}" title="<?php echo ucfirst((string) $App->lang['scarica il file']); ?> {{ value.org_filename }}">
 												{{ value.filename }}
 											</a>
 										</td>	

@@ -5,7 +5,7 @@ class Pages extends Core {
 
 	public static $output = '';
 	public static $level = 0;
-	public static $colum = array();
+	public static $colum = [];
 	public static $subItems = 0;
 	public static $treeData = '';
 	
@@ -16,7 +16,7 @@ class Pages extends Core {
 	
 	public static function createMenuFromSubProducts($obj,$opt) 
 	{	
-		$optDef = array(); 
+		$optDef = []; 
 		$opt = array_merge($optDef,$opt);
 		self::resetOutput();
 		
@@ -34,11 +34,11 @@ class Pages extends Core {
 
 	public static function createMenuDivFromSubPages($obj,$parent,$opt) 
 	{	
-		$optDef = array(
+		$optDef = [
 			'ulIsMain'=>1, 
 			'pagesModule' => 'pages/',
 			'valueUrlDefault' => '%ID%/%SEOCLEAN%'
-		);
+		];
 		$opt = array_merge($optDef,$opt);
 
 		$has_children = false;
@@ -123,13 +123,13 @@ class Pages extends Core {
 
 						if ($value->url != '') {
 							$url = $value->url;
-							$url = ToolsStrings::parseHtmlContent($url,array());
+							$url = ToolsStrings::parseHtmlContent($url,[]);
 						}
 
 
-						$url = preg_replace('/%SEO%/',$titlesVal['titleSeo'],$url);
-						$url = preg_replace('/%SEOCLEAN%/', SanitizeStrings::urlslug($titlesVal['titleSeo'],array('delimiter'=>'-')),$url);
-						$url = preg_replace('/%SEOENCODE%/', urlencode($titlesVal['titleSeo']),$url);
+						$url = preg_replace('/%SEO%/',(string) $titlesVal['titleSeo'],(string) $url);
+						$url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($titlesVal['titleSeo'],['delimiter'=>'-']),$url);
+						$url = preg_replace('/%SEOENCODE%/', urlencode((string) $titlesVal['titleSeo']),$url);
 
 						$title = $titlesVal['title'];
 
@@ -141,24 +141,24 @@ class Pages extends Core {
 						self::$output .= $href.PHP_EOL;
 
 						if ($value->alias == $opt['activepage']) {
-							self::$output = preg_replace('/%CLASSACTIVE%/',$opt['classactive'],self::$output);
-							self::$output = preg_replace('/%TEXTACTIVE%/',$opt['textactive'],self::$output);
+							self::$output = preg_replace('/%CLASSACTIVE%/',(string) $opt['classactive'],self::$output);
+							self::$output = preg_replace('/%TEXTACTIVE%/',(string) $opt['textactive'],(string) self::$output);
 						} else {
 							self::$output = preg_replace('/%CLASSACTIVE%/','',self::$output);
-							self::$output = preg_replace('/%TEXTACTIVE%/','',self::$output);
+							self::$output = preg_replace('/%TEXTACTIVE%/','',(string) self::$output);
 						}
 
-						self::$output = preg_replace('/%URL%/',$url,self::$output);
-						self::$output = preg_replace('/%URLTITLE%/',$title,self::$output);
-						self::$output = preg_replace('/%TITLE%/',$title,self::$output);
+						self::$output = preg_replace('/%URL%/',$url,(string) self::$output);
+						self::$output = preg_replace('/%URLTITLE%/',(string) $title,(string) self::$output);
+						self::$output = preg_replace('/%TITLE%/',(string) $title,(string) self::$output);
 						
 						
-						self::$output = preg_replace('/%LEVEL%/',self::$level,self::$output);
-						self::$output = preg_replace('/%SONS%/',$value->sons,self::$output);
-						self::$output = preg_replace('/%ID%/',$value->id,self::$output);
-						self::$output = preg_replace('/%PARENT%/',$value->parent,self::$output);
+						self::$output = preg_replace('/%LEVEL%/',(string) self::$level,(string) self::$output);
+						self::$output = preg_replace('/%SONS%/',(string) $value->sons,(string) self::$output);
+						self::$output = preg_replace('/%ID%/',(string) $value->id,(string) self::$output);
+						self::$output = preg_replace('/%PARENT%/',(string) $value->parent,(string) self::$output);
 						if (isset($value->alias)) {
-							self::$output = preg_replace('/%ALIAS%/',$value->alias,self::$output);
+							self::$output = preg_replace('/%ALIAS%/',$value->alias,(string) self::$output);
 						}
 
 						self::$level++;	
@@ -175,9 +175,9 @@ class Pages extends Core {
 	}	
 	
 	public static function createMenuFromSubPages($obj,$parent,$opt) {	
-		$optDef = array(
+		$optDef = [
 			'ulIsMain'=>0, 'ulMain'=>'<ul>', 'ulSubMenu'=>'<ul>',	 'ulDefault'=>'<ul>',	 'liMain'=>'<li>', 'liSubMenu'=>'<li>', 'liSubSubMenu'=>'<li>', 'liDefault'=>'<li>', 'hrefMain'=>'<a>', 'hrefSubMenu'=>'<a>', 'hrefdefault'=>'<a>', 'lang'=>'it', 'urldefault'=>'#!', 'pagesModule'=>'pages/', 'valueUrlDefault'=>'%ID%/%SEOCLEAN%', 'titleField'=>'', 'activepage'=>'pages'
-			); 
+			]; 
 		$opt = array_merge($optDef,$opt);
 
 		$has_children = false;
@@ -196,7 +196,7 @@ class Pages extends Core {
 							$has_children = true;											
 							if (self::$level == 0) $ul = $opt['ulMain'];
 							if (self::$level > 0) $ul = $opt['ulSubMenu'];	
-							$ul = preg_replace('/%ACTIVEPAGE%%/',$opt['activepage'],$ul);						
+							$ul = preg_replace('/%ACTIVEPAGE%%/',(string) $opt['activepage'],(string) $ul);						
 	            		if (self::$level > $opt['ulIsMain']) self::$output .= $ul.PHP_EOL;  
 	           		}								
 						/* gestione tag dinamici */
@@ -214,9 +214,9 @@ class Pages extends Core {
 						
 						//echo 'alias: '.$value->alias;
 	         		if (self::$level == 0 && $value->alias == $opt['activepage']) {
-	         			$li = preg_replace('/%CLASSACTIVE%/',' active',$li);
+	         			$li = preg_replace('/%CLASSACTIVE%/',' active',(string) $li);
 	         			} else {
-	         				$li = preg_replace('/%CLASSACTIVE%/','',$li);
+	         				$li = preg_replace('/%CLASSACTIVE%/','',(string) $li);
 	         				}	
 	
 		       		/* crea titles */
@@ -226,12 +226,12 @@ class Pages extends Core {
 		       		if (isset($value->type)) {
 		       			$hrefUrl = self::getUrlFromPageType($value,$titlesVal,$opt);
 		       			}           
-	 					$li = preg_replace('/%URL%/',$hrefUrl,$li);
-	 					$li = preg_replace('/%URLTITLE%/',$titlesVal['titleSeo'],$li);
-	 					$li = preg_replace('/%TITLE%/',$titlesVal['title'],$li);
-	 					$href = preg_replace('/%URL%/',$hrefUrl,$href);
-	 					$href = preg_replace('/%URLTITLE%/',$titlesVal['titleSeo'],$href);
-	 					$href = preg_replace('/%TITLE%/',$titlesVal['title'],$href);
+	 					$li = preg_replace('/%URL%/',(string) $hrefUrl,$li);
+	 					$li = preg_replace('/%URLTITLE%/',(string) $titlesVal['titleSeo'],$li);
+	 					$li = preg_replace('/%TITLE%/',(string) $titlesVal['title'],$li);
+	 					$href = preg_replace('/%URL%/',(string) $hrefUrl,(string) $href);
+	 					$href = preg_replace('/%URLTITLE%/',(string) $titlesVal['titleSeo'],$href);
+	 					$href = preg_replace('/%TITLE%/',(string) $titlesVal['title'],$href);
 	 					
 	 					if (self::$level == 0 && $value->alias == $opt['activepage']) {
 	         			$href = preg_replace('/%CLASSACTIVE%/',' active',$href);
@@ -243,8 +243,8 @@ class Pages extends Core {
 	 					
 	 					
 	 					
-	 					self::$output = preg_replace('/%LEVEL%/',self::$level,self::$output);
-	 					self::$output = preg_replace('/%SONS%/',$value->sons,self::$output);
+	 					self::$output = preg_replace('/%LEVEL%/',(string) self::$level,self::$output);
+	 					self::$output = preg_replace('/%SONS%/',(string) $value->sons,(string) self::$output);
 	 					    					
 	 					$id = intval($value->id);
 	 					self::$level++;	
@@ -263,31 +263,23 @@ class Pages extends Core {
 	
 		public static function getTitlesVal($value,$opt) 
 	{
-		$titlesVal = array();
+		$titlesVal = [];
 		$fieldTitle = 'title_';
  		$fieldTitleSeo = 'title_seo_';
  		$fieldTitleMeta = 'title_meta_';         		        		
- 		$titlesVal['title'] = Multilanguage::getLocaleObjectValue($value,$fieldTitle,Config::$langVars['user'],array());
- 		$titlesVal['titleSeo'] = Multilanguage::getLocaleObjectValue($value,$fieldTitleSeo,Config::$langVars['user'],array());
- 		$titlesVal['titleMeta'] = Multilanguage::getLocaleObjectValue($value,$fieldTitleMeta,Config::$langVars['user'],array()); 
+ 		$titlesVal['title'] = Multilanguage::getLocaleObjectValue($value,$fieldTitle,Config::$langVars['user'],[]);
+ 		$titlesVal['titleSeo'] = Multilanguage::getLocaleObjectValue($value,$fieldTitleSeo,Config::$langVars['user'],[]);
+ 		$titlesVal['titleMeta'] = Multilanguage::getLocaleObjectValue($value,$fieldTitleMeta,Config::$langVars['user'],[]); 
 		return $titlesVal;	
 	}
 	
 	public static function getUrlFromPageType($value,$titlesVal,$opt) {
-		switch($value->type) {
-			case 'label':
-				$url = $opt['urldefault'];						
-			break;
-			case 'module-link':
-				$url = URL_SITE.$value->url;
-			break;			
-			case 'url':
-				$url = $value->url;							
-			break;						
-			default:		      
-	  			$url = URL_SITE.$opt['pagesModule'].$opt['valueUrlDefault'];
-			break;
-	  		}
+		$url = match ($value->type) {
+            'label' => $opt['urldefault'],
+            'module-link' => URL_SITE.$value->url,
+            'url' => $value->url,
+            default => URL_SITE.$opt['pagesModule'].$opt['valueUrlDefault'],
+        };
 	  		
 	  	$parentstring = '';
 	  	/* trova il parent alias */
@@ -296,13 +288,13 @@ class Pages extends Core {
 	  		if (isset($value->breadcrumbs[0]['alias'])) $parentalias = $value->breadcrumbs[0]['alias'].'/';
 	  		}
 		
-		$url = preg_replace('/%URLSITE%/',URL_SITE,$url);	
-		$url = preg_replace('/%ID%/',$value->id,$url);
-		$url = preg_replace('/%ALIAS%/',$value->alias,$url);
-		$url = preg_replace('/%SEO%/',$titlesVal['titleSeo'],$url);
-		$url = preg_replace('/%SEOCLEAN%/', SanitizeStrings::urlslug($titlesVal['titleSeo'],array('delimiter'=>'-')),$url);
-		$url = preg_replace('/%SEOENCODE%/', urlencode($titlesVal['titleSeo']),$url);
-		$url = preg_replace('/%TITLE%/', urlencode($titlesVal['titleSeo']),$url); 
+		$url = preg_replace('/%URLSITE%/',URL_SITE,(string) $url);	
+		$url = preg_replace('/%ID%/',(string) $value->id,$url);
+		$url = preg_replace('/%ALIAS%/',(string) $value->alias,$url);
+		$url = preg_replace('/%SEO%/',(string) $titlesVal['titleSeo'],$url);
+		$url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($titlesVal['titleSeo'],['delimiter'=>'-']),$url);
+		$url = preg_replace('/%SEOENCODE%/', urlencode((string) $titlesVal['titleSeo']),$url);
+		$url = preg_replace('/%TITLE%/', urlencode((string) $titlesVal['titleSeo']),$url); 
 		$url = preg_replace('/%PARENTSTRING%/', urlencode($parentstring),$url);
 		$url = preg_replace('/%PARENTALIAS%/', $parentalias,$url);
 				
@@ -314,7 +306,7 @@ class Pages extends Core {
 	// funzione usate per compatibilita CLE
 	// da camcellare in altri progetti 
 	public static function setMainTreePagesDataCle($opt) {
-		$optDef = array('fieldKey'=>'alias','table'=>'pages','table template'=>'pagetemplates','ordering'=>'ASC'); 
+		$optDef = ['fieldKey'=>'alias','table'=>'pages','table template'=>'pagetemplates','ordering'=>'ASC']; 
 		$opt = array_merge($optDef,$opt);
 
 		$table = DB_TABLE_PREFIX.$opt['table'];
@@ -353,7 +345,7 @@ class Pages extends Core {
 	}
 
 	public static function setMainTreePagesData($opt) {
-		$optDef = array('hideMenu'=>0,'fieldKey'=>'alias','table'=>'pages','table template'=>'pagetemplates','ordering'=>'ASC','hideMenu'=>0); 
+		$optDef = ['hideMenu'=>0,'fieldKey'=>'alias','table'=>'pages','table template'=>'pagetemplates','ordering'=>'ASC','hideMenu'=>0]; 
 		$opt = array_merge($optDef,$opt);
 
 		$table = DB_TABLE_PREFIX.$opt['table'];
@@ -385,7 +377,7 @@ class Pages extends Core {
 	}
 
 	public static function setMainTreePagesDataOld($opt) {
-		$optDef = array('fieldKey'=>'alias','table'=>'pages','table template'=>'pagetemplates','ordering'=>'ASC'); 
+		$optDef = ['fieldKey'=>'alias','table'=>'pages','table template'=>'pagetemplates','ordering'=>'ASC']; 
 		$opt = array_merge($optDef,$opt);
 		$languages = self::$globalSettings['languages'];
 
@@ -414,7 +406,7 @@ class Pages extends Core {
 	
 		
 	public static function setMainTreeProductsData($opt) {
-		$optDef = array('tablecat'=>'ec_subcategories','tablepro'=>'ec_products','langUser'=>'it','getbreadcrumbs'=>1);
+		$optDef = ['tablecat'=>'ec_subcategories','tablepro'=>'ec_products','langUser'=>'it','getbreadcrumbs'=>1];
 		$opt = array_merge($optDef,$opt);
 		$languages = self::$globalSettings['languages'];
 
@@ -422,21 +414,21 @@ class Pages extends Core {
 		$tableProd = DB_TABLE_PREFIX.$opt['tablepro'];
 		
 		/* prendo le sottocategorie in elenco con la loro struttuta */
-		$subcategories = Subcategories::getSubCategoriesStructure(array('table'=>'ec_subcategories'));
+		$subcategories = Subcategories::getSubCategoriesStructure(['table'=>'ec_subcategories']);
 		//print_r($subcategories);
 		
-		$products = array();
+		$products = [];
 		
 		if ( isset($subcategories) && is_array($subcategories) && count($subcategories) > 0 ) {
 			foreach ( $subcategories AS $category ) {
 			
 				/* prendo i prodotti dalle categorie */
 				$qry = "SELECT id";	
-				$fields = array();
+				$fields = [];
 				$fields[] = 'id';
 				foreach ($languages AS $lang) $fields[] = "title_".$lang." AS title_".$lang;
 				$fields[] = "title_".$opt['langUser']." AS title";
-				$fieldsValues = array($category->id);
+				$fieldsValues = [$category->id];
 				Sql::initQuery($tableProd,$fields,$fieldsValues,'id_cat = ? AND active = 1','ordering ASC');
 				$products[$category->id] = Sql::getRecords();		
 			}		

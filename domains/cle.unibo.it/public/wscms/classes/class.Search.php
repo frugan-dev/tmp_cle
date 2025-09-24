@@ -8,7 +8,7 @@ class Search extends Core {
 		}
 		
 	public static function inFrameWork($keyword,$languages,$lang) {
-		$res = array();
+		$res = [];
 		/* site-pages */
 		$opz['section'] = $lang['pagine'];
 		$opz['alias'] = 'page';
@@ -17,8 +17,8 @@ class Search extends Core {
 		
 		$opz['table'] = DB_TABLE_PREFIX.'site_pages_contents AS c LEFT JOIN '.DB_TABLE_PREFIX.'site_pages AS p ON (c.id_page = p.id)';
  		$opz['active'] = false;
- 		$opz['fields'] = array('c.id_page AS id_page','p.id AS id');		 		
- 		$opz['fieldsSearch'] = array();
+ 		$opz['fields'] = ['c.id_page AS id_page','p.id AS id'];		 		
+ 		$opz['fieldsSearch'] = [];
  		foreach($languages AS $l) {
  			$opz['fields'][] = 'p.title_'.$l.' AS title_'.$l;
  			$opz['fieldsSearch'][] = 'content_'.$l;	
@@ -30,16 +30,16 @@ class Search extends Core {
 		}
 	
 	public static function inTableModule($keyword,$languages,$lang,$module,$opz) {
-		$opzDef = array('alias'=>'');	
+		$opzDef = ['alias'=>''];	
 		$opz = array_merge($opzDef,$opz);
 		
-		$res = array();		
+		$res = [];		
 		switch ($module) {			
 		 	case 'news':
 		 		$opz['table'] = DB_TABLE_PREFIX.'news';
 		 		$opz['active'] = true;
-		 		$opz['fields'] = array('id');		 		
-		 		$opz['fieldsSearch'] = array();
+		 		$opz['fields'] = ['id'];		 		
+		 		$opz['fieldsSearch'] = [];
 		 		$opz['section'] = $lang['notizie'];
 		 		$opz['ordering'] = 'datatimeins ASC';
 		 		foreach($languages AS $l) {
@@ -53,8 +53,8 @@ class Search extends Core {
 			case 'faq':
 		 		$opz['table'] = DB_TABLE_PREFIX.'faq';
 		 		$opz['active'] = true;
-		 		$opz['fields'] = array('id');		 		
-		 		$opz['fieldsSearch'] = array();
+		 		$opz['fields'] = ['id'];		 		
+		 		$opz['fieldsSearch'] = [];
 		 		$opz['section'] = $lang['faq'];
 		 		$opz['ordering'] = 'ordering ASC';
 		 		foreach($languages AS $l) {
@@ -74,18 +74,18 @@ class Search extends Core {
 		}	
 
 	public static function inTable($keyword,$languages,$module,$opz) {
-		$res = array();
-		$opzDef = array('table'=>'','active'=>true,'ordering'=>'','section'=>'','alias'=>'','itemidfield'=>'id','itemtitlefield'=>'title','itemmethod'=>'dt','itemaction'=>'');	
+		$res = [];
+		$opzDef = ['table'=>'','active'=>true,'ordering'=>'','section'=>'','alias'=>'','itemidfield'=>'id','itemtitlefield'=>'title','itemmethod'=>'dt','itemaction'=>''];	
 		$opz = array_merge($opzDef,$opz);
-		$res = array();
+		$res = [];
 		$clause = '';
 		$and = '';		
-		$fieldsVal = array();			
+		$fieldsVal = [];			
 		if ($opz['active'] == true) {
 			$clause = 'active = 1';
 			$and = ' AND ';	
 			}			
-		list($subClause,$subFieldsVal) = Sql::getClauseVarsFromSession($keyword,$opz['fieldsSearch'],array('separator'=>','));
+		[$subClause, $subFieldsVal] = Sql::getClauseVarsFromSession($keyword,$opz['fieldsSearch'],['separator'=>',']);
 		if ($subClause != '') {
 			$clause .= $and.'('.$subClause.')';
 			$and = ' AND ';
@@ -95,7 +95,7 @@ class Search extends Core {
 		if ($opz['ordering'] != '') Sql::setOrder($opz['ordering']);
 		$obj = Sql::getRecords();
 		
-		$res[$module] = array();
+		$res[$module] = [];
 		$res[$module]['alias'] = $opz['alias'];
 		$res[$module]['itemidfield'] = $opz['itemidfield'];
 		$res[$module]['itemtitlefield'] = $opz['itemtitlefield'];

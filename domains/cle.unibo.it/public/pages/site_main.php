@@ -13,12 +13,12 @@ if (is_array($dataMenuPages) && count($dataMenuPages) > 0) $App->menuPages = Pag
 $App->menuSitePages = '';
 if (is_array($dataMenuSitePages) && count($dataMenuSitePages) > 0) $App->menuSitePages = Pages::createMenuDivFromSubPages($dataMenuSitePages,0,$optMenuPagesDiv);
 
-$optMainMenuDiv['modulesmenu'] = array(
-	'pages'=>array('replace'=>'/%MENUPAGES%/','values'=>$App->menuPages),
+$optMainMenuDiv['modulesmenu'] = [
+	'pages'=>['replace'=>'/%MENUPAGES%/','values'=>$App->menuPages],
 	//'categories'=>array('replace'=>'/%MENUCATEGORIES%/','values'=>$App->menuCategories)
-	'site-pages'=>array('replace'=>'/%MENUSITEPAGES%/','values'=>$App->menuSitePages),
+	'site-pages'=>['replace'=>'/%MENUSITEPAGES%/','values'=>$App->menuSitePages],
 	//'categories'=>array('replace'=>'/%MENUCATEGORIES%/','values'=>$App->menuCategories)
-);
+];
 $App->mainMenu = Menu::createMenuOutputFromTemplate($dataMainMenu,0,$optMainMenuDiv);
 
 
@@ -27,23 +27,23 @@ $App->mainMenu = Menu::createMenuOutputFromTemplate($dataMainMenu,0,$optMainMenu
 $App->systemMessages = '';
 $systemMessages = new stdClass();
 if (isset($_SESSION['message']) && $_SESSION['message'] != '') {
-	$mess = explode('|',$_SESSION['message']);
+	$mess = explode('|',(string) $_SESSION['message']);
 	unset($_SESSION['message']);
 }
 if (isset($mess[0])) $systemMessages->error = $mess[0];
 if (isset($mess[1])) $systemMessages->message =$mess[1];
 $appErrors = Utilities::getMessagesCore($systemMessages);
-list($show,$error,$type,$content) = $appErrors;
+[$show, $error, $type, $content] = $appErrors;
 if ($show == true) {
 	if ($type == 0 && $error > 0) $type = $error;
 	
 	if (isset($templateSystemMessages) && $templateSystemMessages != '') {
 		$App->systemMessages .= $templateSystemMessages['container'];
-		if ($type == 2) $App->systemMessages = preg_replace('/%ALERT%/', $templateSystemMessages['warning'], $App->systemMessages);
-		if ($type == 1) $App->systemMessages = preg_replace('/%ALERT%/', $templateSystemMessages['danger'], $App->systemMessages);
-		if ($type == 0) $App->systemMessages = preg_replace('/%ALERT%/', $templateSystemMessages['success'], $App->systemMessages);
-		if ($type > 2) $App->systemMessages = preg_replace('/%ALERT%/', $templateSystemMessages['danger'], $App->systemMessages);
-		$App->systemMessages = preg_replace('/%MESSAGE%/', $content, $App->systemMessages);	
+		if ($type == 2) $App->systemMessages = preg_replace('/%ALERT%/', (string) $templateSystemMessages['warning'], $App->systemMessages);
+		if ($type == 1) $App->systemMessages = preg_replace('/%ALERT%/', (string) $templateSystemMessages['danger'], (string) $App->systemMessages);
+		if ($type == 0) $App->systemMessages = preg_replace('/%ALERT%/', (string) $templateSystemMessages['success'], (string) $App->systemMessages);
+		if ($type > 2) $App->systemMessages = preg_replace('/%ALERT%/', (string) $templateSystemMessages['danger'], (string) $App->systemMessages);
+		$App->systemMessages = preg_replace('/%MESSAGE%/', (string) $content, (string) $App->systemMessages);	
 	} else {
 		$App->systemMessages .= '<div id="systemMessageID" class="alert';
 		if ($type == 2) $App->systemMessages .= ' alert-warning';
@@ -55,6 +55,6 @@ if ($show == true) {
 }
 
 // cookie modal
-Config::$langVars['modal privacy policy content'] = preg_replace('/%URLPRIVACYPOLICYPAGE%/',$App->urlprivacypolicypage, Config::$langVars['modal privacy policy content']);
-Config::$langVars['modal privacy policy content'] = preg_replace('/%URLCOOKIEPOLICYPAGE%/',$App->urlcookiepolicypage, Config::$langVars['modal privacy policy content']);
+Config::$langVars['modal privacy policy content'] = preg_replace('/%URLPRIVACYPOLICYPAGE%/',(string) $App->urlprivacypolicypage, (string) Config::$langVars['modal privacy policy content']);
+Config::$langVars['modal privacy policy content'] = preg_replace('/%URLCOOKIEPOLICYPAGE%/',(string) $App->urlcookiepolicypage, Config::$langVars['modal privacy policy content']);
 ?>

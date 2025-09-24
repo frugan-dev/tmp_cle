@@ -14,12 +14,12 @@ if(isset($_POST['id_folder'])) $_MY_SESSION_VARS = $my_session->addSessionsModul
 if (Core::$request->method == 'listItem' && $App->id > 0) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'id_folder',$App->id);
 
 /* gestione sessione -> id_cat */	
-$App->id_folder = (isset($_MY_SESSION_VARS[$App->sessionName]['id_folder']) ? $_MY_SESSION_VARS[$App->sessionName]['id_folder'] : 0);
+$App->id_folder = ($_MY_SESSION_VARS[$App->sessionName]['id_folder'] ?? 0);
 
 //echo 'id folder: '.$App->id_folder;
 
-Sql::initQuery($tableFold,array('id','title_it'),array());
-Sql::setOptions(array('fieldTokeyObj'=>'id'));
+Sql::initQuery($tableFold,['id','title_it'],[]);
+Sql::setOptions(['fieldTokeyObj'=>'id']);
 $App->foldersData = Sql::getRecords();
 //ToolsStrings::dump($App->foldersData );
 
@@ -33,7 +33,7 @@ switch(Core::$request->method) {
 
 	case 'activeItem':
 	case 'disactiveItem':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$App->tableItem,$App->id,array('label'=>$_lang['immagine'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$App->tableItem,$App->id,['label'=>$_lang['immagine'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');	
 	break;
@@ -42,18 +42,18 @@ switch(Core::$request->method) {
 	case 'deleteItem':
 		if ($App->id > 0) { 
 			if (!isset($App->itemOld)) $App->itemOld = new stdClass;
-			Sql::initQuery($App->tableItem,array('id_folder','filename','folder_name'),array($App->id),'id = ?');
+			Sql::initQuery($App->tableItem,['id_folder','filename','folder_name'],[$App->id],'id = ?');
 		   $App->itemOld = Sql::getRecord();
 		   if (Core::$resultOp->error == 0) {
 			   $folder_name = ($App->itemOld->folder_name != '' ? $App->itemOld->folder_name.'/' : ''); 
-				Sql::initQuery($App->tableItem,array(),array($App->id),'id = ?');
+				Sql::initQuery($App->tableItem,[],[$App->id],'id = ?');
 				Sql::deleteRecord();
 				if (Core::$resultOp->error == 0) {
 					/* cancella il file vero e proprio */
 					if (file_exists($App->itemUploadPathDir.$folder_name.$App->itemOld->filename)) {			
 						@unlink($App->itemUploadPathDir.$folder_name.$App->itemOld->filename);			
 						} 			
-					Core::$resultOp->message = ucfirst($App->labels['item']['item']).' cancellat'.$App->labels['item']['itemSex'].'!';		
+					Core::$resultOp->message = ucfirst((string) $App->labels['item']['item']).' cancellat'.$App->labels['item']['itemSex'].'!';		
 					}
 				}
 			}
@@ -71,13 +71,13 @@ switch(Core::$request->method) {
 	   	if (!isset($_POST['created'])) $_POST['created'] = $App->nowDateTime;
 			if (!isset($_POST['active'])) $_POST['active'] = 0;
 	   	/* preleva il filename dal form */	 
-	   	ToolsUpload::setFilenameFormat(array('jpg','png'));  	
+	   	ToolsUpload::setFilenameFormat(['jpg','png']);  	
 	   	ToolsUpload::getFilenameFromForm();	   	
 	   	$_POST['filename'] = ToolsUpload::getFilenameMd5();
 	   	$_POST['org_filename'] = ToolsUpload::getOrgFilename();
 	   	if (Core::$resultOp->error == 0) {	
 		   	/* preleva il nome della cartella scelta */
-		   	Sql::initQuery($tableFold,array('*'),array($_POST['id_folder']),'id = ?');
+		   	Sql::initQuery($tableFold,['*'],[$_POST['id_folder']],'id = ?');
 		   	$App->itemCat = Sql::getRecord();	   	
 		   	if (Core::$resultOp->error == 0) {
 			   	$_POST['folder_name'] = ($App->itemCat->folder_name != '' ? $App->itemCat->folder_name.'/' : '');	   	
@@ -104,7 +104,7 @@ switch(Core::$request->method) {
 			$App->viewMethod = 'formNew';
 			} else {
 				$App->viewMethod = 'list';
-				Core::$resultOp->message = ucfirst($App->labels['item']['item']).' inserit'.$App->labels['item']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['item']['item']).' inserit'.$App->labels['item']['itemSex'].'!';				
 				}
 	break;
 	
@@ -120,12 +120,12 @@ switch(Core::$request->method) {
 			if (!isset($_POST['created'])) $_POST['created'] = $App->nowDateTime;
 			if (!isset($_POST['active'])) $_POST['active'] = 0;
 	   	/* preleva filename vecchio */
-	   	Sql::initQuery($App->tableItem,array('filename','org_filename','folder_name'),array($App->id),'id = ?');	
+	   	Sql::initQuery($App->tableItem,['filename','org_filename','folder_name'],[$App->id],'id = ?');	
 	   	$App->itemOld = Sql::getRecord(); 
 	   	if (Core::$resultOp->error == 0) {
 		   	$oldFolder_name = ($App->itemOld->folder_name != '' ? (string)$App->itemOld->folder_name : '');	   	  		   	
 		   	/* preleva il filename dal form */	
-		   	ToolsUpload::setFilenameFormat(array('jpg','png'));	   	
+		   	ToolsUpload::setFilenameFormat(['jpg','png']);	   	
 		   	ToolsUpload::getFilenameFromForm();		   	
 		   	if (Core::$resultOp->error == 0) {  
 		   		$_POST['filename'] = ToolsUpload::getFilenameMd5();
@@ -134,7 +134,7 @@ switch(Core::$request->method) {
 			   	/* preleva il nuovo foldername dalla categoria scelta */
 			   	$_POST['folder_name'] = '';
 			   	if (isset($_POST['id_folder'])) {
-			   		Sql::initQuery($tableFold,array('folder_name'),array($_POST['id_folder']),'id = ?');	
+			   		Sql::initQuery($tableFold,['folder_name'],[$_POST['id_folder']],'id = ?');	
 			   		$App->item = Sql::getRecord();
 			   		if(Core::$resultOp->error == 0) {  
 			   			$_POST['folder_name'] = $App->item->folder_name.'/';
@@ -181,7 +181,7 @@ switch(Core::$request->method) {
 			} else {
 				if (isset($_POST['submitForm'])) {	
 					$App->viewMethod = 'list';
-					Core::$resultOp->message = ucfirst($App->labels['item']['item']).' modificat'.$App->labels['item']['itemSex'].'!';								
+					Core::$resultOp->message = ucfirst((string) $App->labels['item']['item']).' modificat'.$App->labels['item']['itemSex'].'!';								
 					} else {						
 						if (isset($_POST['id'])) {
 							$App->id = $_POST['id'];
@@ -203,7 +203,7 @@ switch(Core::$request->method) {
 	
 	case 'messageItem':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';
 	break;
 	
@@ -233,7 +233,7 @@ switch((string)$App->viewMethod){
 	case 'formMod':
 		$App->id_folder = Categories::checkIfCatExistsInObjectOrGetOne($App->foldersData,$App->id_folder);
 		$App->item = new stdClass;	
-		Sql::initQuery($App->tableItem,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tableItem,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->fieldsItem);
 		$App->item->filenameRequired = (isset($App->item->filename) && $App->item->filename != '' ? false : true);
@@ -243,16 +243,16 @@ switch((string)$App->viewMethod){
 	
 	case 'list':	
 		$App->items = new stdClass;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
 		
-		$qryFields = array('*');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$qryFields = ['*'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		$and = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsItem,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsItem,'');
 			}	
 		if ($App->id_folder > 0) {
 			$clause .= "id_folder = ?";

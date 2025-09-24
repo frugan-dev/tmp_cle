@@ -12,7 +12,7 @@ class SqlCle extends Core {
 	static $customQry = '';
 	static $table = '';
 	static $fields = '';
-	static $fieldsValue = array();
+	static $fieldsValue = [];
 	static $clause = '';
 	static $wherePrefix = '';
 	static $order = '';
@@ -23,12 +23,12 @@ class SqlCle extends Core {
 	static $addslashes = true;	
 	static $foundRows = 0;
 		
-	static $breadcrumbs = array();
+	static $breadcrumbs = [];
 	static $listTreeData = '';	
 	static $countA = 0;	
 	static $parentstring = '';
 	static $pretitleparent = '';	
-	static $languages = array('it');
+	static $languages = ['it'];
 	
 	public function __construct(){	
 		parent::__construct();
@@ -37,15 +37,15 @@ class SqlCle extends Core {
 	public static function getInstanceDb() {
 		self::$dbConfig = Config::getDatabaseSettings();
 		//print_r(self::$dbConfig);
-		$user = (isset(self::$dbConfig['user']) ? self::$dbConfig['user'] : 'nd');
-		$password = (isset( self::$dbConfig['password']) ? self::$dbConfig['password'] : 'nd');
-		$host = (isset(self::$dbConfig['host']) ? self::$dbConfig['host'] : 'nd');
-		$name = (isset(self::$dbConfig['name']) ? self::$dbConfig['name'] : 'nd');
+		$user = (self::$dbConfig['user'] ?? 'nd');
+		$password = (self::$dbConfig['password'] ?? 'nd');
+		$host = (self::$dbConfig['host'] ?? 'nd');
+		$name = (self::$dbConfig['name'] ?? 'nd');
 		$dsn = 'mysql:host='.$host.';dbname='.$name.';port=3306;connect_timeout=15';
 		
-		$options = array(
+		$options = [
     		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-			);
+			];
 			
 		if( version_compare(PHP_VERSION, '5.3.6', '<') ){
     		if( defined('PDO::MYSQL_ATTR_INIT_COMMAND') ){
@@ -71,10 +71,10 @@ class SqlCle extends Core {
 		
 /* QUERY CUSTOM */		
 	public static function getRecords(){	
-		$obj = array();		
+		$obj = [];		
 		/* opzioni */
 		/* la key dell oggettto è presa da un campo */
-		$op_fieldTokeyObj = (isset(self::$options['fieldTokeyObj']) ? self::$options['fieldTokeyObj'] : '');		
+		$op_fieldTokeyObj = (self::$options['fieldTokeyObj'] ?? '');		
 		/* sezione CLAUSE */
 		$clause = self::$clause;
 		if ($clause != '') $clause = " WHERE ".$clause;		
@@ -127,7 +127,7 @@ class SqlCle extends Core {
 		
 	public static function getRecord(){	
 		//self::resetResultOp();
-		$obj = array();
+		$obj = [];
 		$clause = self::$clause;
 		if ($clause != '') $clause = " WHERE ".$clause;			
 		if (self::$customQry == '') {
@@ -157,8 +157,8 @@ class SqlCle extends Core {
 
 	public static function insertRecord() {
 			//self::resetResultOp();
-			$fields = array();
-			$fieldsPrepare = array();		
+			$fields = [];
+			$fieldsPrepare = [];		
 			/* creo l'elenco dei campi */			
 			if (is_array(self::$fields) && count(self::$fields) > 0) {
 				foreach(self::$fields AS $key=>$value){
@@ -182,8 +182,8 @@ class SqlCle extends Core {
 		}
 
 	public static function updateRecord() {
-			$fields = array();
-			$fieldsPrepare = array();			
+			$fields = [];
+			$fieldsPrepare = [];			
 			/* creo l'elenco dei campi */			
 			if (is_array(self::$fields) && count(self::$fields) > 0) {
 				foreach(self::$fields AS $key=>$value){
@@ -319,7 +319,7 @@ class SqlCle extends Core {
 		
 	public static function getTablesDatabase($database) {
 		try {
-			$arr = array();
+			$arr = [];
 			$pdoCore = self::getInstanceDb();
 			$result = $pdoCore->query("SHOW TABLES");
 				while ($row = $result->fetch(PDO::FETCH_NUM)) {
@@ -339,9 +339,9 @@ class SqlCle extends Core {
 	
 	/* INSERIMENTI  DA POST */
 	public static function insertRawlyPost($fields,$table) {
-		$fieldListArray = array();
-		$fieldValuesArray = array();
-		$fieldPrepareArray = array();
+		$fieldListArray = [];
+		$fieldValuesArray = [];
+		$fieldPrepareArray = [];
 		if (is_array($fields) && count($fields) > 0){
 			foreach($fields AS $key=>$value){
 				if ($value['type'] != 'autoinc' && $value['type'] != 'nodb') {
@@ -369,8 +369,8 @@ class SqlCle extends Core {
 	
 	/* MODIFICHE DA POST */	
 	public static function updateRawlyPost($fields,$table,$clauseRif,$valueRif) {
-		$fieldListArray = array();
-		$fieldValuesArray = array();
+		$fieldListArray = [];
+		$fieldValuesArray = [];
 		if (is_array($fields) && count($fields) > 0){
 			foreach($fields AS $key=>$value){
 				if ($value['type'] != 'autoinc' && $value['type'] != 'nodb') {
@@ -439,7 +439,7 @@ class SqlCle extends Core {
 	
 	public static function countRecordQry($table,$keyRif,$clauseRif,$valueRif) {
 		$qry = "SELECT COUNT(".$keyRif.") FROM ".$table." WHERE ".$clauseRif." = ?";			
-		$fieldValueArray = array($valueRif);
+		$fieldValueArray = [$valueRif];
 		if (self::$debugMode == 1) echo '<br>'.$qry;
 		try{
 			$dbName = self::$dbName;
@@ -458,7 +458,7 @@ class SqlCle extends Core {
 		
 	/* SQL TOOLS */
 	public static function checkRequireFields($fields) {
-		$fieldsTemp = Toolsstrings::multiSearch($fields, array('required' => true));
+		$fieldsTemp = Toolsstrings::multiSearch($fields, ['required' => true]);
 		if (is_array($fieldsTemp) && count($fieldsTemp) > 0){
 			foreach($fieldsTemp AS $key=>$value){
 				if (!isset($_POST[$key]) || $_POST[$key] == '') {		
@@ -470,7 +470,7 @@ class SqlCle extends Core {
 		}
 		
 	public static function stripMagicFields($array){
-		$resultArray = array();
+		$resultArray = [];
 		foreach($array AS $key=>$value){
 			$resultArray[$key] = SanitizeStrings::stripMagic($value);		
 			}
@@ -501,9 +501,9 @@ class SqlCle extends Core {
 		}
 		
    public static function setClauseFromAppSession($sessionApp,$fields,$clauseWhere='') {  	
-		$fieldsSearch = Toolsstrings::multiSearch($fields, array('searchTable' => true));
+		$fieldsSearch = Toolsstrings::multiSearch($fields, ['searchTable' => true]);
 		/* sezione per la ricerca */
-		$words = explode(',',$sessionApp);
+		$words = explode(',',(string) $sessionApp);
 		if (count($fieldsSearch) > 0) {
 			foreach($fieldsSearch AS $key=>$value){					
 				if (count($words) > 0) {
@@ -523,14 +523,14 @@ class SqlCle extends Core {
 			}
 		}
 		
-	 public static function getClauseVarsFromAppSession($sessionApp,$fields,$clauseWhere='',$opz=array()) { 
-	 	$tableAlias = (isset($opz['tableAlias']) ? $opz['tableAlias'] : ''); 	
-		$fieldsSearch = Toolsstrings::multiSearch($fields, array('searchTable' => true));
+	 public static function getClauseVarsFromAppSession($sessionApp,$fields,$clauseWhere='',$opz=[]) { 
+	 	$tableAlias = ($opz['tableAlias'] ?? ''); 	
+		$fieldsSearch = Toolsstrings::multiSearch($fields, ['searchTable' => true]);
 		/* sezione per la ricerca */
-		$clauseQry = array();
-		$fieldsVars = array();
+		$clauseQry = [];
+		$fieldsVars = [];
 		$qryTemp = '';		
-		$words = explode(',',$sessionApp);
+		$words = explode(',',(string) $sessionApp);
 		if (count($fieldsSearch) > 0) {
 			foreach($fieldsSearch AS $key=>$value){					
 				if (count($words) > 0) {
@@ -542,17 +542,17 @@ class SqlCle extends Core {
 				}			
 			}			
 		$qryTemp = implode(' or ',$clauseQry);			
-		return array($qryTemp,$fieldsVars);
+		return [$qryTemp,$fieldsVars];
 		}
 		
-	public static function getClauseVarsFromSession($session,$fields,$opz=array()) {
-		$separator = (isset($opz['separator']) ? $opz['separator'] : ' ');
+	public static function getClauseVarsFromSession($session,$fields,$opz=[]) {
+		$separator = ($opz['separator'] ?? ' ');
 		
 		/* sezione per la ricerca */
-		$clauseQry = array();
-		$fieldsVars = array();
+		$clauseQry = [];
+		$fieldsVars = [];
 		$qryTemp = '';		
-		$words = explode($separator,$session);
+		$words = explode($separator,(string) $session);
 		if (count($fields) > 0) {
 			foreach($fields AS $value){					
 				if (count($words) > 0) {
@@ -564,7 +564,7 @@ class SqlCle extends Core {
 				}			
 			}			
 		$qryTemp = implode(' or ',$clauseQry);			
-		return array($qryTemp,$fieldsVars);
+		return [$qryTemp,$fieldsVars];
 		}
 
 
@@ -572,12 +572,12 @@ class SqlCle extends Core {
 	 public static function manageFieldActive($method,$appTable,$id,$label='Voce',$sex='a'){
    	switch($method) {
    		case 'active':
-   			self::initQuery($appTable,array('active'),array('1',$id),'id = ?');
+   			self::initQuery($appTable,['active'],['1',$id],'id = ?');
 				self::updateRecord();	
    			self::$resultOp->message = $label." attivat".$sex."!";
    		break;
 			case 'disactive':
-				self::initQuery($appTable,array('active'),array('0',$id),'id = ?');
+				self::initQuery($appTable,['active'],['0',$id],'id = ?');
 				self::updateRecord();
    			self::$resultOp->message = $label." disattivat".$sex."!";
    		break;   		
@@ -586,44 +586,34 @@ class SqlCle extends Core {
  
 	public static function switchFieldOnOff($appTable,$field,$fieldRif,$id,$label='Voce',$sex='a'){
    	/* preleva il valore del flag */
-   	self::initQuery($appTable,array($field),array($id),$fieldRif.' = ?');
+   	self::initQuery($appTable,[$field],[$id],$fieldRif.' = ?');
    	if (!isset($appData)) $appData = new stdClass();
    	if (!isset($appData->item)) $appData->item = new stdClass();
 		$appData->item = Sql::getItemData();
-		switch($appData->item->$field) {
-			case 0:
-				$appData->item->$field = 1;
-			break;
-			case 1:
-			default:
-				$appData->item->$field = 0;
-			break;
-   		}
+		$appData->item->$field = match ($appData->item->$field) {
+            0 => 1,
+            default => 0,
+        };
    	/* lo aggiorna */
-		self::initQuery($appTable,array($field),array($appData->item->$field,$id),$fieldRif.' = ?');
+		self::initQuery($appTable,[$field],[$appData->item->$field,$id],$fieldRif.' = ?');
 		self::updateRecord();
-		switch($appData->item->$field) {
-			case 0:
-				self::$resultOp->message = $label." disattivat".$sex."!";
-			break;
-			case 1:
-			default:
-				self::$resultOp->message = $label." attivat".$sex."!";
-			break;
-   		}
+		self::$resultOp->message = match ($appData->item->$field) {
+            0 => $label." disattivat".$sex."!",
+            default => $label." attivat".$sex."!",
+        };
    	}
   	
    	/* VOCI ALBERO */
 	
 	public static function setListTreeData($qry,$parent = 0,$option='') {
-		$levelString = (isset($option['levelString']) ? $option['levelString'] : '-->');
-		$noId = (isset($option['noId']) ? $option['noId'] : 0);
-		$fieldKey = (isset($option['fieldKey']) ? $option['fieldKey'] : '');
-		$hideId = (isset($option['hideId']) ? $option['hideId'] : false);
+		$levelString = ($option['levelString'] ?? '-->');
+		$noId = ($option['noId'] ?? 0);
+		$fieldKey = ($option['fieldKey'] ?? '');
+		$hideId = ($option['hideId'] ?? false);
 		$hideSons = (isset($option['hideSoPDO::MYSQL_ATTR_USE_BUFFERED_QUERY => falsens']) ? $option['hideSons'] : false);
-		$rifId = (isset($option['rifId']) ? $option['rifId'] : 'id');
-		$rifIdValue = (isset($option['rifIdValue']) ? $option['rifIdValue'] : '0');
-		$hideLabel = (isset($option['hideLabel']) ? $option['hideLabel'] : false);
+		$rifId = ($option['rifId'] ?? 'id');
+		$rifIdValue = ($option['rifIdValue'] ?? '0');
+		$hideLabel = ($option['hideLabel'] ?? false);
 		
 		if (!isset(self::$level)) self::$level = 0;
 		try {	
@@ -652,12 +642,12 @@ class SqlCle extends Core {
 						for($x1=1;$x1 <= self::$level; $x1++) {
 							self::$listTreeData[$varKey]->levelString .= $levelString;
 							}	
-																	
+
 						/* breadcrumbs */			
 						$get = true;						
 						if ($get == true) {
-							if (self::$level == 0) self::$breadcrumbs = array();
-							self::$breadcrumbs[self::$level] = array();
+							if (self::$level == 0) self::$breadcrumbs = [];
+							self::$breadcrumbs[self::$level] = [];
 							self::$breadcrumbs[self::$level]['type'] = $row->type;
 							self::$breadcrumbs[self::$level]['parent'] = $row->parent;
 							if (isset($row->alias)) self::$breadcrumbs[self::$level]['alias'] = $row->alias;
@@ -670,7 +660,7 @@ class SqlCle extends Core {
 							}						
 						self::$listTreeData[$varKey]->breadcrumbs = self::$breadcrumbs;
 						if ($row->sons == 0) {
-							if (self::$level == 0) self::$breadcrumbs = array();							
+							if (self::$level == 0) self::$breadcrumbs = [];							
 							$cc = count(self::$breadcrumbs);
 							for($xx=self::$level;$xx <=$cc;$xx++) unset(self::$breadcrumbs[$xx]);
 							}
@@ -722,7 +712,7 @@ class SqlCle extends Core {
 		
 	public static function setClause($value){
 		if (self::$addslashes == true) {
-			self::$clause = addslashes($value);
+			self::$clause = addslashes((string) $value);
 			} else {
 				self::$clause = $value;
 				}
@@ -748,7 +738,8 @@ class SqlCle extends Core {
 		self::$resultPaged = $value;
 		}
 		
-	public static function setDebugMode($value){
+	#[\Override]
+    public static function setDebugMode($value){
 		self::$debugMode = $value;
 		}
 
@@ -791,7 +782,7 @@ class SqlCle extends Core {
 		
 	public static function getTablePrefix() {	
 		self::$dbConfig = Config::getDatabaseSettings();	
-		$s = (isset(self::$dbConfig['tableprefix']) ? self::$dbConfig['tableprefix'] : '');	
+		$s = (self::$dbConfig['tableprefix'] ?? '');	
 		return $s;
 		}	
 
@@ -799,7 +790,7 @@ class SqlCle extends Core {
 		return self::$foundRows;
 		}
 	
-	public static function initQuery($table='',$fields='',$fieldsValue=array(),$clause='',$order='',$limit='',$options='',$resultPaged=false){
+	public static function initQuery($table='',$fields='',$fieldsValue=[],$clause='',$order='',$limit='',$options='',$resultPaged=false){
 		self::$table = $table;
 		self::$fields = $fields;
 		self::$fieldsValue = $fieldsValue;

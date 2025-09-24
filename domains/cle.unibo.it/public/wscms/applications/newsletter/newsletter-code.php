@@ -9,7 +9,7 @@ if (isset($_POST['searchFromTable'])) $_MY_SESSION_VARS = $my_session->addSessio
 if (isset($_POST['newsTemplate'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'newsTemplate',$_POST['newsTemplate']);
 if (Core::$request->method == 'listNewCode' && $App->id > 0) {
 	/* prende i dati della news */
-	Sql::initQuery($App->tableNew,array('*'),array($App->id),'id = ?');
+	Sql::initQuery($App->tableNew,['*'],[$App->id],'id = ?');
 	$App->item_news = Sql::getRecord();
 	if (isset($App->item_news->template)) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'newsTemplate',$App->item_news->template);
 	
@@ -33,16 +33,16 @@ if ($App->newsTemplate == '') {
 switch(Core::$request->method) {
 	case 'activeNewCode':
 	case 'disactiveNewCode':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-7),$App->tableNewCode,$App->id,ucfirst($App->labels['code']['item']),$App->labels['code']['itemSex']);
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-7),$App->tableNewCode,$App->id,ucfirst((string) $App->labels['code']['item']));
 		$App->viewMethod = 'list';		
 	break;
 	
 	case 'deleteNewCode':
 		if ($App->id > 0) {
-			Sql::initQuery($App->tableNewCode,array(),array($App->id),'id = ?');
+			Sql::initQuery($App->tableNewCode,[],[$App->id],'id = ?');
 			Sql::deleteRecord();
 			if (Core::$resultOp->error == 0) {
-				Core::$resultOp->message = ucfirst($App->labels['code']['item']).' cancellat'.$App->labels['code']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['code']['item']).' cancellat'.$App->labels['code']['itemSex'].'!';				
 				}
 			}		
 		$App->viewMethod = 'list';
@@ -75,7 +75,7 @@ switch(Core::$request->method) {
 			$App->viewMethod = 'formNewCode';
 			} else {
 				$App->viewMethod = 'list';
-				Core::$resultOp->message = ucfirst($App->labels['code']['item']).' inserit'.$App->labels['code']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['code']['item']).' inserit'.$App->labels['code']['itemSex'].'!';				
 				}		
 	break;
 
@@ -91,7 +91,7 @@ switch(Core::$request->method) {
 			/* controlla i campi obbligatori */
 			Sql::checkRequireFields($App->fieldsNewCode);
 			if (Core::$resultOp->error == 0) {
-				$_POST['content_it'] = ToolsStrings::parseHtmlContent($_POST['content_it'],array('customtag'=>'{{FOLDERSITE}}','customtagvalue'=>FOLDER_SITE));
+				$_POST['content_it'] = ToolsStrings::parseHtmlContent($_POST['content_it'],['customtag'=>'{{FOLDERSITE}}','customtagvalue'=>FOLDER_SITE]);
 				Sql::stripMagicFields($_POST);
 				Sql::updateRawlyPost($App->fieldsNewCode,$App->tableNewCode,'id',$App->id);
 				if (Core::$resultOp->error == 0) {					
@@ -106,7 +106,7 @@ switch(Core::$request->method) {
 			} else {
 				if (isset($_POST['submitForm'])) {	
 					$App->viewMethod = 'list';
-					Core::$resultOp->message = ucfirst($App->labels['code']['item']).' modificat'.$App->labels['code']['itemSex'].'!';								
+					Core::$resultOp->message = ucfirst((string) $App->labels['code']['item']).' modificat'.$App->labels['code']['itemSex'].'!';								
 					} else {						
 						if (isset($_POST['id'])) {
 							$App->id = $_POST['id'];
@@ -122,18 +122,18 @@ switch(Core::$request->method) {
 	break;
 	
 	case 'previewNewCode':
-		Sql::initQuery($App->tableNewCode,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tableNewCode,['*'],[$App->id],'id = ?');
 		$App->item_code = Sql::getRecord();			
 		if (Core::$resultOp->error == 0) {	
 			$App->item->finalOutput = '';
 			$file = PATH_UPLOAD_DIR.$App->templatesFolder.$App->newsTemplate;
 			$urldelete = URL_SITE.$App->settings['admin url delete address']->value_it;
-			$App->item_code->content_it = ToolsStrings::parseHtmlContent($App->item_code->content_it,array('customtag'=>'{{PATHNEWSLETTER}}','customtagvalue'=>UPLOAD_DIR.$App->templatesFolder));
+			$App->item_code->content_it = ToolsStrings::parseHtmlContent($App->item_code->content_it,['customtag'=>'{{PATHNEWSLETTER}}','customtagvalue'=>UPLOAD_DIR.$App->templatesFolder]);
 			if (file_exists($file) == true) {
 				$App->item->finalOutput = file_get_contents($file);				
 				$App->item->finalOutput = preg_replace('/{{PATHNEWSLETTER}}/',UPLOAD_DIR.$App->templatesFolder,$App->item->finalOutput);
-				$App->item->finalOutput = preg_replace('/{{CONTENT}}/',$App->item_code->content_it,$App->item->finalOutput);	
-				$App->item->finalOutput = preg_replace('/{{URLDELETE}}/',$urldelete,$App->item->finalOutput);
+				$App->item->finalOutput = preg_replace('/{{CONTENT}}/',(string) $App->item_code->content_it,(string) $App->item->finalOutput);	
+				$App->item->finalOutput = preg_replace('/{{URLDELETE}}/',$urldelete,(string) $App->item->finalOutput);
 		      } else {
 		         $App->item->finalOutput = $App->item_code->content_it;
 		         }   
@@ -153,7 +153,7 @@ switch(Core::$request->method) {
 	
 	case 'messageNewCode':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';		
 	break;
 	
@@ -176,24 +176,24 @@ switch((string)$App->viewMethod) {
 	break;
 	
 	case 'formMod':
-		Sql::initQuery($App->tableNewCode,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tableNewCode,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->fieldsNewCode);
-		$App->item->content_it = ToolsStrings::parseHtmlContent($App->item->content_it,array('customtag'=>'{{URLSITE}}','customtagvalue'=>URL_SITE));
+		$App->item->content_it = ToolsStrings::parseHtmlContent($App->item->content_it,['customtag'=>'{{URLSITE}}','customtagvalue'=>URL_SITE]);
 		$App->templateApp = 'formNewCode.html';
 		$App->methodForm = 'updateNewCode';
 	break;
 
 	case 'list':	
 		$App->items = new stdClass;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
-		$qryFields = array('*');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
+		$qryFields = ['*'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsNewCode,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsNewCode,'');
 			}		
 		if (isset($sessClause) && $sessClause != '') $clause .= $sessClause;
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {

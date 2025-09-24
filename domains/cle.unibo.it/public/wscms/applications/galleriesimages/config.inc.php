@@ -4,15 +4,15 @@
 $App->params = new stdClass();
 $App->params->label = "Gallery";
 /* prende i dati del modulo */
-Sql::initQuery(DB_TABLE_PREFIX.'modules',array('name','label','help_small','help'),array('galleriesimages'),'name = ?');
+Sql::initQuery(DB_TABLE_PREFIX.'modules',['name','label','help_small','help'],['galleriesimages'],'name = ?');
 $obj = Sql::getRecord();
 if (Core::$resultOp->error == 0 && isset($obj) && count((array)$obj) > 1) $App->params = $obj;
 
-$App->params->uploadPaths = array();
-$App->params->uploadDirs = array();
-$App->params->orderTypes = array();
-$App->params->tables = array();
-$App->params->fields = array();
+$App->params->uploadPaths = [];
+$App->params->uploadDirs = [];
+$App->params->orderTypes = [];
+$App->params->tables = [];
+$App->params->fields = [];
 
 $App->params->codeVersion = ' v.4.0.0.';
 $App->params->pageTitle = $App->params->label;

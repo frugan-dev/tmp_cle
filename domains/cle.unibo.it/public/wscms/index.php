@@ -12,7 +12,7 @@ ini_set('display_errors',1);
 */
 
 define('PATH','');
-define('MAXPATH', str_replace("includes","",dirname(__FILE__)).'');
+define('MAXPATH', str_replace("includes","",__DIR__).'');
 if(!ini_get('date.timezone')) date_default_timezone_set('GMT');
 setlocale(LC_TIME, 'ita', 'it_IT');
 
@@ -45,12 +45,12 @@ setlocale(LC_TIME, 'ita', 'it_IT');
 Config::setGlobalSettings($globalSettings);
 Config::init();
 
-Core::$globalSettings['requestoption']['coremodules'] = array('moduleassociated','login','logout','account','password','profile','nopassword','nousername','moduleassociated','error');
-Core::$globalSettings['requestoption']['othermodules'] = array_merge(array('help'),Core::$globalSettings['requestoption']['coremodules']);
+Core::$globalSettings['requestoption']['coremodules'] = ['moduleassociated','login','logout','account','password','profile','nopassword','nousername','moduleassociated','error'];
+Core::$globalSettings['requestoption']['othermodules'] = array_merge(['help'],Core::$globalSettings['requestoption']['coremodules']);
 Core::$globalSettings['requestoption']['defaultaction'] = 'home';
 Core::$globalSettings['requestoption']['defaultpagesmodule'] = 'home';
 Core::$globalSettings['requestoption']['sectionadmin'] = 1;
-Core::$globalSettings['requestoption']['methods'] = array();
+Core::$globalSettings['requestoption']['methods'] = [];
 Core::$globalSettings['requestoption']['isRoot'] = 0;
 Core::$globalSettings['requestoption']['getlasturlparam'] = false;
 
@@ -83,14 +83,14 @@ $App->metaKeywordsPage = $globalSettings['meta tags page']['keyword'];
 // avvio sessione
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,AD_SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
 // carica dati utente loggato 
 $App->userLoggedData = new stdClass();
 if (isset($_MY_SESSION_VARS['idUser'])) {
-	Sql::initQuery(DB_TABLE_PREFIX.'users',array('*'),array($_MY_SESSION_VARS['idUser']),'active = 1 AND id = ?','');
+	Sql::initQuery(DB_TABLE_PREFIX.'users',['*'],[$_MY_SESSION_VARS['idUser']],'active = 1 AND id = ?','');
 	$App->userLoggedData = Sql::getRecord();
 	if (Core::$resultOp->error == 1) die('Errore db utenti!');
 	if (isset($App->userLoggedData->is_root)) $App->userLoggedData->is_root = intval($App->userLoggedData->is_root);
@@ -140,7 +140,7 @@ $App->user_modules_active = Permissions::getUserLevelModulesRights($App->userLog
 // controlla permessi per accesso modulo
 $App->user_first_module_active = Core::$globalSettings['requestoption']['defaultaction'];
 $App->user_module_active = Core::$globalSettings['requestoption']['defaultaction'];
-if (Permissions::checkIfModulesIsReadable(Core::$request->action,$App->userLoggedData,array('chackTable'=>false)) == false) {
+if (Permissions::checkIfModulesIsReadable(Core::$request->action,$App->userLoggedData,['chackTable'=>false]) == false) {
 	Core::$request->action = $App->user_first_module_active;
 }
 
@@ -168,7 +168,7 @@ $App->modules_access = Permissions::getUserLevelModulesRights($App->userLoggedDa
 */
 // controlla se il modulo action è leggibile
 $App->user_first_module_active = Core::$globalSettings['requestoption']['defaultaction'];
-if (Permissions::checkIfModulesIsReadable(Core::$request->action,$App->userLoggedData,array('chackTable'=>false)) == false) {
+if (Permissions::checkIfModulesIsReadable(Core::$request->action,$App->userLoggedData,['chackTable'=>false]) == false) {
 	Core::$request->action = $App->user_first_module_active;
 }
 
@@ -224,7 +224,7 @@ echo '<br>App->templateApp: '.$App->templateApp;
 /* genera il template */
 if ($renderTpl == true && $App->templateApp != '') {
 
-	$arrayVars = array(
+	$arrayVars = [
 		'App'=>$App,
 		'LangVars'=>Config::$langVars,
 		'Lang'=>Config::$langVars,
@@ -239,7 +239,7 @@ if ($renderTpl == true && $App->templateApp != '') {
 		'MySessionVars'=>$_MY_SESSION_VARS,
 		'Session'   => $_SESSION,
 		'GlobalSettings'=>$globalSettings
-	);
+	];
 
 	$loader = new \Twig\Loader\FilesystemLoader($pathtemplateBase);
 	$loader->addPath($pathtemplateApp);

@@ -26,7 +26,7 @@ define('DB_TABLE_PREFIX',Sql::getTablePrefix());
 /* avvio sessione */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
@@ -54,7 +54,7 @@ $table = '';
 $fieldId = 'id';
 $field = '';
 $fieldLabel = '';
-$fieldsValue = array();
+$fieldsValue = [];
 $matchType = '=';
 $customClause = '';
 $andClause = '';
@@ -72,7 +72,7 @@ if ( isset($_REQUEST['andClause']) && $_REQUEST['andClause'] != '' ) $andClause 
 if ($table != '' && $field != '') {         
     $clause = $field . $matchType . '?';
     if ($customClause != '') $clause .= $andClause .'('.$customClause.')';   
-    Config::$queryParams = array();
+    Config::$queryParams = [];
     Config::$queryParams['tables'] = $table;
     Config::$queryParams['keyRif'] = $fieldId;
     Config::$queryParams['whereClause'] = $clause;
@@ -86,11 +86,11 @@ if ($table != '' && $field != '') {
 if ($fieldLabel == '') $fieldLabel = $field;
 if ($foo > 0) {
     $data['result'] = '1';
-    $data['message'] = preg_replace('/%ITEM%/',$fieldLabel,Config::$langVars['Il valore per il campo %ITEM% è già presente nel nostro database!']);
+    $data['message'] = preg_replace('/%ITEM%/',(string) $fieldLabel,(string) Config::$langVars['Il valore per il campo %ITEM% è già presente nel nostro database!']);
     
 } else {
     $data['result'] = '0';
-    $data['message'] = preg_replace('/%ITEM%/',$fieldLabel,Config::$langVars['Il valore per il campo %ITEM% è disponibile!']);
+    $data['message'] = preg_replace('/%ITEM%/',(string) $fieldLabel,(string) Config::$langVars['Il valore per il campo %ITEM% è disponibile!']);
 }
 echo json_encode($data);
 

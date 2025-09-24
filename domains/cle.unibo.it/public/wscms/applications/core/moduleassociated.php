@@ -4,10 +4,10 @@
 Sql::setDebugMode(1);
 
 if (isset(Core::$request->method) && Core::$request->method == 'from') {
-	$_SESSION['associatedModule'] = (isset(Core::$request->param) ? Core::$request->param : '');
-	$_SESSION['associatedReturnmethod'] = (isset(Core::$request->params[0]) ? Core::$request->params[0] : '');
+	$_SESSION['associatedModule'] = (Core::$request->param ?? '');
+	$_SESSION['associatedReturnmethod'] = (Core::$request->params[0] ?? '');
 	$_SESSION['associatedRifItem'] = strtolower(substr($_SESSION['associatedReturnmethod'],-4,4));
-	$_SESSION['associatedOwnerId'] = (isset(Core::$request->params[1]) ? Core::$request->params[1] : '');
+	$_SESSION['associatedOwnerId'] = (Core::$request->params[1] ?? '');
 	$_SESSION['associatedType'] = (isset(Core::$request->params[2]) ? intval(Core::$request->params[2]) : 0);
 }
 /*
@@ -49,8 +49,8 @@ $App->sessionName = 'config';
 //if (!isset($App->ownerData->id) || (isset($App->ownerData->id) && $App->ownerData->id == 0)) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/404'); die(); }
 
 if ($_SESSION['associatedOwnerId'] > 0) {
-	Sql::initQuery($App->params->tables['item'],array('*'),array($_SESSION['associatedOwnerId']),'active = 1 AND id = ?');
-	Sql::setOptions(array('fieldTokeyObj'=>'id'));
+	Sql::initQuery($App->params->tables['item'],['*'],[$_SESSION['associatedOwnerId']],'active = 1 AND id = ?');
+	Sql::setOptions(['fieldTokeyObj'=>'id']);
 	$App->ownerData = Sql::getRecord();
 	if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'/404'); die; }
 	$field = 'title_'.$_lang['user'];	
@@ -66,15 +66,15 @@ switch(Core::$request->method) {
 	default;	
 		echo '<br>creo lista';	
 		$App->items = new stdClass;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
-		$qryFields = array('*');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
+		$qryFields = ['*'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = 'resource_type = 1';
 		$and = ' AND ';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['resources'],'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->params->fields['resources'],'');
 		}	
 		if ($_SESSION['associatedOwnerId'] > 0) {
 			$clause .= $and."id_owner = ?";
@@ -97,7 +97,7 @@ switch(Core::$request->method) {
 		Sql::setOrder('ordering ASC');
 		if (Core::$resultOp->error <> 1) $obj = Sql::getRecords();
 		/* sistemo i dati */
-		$arr = array();
+		$arr = [];
 		if (is_array($obj) && count($obj) > 0) {
 			foreach ($obj AS $value) {	
 				$field = 'title_'.$_lang['user'];	
@@ -109,11 +109,11 @@ switch(Core::$request->method) {
 		
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
-		$App->paginationTitle = preg_replace('/%START%/',$App->pagination->firstPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',$App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',$App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
 
-		$App->pageSubTitle .= $App->pageSubTitle = preg_replace('/%ITEM%/',$App->associatedTypefiles,$_lang['lista delle %ITEM%']);;
+		$App->pageSubTitle .= $App->pageSubTitle = preg_replace('/%ITEM%/',(string) $App->associatedTypefiles,(string) $_lang['lista delle %ITEM%']);;
 		$App->viewMethod = 'list';
 	break;		
 }

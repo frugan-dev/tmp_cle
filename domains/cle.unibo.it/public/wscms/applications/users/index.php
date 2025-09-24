@@ -20,14 +20,14 @@ $App->formTabActive = 1;
 
 $App->user_levels = Config::$userLevels;
 	
-switch(substr(Core::$request->method,-4,4)) {		
+switch(substr((string) Core::$request->method,-4,4)) {		
 	default:
 		$App->sessionName .= '';
-		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10','srcTab'=>''));
+		if (!isset($_MY_SESSION_VARS[$App->sessionName]['page'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10','srcTab'=>'']);
 		$Module = new Module($App->sessionName,$App->params->tables['item']);
 		include_once(PATH.$App->pathApplications.Core::$request->action."/items.php");
 		$App->defaultJavascript = "
-		messages['password not match'] = '".addslashes($_lang['Le due password non corrispondono!'])."';
+		messages['password not match'] = '".addslashes((string) $_lang['Le due password non corrispondono!'])."';
 		";
 	break;
 	}

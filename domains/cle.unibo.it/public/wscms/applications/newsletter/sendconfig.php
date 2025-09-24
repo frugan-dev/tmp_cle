@@ -3,7 +3,7 @@
 
 if (Core::$request->method == 'updateConfig') {
 	if (!isset($App->items)) $App->items = new stdClass();
-	Sql::initQuery($App->tableConf,array('*'));
+	Sql::initQuery($App->tableConf,['*']);
 	Sql::setClause('active = 1');
 	Sql::setOrder('ordering ASC');
 	$App->items = Sql::getRecords();
@@ -14,8 +14,8 @@ if (Core::$request->method == 'updateConfig') {
 					$key = $value->name;
 					$id = $value->id;
 		 		
-		    		$fields = array();
-		    		$fieldsValues = array();
+		    		$fields = [];
+		    		$fieldsValues = [];
 		    		foreach($globalSettings['languages'] AS $lang) {
 		    			$stringFieldValueRif = 'value_'.$lang;
 		    			$fieldValue = $value->$stringFieldValueRif;
@@ -36,7 +36,7 @@ if (Core::$request->method == 'updateConfig') {
 	
 /* legge la tabella */
 $App->items = new stdClass();
-Sql::initQuery($App->tableConf,array('*'));
+Sql::initQuery($App->tableConf,['*']);
 Sql::setClause('active = 1');
 Sql::setOrder('ordering ASC');
 if (Core::$resultOp->error <> 1) $App->items = Sql::getRecords();

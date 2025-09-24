@@ -54,13 +54,13 @@
 							<label for="id_catsID" class="col-md-3 control-label">Id Categorie associate</label>
 							<div class="col-md-7">
 							<?php
-							$itemCats = array();
-							if ($this->App->item->id_cats != '') $itemCats = explode(',',$this->App->item->id_cats);				
+							$itemCats = [];
+							if ($this->App->item->id_cats != '') $itemCats = explode(',',(string) $this->App->item->id_cats);				
 							?>
 								<?php if(is_array($this->App->item_cats) && count($this->App->item_cats) > 0): ?>
 								<select required name="id_cats[]" size="15" multiple id="id_catsID">
 									<?php foreach ($this->App->item_cats AS $value): ?>
-									<option value="<?php echo $value->id; ?>"<?php if (is_array($itemCats) && in_array($value->id,$itemCats)) echo ' selected="selected"'; ?>><?php echo $value->id.' - '.htmlspecialchars($value->title_it,ENT_QUOTES,'UTF-8'); ?></option>
+									<option value="<?php echo $value->id; ?>"<?php if (is_array($itemCats) && in_array($value->id,$itemCats)) echo ' selected="selected"'; ?>><?php echo $value->id.' - '.htmlspecialchars((string) $value->title_it,ENT_QUOTES,'UTF-8'); ?></option>
 									<?php endforeach; ?>
 								<?php endif; ?>
 								</select>								

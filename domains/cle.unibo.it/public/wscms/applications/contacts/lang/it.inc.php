@@ -32,7 +32,7 @@ $_lang['contenuto email utente - titolo'] = "Il contenuto della email di conferm
 $_lang['latitudine - titolo'] = "I dati di latitudine della posizione nella mappa";
 $_lang['longitudine - titolo'] = "I dati di longitudine della posizione nella mappa";
 
-Config::$langVars = array_merge(Config::$langVars, array(
+Config::$langVars = array_merge(Config::$langVars, [
     'mappa' => 'mappa',
     'configurazione modificata' => 'configurazione modificata',
     'indirizzo email - titolo' => 'L\'indirizzo delle email inviate dal modulo contatti',
@@ -64,5 +64,5 @@ Config::$langVars = array_merge(Config::$langVars, array(
     'latitudine - titolo' => 'I dati di latitudine della posizione nella mappa',
     'longitudine - titolo' => 'I dati di longitudine della posizione nella mappa'
     
-));
+]);
 ?>

@@ -3,128 +3,128 @@
 
 // Sponsor
 if (in_array(DB_TABLE_PREFIX.'sponsor',$tablesDb) && file_exists(PATH.$App->pathApplications."sponsor/index.php") && Permissions::checkIfModulesIsReadable('sponsor',$App->userLoggedData,$App->user_module_active) == true) {
-	$App->homeBlocks['sponsor'] 				= array(
+	$App->homeBlocks['sponsor'] 				= [
 		'table'									=> DB_TABLE_PREFIX.'sponsor',
 		'icon panel'							=> 'fa-users',
-		'label'									=> ucfirst($_lang['sponsor']),
-		'sex suffix'							=> ucfirst($_lang['nuovi']),
+		'label'									=> ucfirst((string) $_lang['sponsor']),
+		'sex suffix'							=> ucfirst((string) $_lang['nuovi']),
 		'type'									=> 'info',
 		'url'									=> true,
-		'url item'								=> array (
+		'url item'								=>  [
 			'string'							=> URL_SITE_ADMIN.'sponsor',
-			'opt'								=> array()
-		)
-	);			
-	$App->homeTables['sponsor'] 				= array(
+			'opt'								=> []
+		]
+	];			
+	$App->homeTables['sponsor'] 				= [
 		'table'									=> DB_TABLE_PREFIX.'sponsor',
 		'icon panel'							=> 'fa-users',
-		'label'									=> ucfirst($_lang['ultimi']).' '.$_lang['sponsor'],
-		'fields'								=> array(
+		'label'									=> ucfirst((string) $_lang['ultimi']).' '.$_lang['sponsor'],
+		'fields'								=> [
 
-			'title'								=> array(
+			'title'								=> [
 				'multilanguage'					=> 1,
 				'type'							=> 'varchar',
-				'label'							=> ucfirst($_lang['titolo']),
+				'label'							=> ucfirst((string) $_lang['titolo']),
 				'url'							=> true,
-				'url item'						=> array(
+				'url item'						=> [
 					'string'					=> URL_SITE_ADMIN.'sponsor',
-					'opt'						=> array(
+					'opt'						=> [
 						'fieldItemRif'			=> ''
-					)
-				)
-			),
+					]
+				]
+			],
 
-			'filename'							=> array(
+			'filename'							=> [
 				'multilanguage'					=> 0,
 				'type'							=> 'varchar',
-				'label'							=> ucfirst($_lang['immagine']),
+				'label'							=> ucfirst((string) $_lang['immagine']),
 				'type'							=> 'image',
 				'pathdef'						=> UPLOAD_DIR.'sponsor/',
 				'path'							=> UPLOAD_DIR.'sponsor/'
-			)
-		)
-	);	
+			]
+		]
+	];	
 }
 
 // Partner
 if (in_array(DB_TABLE_PREFIX.'partners',$tablesDb) && file_exists(PATH.$App->pathApplications."partners/index.php") && Permissions::checkIfModulesIsReadable('partners',$App->userLoggedData,$App->user_module_active) == true) {
 	//Core::setDebugMode(1);	
-	$App->homeBlocks['partners'] 				= array(
+	$App->homeBlocks['partners'] 				= [
 		'table'									=> DB_TABLE_PREFIX.'partners',
 		'icon panel'							=> 'fa-users',
-		'label'									=> ucfirst($_lang['partners']),
-		'sex suffix'							=> ucfirst($_lang['nuovi']),
+		'label'									=> ucfirst((string) $_lang['partners']),
+		'sex suffix'							=> ucfirst((string) $_lang['nuovi']),
 		'type'									=> 'info',
 		'url'									=> true,
-		'url item'								=> array (
+		'url item'								=>  [
 			'string'							=> URL_SITE_ADMIN.'partners',
-			'opt'								=> array()
-		)
-	);			
-	$App->homeTables['partners'] 				= array(
+			'opt'								=> []
+		]
+	];			
+	$App->homeTables['partners'] 				= [
 		'table'									=> DB_TABLE_PREFIX.'partners',
 		'icon panel'							=> 'fa-users',
-		'label'									=> ucfirst($_lang['ultimi']).' '.$_lang['partners'],
-		'fields'								=> array(
+		'label'									=> ucfirst((string) $_lang['ultimi']).' '.$_lang['partners'],
+		'fields'								=> [
 
-			'title'								=> array(
+			'title'								=> [
 				'multilanguage'					=> 1,
 				'type'							=> 'varchar',
-				'label'							=> ucfirst($_lang['titolo']),
+				'label'							=> ucfirst((string) $_lang['titolo']),
 				'url'							=> true,
-				'url item'						=> array(
+				'url item'						=> [
 					'string'					=> URL_SITE_ADMIN.'partners',
-					'opt'						=> array(
+					'opt'						=> [
 						'fieldItemRif'			=> ''
-					)
-				)
-			),
+					]
+				]
+			],
 
-			'filename'							=> array(
+			'filename'							=> [
 				'multilanguage'					=> 0,
 				'type'							=> 'varchar',
-				'label'							=> ucfirst($_lang['immagine']),
+				'label'							=> ucfirst((string) $_lang['immagine']),
 				'type'							=> 'image',
 				'pathdef'						=> UPLOAD_DIR.'partners/',
 				'path'							=> UPLOAD_DIR.'partners/'
-			)
-		)
-	);	
+			]
+		]
+	];	
 }
 
 // FAQ
 if (in_array(DB_TABLE_PREFIX.'faq',$tablesDb) && file_exists(PATH.$App->pathApplications."faq/index.php") && Permissions::checkIfModulesIsReadable('faq',$App->userLoggedData,$App->user_module_active) == true) {
 	//Core::setDebugMode(1);	
-	$App->homeBlocks['faq'] 					= array(
+	$App->homeBlocks['faq'] 					= [
 		'table'									=> DB_TABLE_PREFIX.'faq',
 		'icon panel'							=> 'fa-question',
-		'label'									=> ucfirst($_lang['faq']),
-		'sex suffix'							=> ucfirst($_lang['nuove']),
+		'label'									=> ucfirst((string) $_lang['faq']),
+		'sex suffix'							=> ucfirst((string) $_lang['nuove']),
 		'type'									=> 'info',
 		'url'									=> true,
-		'url item'								=> array (
+		'url item'								=>  [
 			'string'							=> URL_SITE_ADMIN.'faq',
-			'opt'								=> array()
-		)
-	);			
-	$App->homeTables['faq'] 					= array(
+			'opt'								=> []
+		]
+	];			
+	$App->homeTables['faq'] 					= [
 		'table'									=> DB_TABLE_PREFIX.'faq',
 		'icon panel'							=> 'fa-question',
-		'label'									=> ucfirst($_lang['ultime']).' '.$_lang['faq'],
-		'fields'								=> array(
-			'title'								=> array(
+		'label'									=> ucfirst((string) $_lang['ultime']).' '.$_lang['faq'],
+		'fields'								=> [
+			'title'								=> [
 				'multilanguage'					=> 1,
 				'type'							=> 'varchar',
-				'label'							=> ucfirst($_lang['titolo']),
+				'label'							=> ucfirst((string) $_lang['titolo']),
 				'url'							=> true,
-				'url item'						=> array(
+				'url item'						=> [
 					'string'					=> URL_SITE_ADMIN.'faq',
-					'opt'						=> array(
+					'opt'						=> [
 						'fieldItemRif'			=> ''
-					)
-				)
-			)
-		)
-	);	
+					]
+				]
+			]
+		]
+	];	
 }
 ?>

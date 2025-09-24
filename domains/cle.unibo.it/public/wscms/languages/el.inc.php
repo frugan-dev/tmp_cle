@@ -15,8 +15,8 @@ $_lang['data format string'] = "%DAY%th, %STRINGMONTH% %YEAR%";
 $_lang['charset'] = 'it-IT';
 $_lang['charset date'] = 'it_IT';
 
-$_lang['lista giorni'] = array('N.D.','lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica');
-$_lang['lista mesi'] = array('N.D.','Ιανουαρίου','Φεβρουαρίου','Μαρτίου','Απριλίου','Μαΐου','Ιουνίου','Ιουλίου','Αυγούστου','Σεπτεμβρίου','Οκτωβρίου','Νοεμβρίου','Δεκεμβρίου');
+$_lang['lista giorni'] = ['N.D.','lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica'];
+$_lang['lista mesi'] = ['N.D.','Ιανουαρίου','Φεβρουαρίου','Μαρτίου','Απριλίου','Μαΐου','Ιουνίου','Ιουλίου','Αυγούστου','Σεπτεμβρίου','Οκτωβρίου','Νοεμβρίου','Δεκεμβρίου'];
 
 $_lang['lingue'] = "γλώσσες";
 $_lang['lingua'] = "γλώσσες";
@@ -131,8 +131,8 @@ $_lang['ordinamento'] = "διευθέτηση";
 $_lang['ordine abb'] = 'ord.';
 $_lang['ordine'] = 'παραγγελία';
 
-$_lang['page-type'] = array('default'=>'contenuto','label'=>'etichetta','url'=>'url','module-link'=>'link a modulo');
-$_lang['menu-type'] = array('default'=>'Default','label'=>'Etichetta','url'=>'Url','module-link'=>'Link a modulo','module-menu'=>'Menu generato da modulo');
+$_lang['page-type'] = ['default'=>'contenuto','label'=>'etichetta','url'=>'url','module-link'=>'link a modulo'];
+$_lang['menu-type'] = ['default'=>'Default','label'=>'Etichetta','url'=>'Url','module-link'=>'Link a modulo','module-menu'=>'Menu generato da modulo'];
 $_lang['tipi di moduli menu gestiti'] = 'Διαχειριζόμενοι τύποι φορμών μενού';
 $_lang['tipi di moduli menu gestiti info'] = '* <i>Τα μενού που παρατίθενται μπορούν να είναι διαθέσιμα μόνο εάν οι λειτουργικές μονάδες τους είναι εγκατεστημένες και ενεργές.</i>';
 
@@ -377,7 +377,7 @@ $_lang['testo errore mail'] = "Δεν ήταν δυνατή η αποστολή 
 $_lang['Nessuna voce trovata!'] = 'Δεν βρέθηκαν καταχωρήσεις!';
 $_lang['indirizzo email NON valido'] = 'Μη έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου';
 
-$_lang = array_merge($_lang,array(
+$_lang = array_merge($_lang,[
 
     'altro comune' => 'άλλος δήμος',
     'cap' => 'ZIP',
@@ -492,5 +492,5 @@ $_lang = array_merge($_lang,array(
     'cookie tecnici' => 'τεχνικά cookies',
     'cookie di terze parti' => 'cookies τρίτων'
 
-));
+]);
 ?>

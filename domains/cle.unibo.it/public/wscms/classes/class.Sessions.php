@@ -9,20 +9,16 @@
 */
 
 class my_session {
-   var $my_session_id; // l'id di sessione
-   var $session_time; // la durata della sessione
-   var $session_gc_time; // il tempo per la garbage collection
-   var $table_name = SESSIONS_TABLE_NAME; //'sitodemo509_sessions'; // il tempo per la garbage collection
-   var $cookie_name = SESSIONS_COOKIE_NAME; // il tempo per la garbage collection
- 
+   public $my_session_id; // il tempo per la garbage collection
+   public $table_name = SESSIONS_TABLE_NAME; //'sitodemo509_sessions'; // il tempo per la garbage collection
+   public $cookie_name = SESSIONS_COOKIE_NAME; // il tempo per la garbage collection
+
    //il costruttore della classe, inizializza le variabili
-   public function __construct($session_time, $session_gc_time,$cookie_name_def='') { 
+   public function __construct(public $session_time, public $session_gc_time,$cookie_name_def='') { 
    	if ($cookie_name_def != '') $this->cookie_name = $cookie_name_def;
       $this->my_session_id = (!isset($_COOKIE[$this->cookie_name]))
       ? md5(uniqid(microtime()))
       : $_COOKIE[$this->cookie_name];
-      $this->session_time = $session_time;
-      $this->session_gc_time = $session_gc_time;
       }
 
    // avvia o aggiorna la sessione
@@ -34,17 +30,17 @@ class my_session {
 		if (isset($_SERVER['HTTPS'])) $cookieSecure = true;
 		$cookieHttponly = false; 
       if (!isset($_COOKIE[$this->cookie_name])) {
-         setcookie($this->cookie_name, $this->my_session_id, $cookie_expire,'/',$cookieDomain,$cookieSecure,$cookieHttponly);
+         setcookie($this->cookie_name, (string) $this->my_session_id, ['expires' => $cookie_expire, 'path' => '/', 'domain' => (string) $cookieDomain, 'secure' => $cookieSecure, 'httponly' => $cookieHttponly]);
          $sql = "INSERT INTO ".$this->table_name." VALUES('".$this->my_session_id."', '', " .time(). ")";
          $result = $pdoCore->query($sql) or die('Errore db linea 36!');
          } else {
-            if ($this->session_time > 0) setcookie($this->cookie_name, $this->my_session_id, $cookie_expire,'/',$cookieDomain,$cookieSecure,$cookieHttponly);
+            if ($this->session_time > 0) setcookie($this->cookie_name, (string) $this->my_session_id, ['expires' => $cookie_expire, 'path' => '/', 'domain' => (string) $cookieDomain, 'secure' => $cookieSecure, 'httponly' => $cookieHttponly]);
             }
       }
 
    /*   registra la variabili di sessione specificata nel database */
    public function my_session_register($name, $value) {   
-      $_MY_SESSION = array();
+      $_MY_SESSION = [];
       $sql = "SELECT session_vars FROM ".$this->table_name." WHERE sessid = '{$this->my_session_id}'";
       $pdoCore = Sql::getInstanceDb();
       $result = $pdoCore->query($sql) or die('Errore db linea 48!');
@@ -52,7 +48,7 @@ class my_session {
          $row = $result->fetch(PDO::FETCH_ASSOC);              		
        	$_MY_SESSION = unserialize($row['session_vars']); 
        	$_MY_SESSION[$name] = $value;   	
-       	Sql::initQuery($this->table_name,array('session_vars'),array(serialize($_MY_SESSION),$this->my_session_id),'sessid = ?');
+       	Sql::initQuery($this->table_name,['session_vars'],[serialize($_MY_SESSION),$this->my_session_id],'sessid = ?');
        	Sql::updateRecord();
          } else {
             $_MY_SESSION[$name] = $value;
@@ -60,9 +56,9 @@ class my_session {
    			$result_b = $pdoCore->query($sql_b) or die('Errore db linea 59!');
             }
       }
-      
+
     public function my_session_unsetVar($name) {   
-      $_MY_SESSION = array();
+      $_MY_SESSION = [];
       $sql = "SELECT session_vars FROM ".$this->table_name." WHERE sessid = '{$this->my_session_id}'";
       $pdoCore = Sql::getInstanceDb();
       $result = $pdoCore->query($sql) or die('Errore db linea 48!');
@@ -87,7 +83,7 @@ class my_session {
       $result = $pdoCore->query($sql) or die('Errore db linea 70!');
       if ($pdoCore->query("SELECT FOUND_ROWS()")->fetchColumn() > 0) {
       	$row = $result->fetch(PDO::FETCH_ASSOC); 
-         $row['session_vars'] = stripslashes($row['session_vars']);
+         $row['session_vars'] = stripslashes((string) $row['session_vars']);
          $session_vars = unserialize($row['session_vars']);
          return (isset($key) && $key) ? $session_vars[$key] : $session_vars;        
          }     
@@ -107,12 +103,12 @@ class my_session {
       $result = $pdoCore->query($sql) or die('Errore db linea 92!');
       setcookie($this->cookie_name);
    }
-   
+
   	public function addSessionsModuleVars($sessionsVars,$app,$sessionsDef) {
 		$refresh = false;
 		// se non esiste la sessione la crea di fdefault
 		if (!isset($sessionsVars[$app])) {
-			$sessionsVars[$app] = array();
+			$sessionsVars[$app] = [];
 			$refresh = true;
 			}
 		// controlla se sono settati i parametri di defautl
@@ -124,26 +120,26 @@ class my_session {
 					}				
   				}  
   			} 
-		
+
 		if ($refresh == true) {		
 		   $this->my_session_register($app,$sessionsVars[$app]);	
-			$sessionsVars = array();
+			$sessionsVars = [];
 			$sessionsVars = $this->my_session_read();
 			}
   		return $sessionsVars;  	
   		}   
-  		
+
   	public function addSessionsModuleSingleVar($sessionsVars,$app,$key,$var) {
 		$sessionsVars[$app][$key] = $var;		
 		$this->my_session_register($app,$sessionsVars[$app]);	
-		$sessionsVars = array();
+		$sessionsVars = [];
 		$sessionsVars = $this->my_session_read();
   		return $sessionsVars;  			
   		}	
-  		
+
   	public function addSessionsSingleVar($sessionsVars,$value) {	
 		$this->my_session_register($sessionsVars,$value);	
-		$sessionsVars = array();
+		$sessionsVars = [];
 		$sessionsVars = $this->my_session_read();
   		return $sessionsVars;  			
   		}	    

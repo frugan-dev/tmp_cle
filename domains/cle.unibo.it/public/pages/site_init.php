@@ -9,15 +9,15 @@
 //Sql::setDebugMode(1);
 
 $App->pageActive = 'home';
-$dataMainMenu = Menu::setMenuTreeData(array('langUser'=>$_lang['user']));
+$dataMainMenu = Menu::setMenuTreeData(['langUser'=>$_lang['user']]);
 //ToolsStrings::dump($dataMainMenu);
 
 // menu pages
-$dataMenuPages = Pages::setMainTreePagesData(array(
+$dataMenuPages = Pages::setMainTreePagesData([
 	'table'=>'pages',
 	'getbreadcrumbs'=>'1',
 	'hideMenu' => 1
-));
+]);
 //ToolsStrings::dump($dataMenuPages);die();
 $App->pageAlias = Core::$request->page_alias;
 $App->pageID = Core::$request->page_id;
@@ -27,11 +27,11 @@ if (isset($dataMenuPages[Core::$request->page_alias]->breadcrumbs[0]['parent']))
 	$App->pageID = $dataMenuPages[Core::$request->page_alias]->breadcrumbs[0]['parent'];
 }
 
-$dataMenuSitePages = Pages::setMainTreePagesDataCle(array(
+$dataMenuSitePages = Pages::setMainTreePagesDataCle([
 	'table'=>'site_pages',
 	'getbreadcrumbs'=>'1',
 	'table template'=>'site_templates'
-));
+]);
 //ToolsStrings::dump($dataMenuSitePages);
 
 
@@ -46,14 +46,14 @@ $App->page_image_top_bottom = UPLOAD_DIR.'pages/default/default-image-bottom-pag
 
 /* carica i dati di contatto per la home */
 $App->config = new stdClass();
-Sql::initQuery(Sql::getTablePrefix().'contacts_config',array('*'),array(),'id = 1');
+Sql::initQuery(Sql::getTablePrefix().'contacts_config',['*'],[],'id = 1');
 $App->contact_config = Sql::getRecord();
 
 //print_r($App->config);
 $App->addPageJavascriptIniBody = "
 	var gLatitude = ".$App->contact_config->map_latitude.";
 	var gLongitude = ".$App->contact_config->map_longitude.";
-	var gTitle = '".addslashes(Config::$globalSettings['azienda referente'])."';
+	var gTitle = '".addslashes((string) Config::$globalSettings['azienda referente'])."';
 ";
 
 
@@ -70,16 +70,16 @@ $App->meta_og_description = '';
 
 // BREADCRUMBS
 $App->breadcrumbs = new stdClass();
-$App->breadcrumbs->items = array();
-$App->breadcrumbs->items[] = array('class'=>'breadcrumb-item','url'=>URL_SITE,'title'=>'Home');
+$App->breadcrumbs->items = [];
+$App->breadcrumbs->items[] = ['class'=>'breadcrumb-item','url'=>URL_SITE,'title'=>'Home'];
 
 // gestione chhokie terze parti
 $App->cookiesThirdyParts = false;
 if (isset($_COOKIE[$globalSettings['cookiesterzeparti']]) && $_COOKIE[Config::$globalSettings['cookiesterzeparti']] == 1) $App->cookiesThirdyParts = true;
 
-Sql::initQuery(DB_TABLE_PREFIX.'contacts_config',array('*'),array(),'');	
+Sql::initQuery(DB_TABLE_PREFIX.'contacts_config',['*'],[],'');	
 $App->moduleConfig = Sql::getRecord();
-$App->urlprivacypolicypage = ToolsStrings:: parseHtmlContent($App->moduleConfig->url_privacy_page,array());
+$App->urlprivacypolicypage = ToolsStrings:: parseHtmlContent($App->moduleConfig->url_privacy_page,[]);
 $App->urlcookiepolicypage = URL_SITE.'pages/2/cookie-policy';
 
 $App->view = '';

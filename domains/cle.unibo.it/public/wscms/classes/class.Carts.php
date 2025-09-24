@@ -39,7 +39,7 @@ class Carts extends Core {
 	{
 		//Sql::setDebugMode(1);
 		// preleva il carrello di sessione
-		Sql::initQuery(self::$dbTable,array('*'),array(self::$users_id,self::$sessionId,self::$token,self::$companies_code),'users_id = ? AND session_id = ? AND token = ? AND companies_code = ?','created ASC',' LIMIT 1','',false);
+		Sql::initQuery(self::$dbTable,['*'],[self::$users_id,self::$sessionId,self::$token,self::$companies_code],'users_id = ? AND session_id = ? AND token = ? AND companies_code = ?','created ASC',' LIMIT 1','',false);
 		$foo = Sql::getRecord();
 		//ToolsStrings::dumpArray($foo);
 
@@ -47,7 +47,7 @@ class Carts extends Core {
 			self::$carts_id = $foo->id;
 		} else {
 			// altrimenti prende ltimo senza sessione
-			Sql::initQuery(self::$dbTable,array('*'),array(self::$users_id,self::$companies_code),'users_id = ? AND companies_code = ?','created ASC',' LIMIT 1','',false);
+			Sql::initQuery(self::$dbTable,['*'],[self::$users_id,self::$companies_code],'users_id = ? AND companies_code = ?','created ASC',' LIMIT 1','',false);
 			$foo = Sql::getRecord();
 			if (isset($foo->id)) {
 				self::$carts_id = $foo->id;
@@ -84,8 +84,8 @@ class Carts extends Core {
 
 	public static function addCartNew() 
 	{
-    	$f = array('session_id','token','companies_code','users_id','created');
-    	$fv = array(self::$sessionId,self::$token,self::$companies_code,self::$users_id,Config::$nowDateTimeIso);
+    	$f = ['session_id','token','companies_code','users_id','created'];
+    	$fv = [self::$sessionId,self::$token,self::$companies_code,self::$users_id,Config::$nowDateTimeIso];
         Sql::initQuery(self::$dbTable,$f,$fv,'','','','',false);
         Sql::insertRecord();   
         self::$carts_id = Sql::getLastInsertedIdVar();
@@ -94,7 +94,7 @@ class Carts extends Core {
 	public static function checkCartIfExists() 
 	{
     	$result = false;
-    	if (Sql::countRecordQry(self::$dbTable,'id','id = ?',array(self::$carts_id)) > 0) {   		
+    	if (Sql::countRecordQry(self::$dbTable,'id','id = ?',[self::$carts_id]) > 0) {   		
     		$result = true;
     	}	
     	return $result;
@@ -105,15 +105,15 @@ class Carts extends Core {
 		//Sql::setDebugMode(1);
 		// prende dati riga prodotto
 		if (intval($id) > 0) {
-			Sql::initQuery(self::$dbTableCartPro,array('*'),array(self::$carts_id,$id),'carts_id = ? AND id = ?','','','',false);
+			Sql::initQuery(self::$dbTableCartPro,['*'],[self::$carts_id,$id],'carts_id = ? AND id = ?','','','',false);
 			$product = Sql::getRecord();
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); die(); }
 			if (isset($product->id)) { 
 				if (intval($products_quantity) > 0) {
 					$product->quantity = $products_quantity;
 					Sql::initQuery(self::$dbTableCartPro,
-					array('quantity'),
-					array($product->quantity,self::$carts_id,$id)
+					['quantity'],
+					[$product->quantity,self::$carts_id,$id]
 					,'carts_id = ? AND id = ?','','','',false);
 					Sql::updateRecord();
 					if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); die(); }
@@ -124,7 +124,7 @@ class Carts extends Core {
 	
 	public static function clearCartProducts() 
 	{	
-		Sql::initQuery(self::$dbTableCartPro,array('id'),array(self::$carts_id),'carts_id = ?','','','',false);
+		Sql::initQuery(self::$dbTableCartPro,['id'],[self::$carts_id],'carts_id = ?','','','',false);
 		Sql::deleteRecord();
 		if (Core::$resultOp->error > 0) { die('errore db delete cart product'); ToolsStrings::redirect(URL_SITE.'error/db'); }	
 	}
@@ -132,7 +132,7 @@ class Carts extends Core {
 	public static function deleteCart() 
 	{	
 		self::clearCartProducts();
-		Sql::initQuery(self::$dbTable,array('id'),array(self::$carts_id),'id = ?','','','',false);
+		Sql::initQuery(self::$dbTable,['id'],[self::$carts_id],'id = ?','','','',false);
 		Sql::deleteRecord();
 		if (Core::$resultOp->error > 0) { die('errore db cancellazione carrello'); }	
 		self::$carts_id = 0; 
@@ -141,7 +141,7 @@ class Carts extends Core {
     
 	public static function delCartProduct($id) 
 	{
-		Sql::initQuery(self::$dbTableCartPro,array('id'),array($id),'id = ?','','','',false);
+		Sql::initQuery(self::$dbTableCartPro,['id'],[$id],'id = ?','','','',false);
 		Sql::deleteRecord();
 		if (Core::$resultOp->error > 0) { die('Errore db cancellazione prodotto'); }
     }
@@ -152,7 +152,7 @@ class Carts extends Core {
 		$attributes = Products::getAttributesList($_SESSION['globalCompanyCodeDefaultCode']); 
 		//ToolsStrings::dumpArray($attributes);//die('fatto1');
 		if ($id  > 0  && $quantity > 0) {
-			$attribute = (isset($attributes[$attributes_id]->title) ? $attributes[$attributes_id]->title : '');
+			$attribute = ($attributes[$attributes_id]->title ?? '');
 			//echo '<br>attributes_id: '.$attributes_id;
 			//echo '<br>attribute: '.$attribute;
 
@@ -162,13 +162,13 @@ class Carts extends Core {
 			ToolsStrings::dumpArray($product);//die('fatto1');
 
 			Sql::setDebugMode(1);
-			Config::$queryParams = array();
+			Config::$queryParams = [];
 			Config::$queryParams['tables'] = Config::$DatabaseTables['carts products'];
-			Config::$queryParams['fieldsVal'] = array($product->id,$product->users_id,$product->categories_id,$product->companies_code);
+			Config::$queryParams['fieldsVal'] = [$product->id,$product->users_id,$product->categories_id,$product->companies_code];
 			Config::$queryParams['where'] = 'products_id = ? AND users_id = ? AND categories_id = ? AND companies_code = ?';
-			Config::$queryParams['fieldsVal'] = array($product->id,self::$users_id,$attribute);
+			Config::$queryParams['fieldsVal'] = [$product->id,self::$users_id,$attribute];
 			Config::$queryParams['where'] = 'products_id = ? AND users_id = ? AND attribute = ?';
-			Sql::initQuery(Config::$queryParams['tables'],array('*'),Config::$queryParams['fieldsVal'],Config::$queryParams['where']);
+			Sql::initQuery(Config::$queryParams['tables'],['*'],Config::$queryParams['fieldsVal'],Config::$queryParams['where']);
 			$foo = Sql::getRecord();
 			if (Core::$resultOp->error > 0) { die('Errore lettura prodotto per vedere se gia esistente'); }
 			//ToolsStrings::dumpArray($foo);die('fatto2');
@@ -176,10 +176,10 @@ class Carts extends Core {
 			if (isset($foo->id) && intval($foo->id) > 0) {
 				//ToolsSt ings::dump($foo);
 				$qty = $foo->quantity + $quantity;
-				Config::$queryParams = array();
+				Config::$queryParams = [];
 				Config::$queryParams['tables'] = Config::$DatabaseTables['carts products'];
-				Config::$queryParams['fields'] = array('quantity');
-				Config::$queryParams['fieldsVal'] = array($qty,$foo->id);
+				Config::$queryParams['fields'] = ['quantity'];
+				Config::$queryParams['fieldsVal'] = [$qty,$foo->id];
 				Config::$queryParams['where'] = 'id = ?';
 				ToolsStrings::dump(Config::$queryParams);
 				Sql::initQuery(Config::$queryParams['tables'],Config::$queryParams['fields'],Config::$queryParams['fieldsVal'],Config::$queryParams['where']);
@@ -188,7 +188,7 @@ class Carts extends Core {
 			} else {
 
 				// salva il prodotto
-				$f = array(
+				$f = [
 					'carts_id',
 					'users_id',
 					'categories_id',
@@ -198,8 +198,8 @@ class Carts extends Core {
 					'quantity',
 					"companies_code",
 					"attribute"
-				);
-				$fv = array(
+				];
+				$fv = [
 					self::$carts_id,
 					self::$users_id,				
 					$product->categories_id,
@@ -209,7 +209,7 @@ class Carts extends Core {
 					$quantity,
 					$product->companies_code,
 					$attribute		    	
-				);
+				];
 				Sql::initQuery(self::$dbTableCartPro,$f,$fv,'','','','',false);
 				Sql::insertRecord();
 				if (Core::$resultOp->error > 0) { die('Errore inserimento nuovo prodotto'); }	
@@ -226,9 +226,9 @@ class Carts extends Core {
     
     public static function loadCartProducts() {
 		//Sql::setDebugMode(1);
-    	$obj = array();
-     	$f = array('cp.*','product.title');
-    	$fv = array(self::$carts_id);
+    	$obj = [];
+     	$f = ['cp.*','product.title'];
+    	$fv = [self::$carts_id];
     	$clause = 'cp.carts_id = ?';
         Sql::initQuery(self::$dbTableCartPro.' AS cp INNER JOIN '.self::$dbTablePro.' AS product ON (cp.products_id = product.id)',$f,$fv,$clause,'','','',false);
        	//Sql::setOptAddRowFields(1);
@@ -239,9 +239,9 @@ class Carts extends Core {
 			//totali
 			self::$total_products_quantity += $row->quantity;
 			// pende gli attributi prodotto
-			$obja = array();
-     		$f = array('name,label,value');
-			$fv = array($row->id);
+			$obja = [];
+     		$f = ['name,label,value'];
+			$fv = [$row->id];
     		$clause = 'carts_products_id = ?';
 			$obja = Sql::getRecords();	
 			$row->attributes = $obja;

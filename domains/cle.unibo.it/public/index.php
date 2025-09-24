@@ -13,7 +13,7 @@ if (!isset($_SESSION['csrftoken'])) $_SESSION['csrftoken'] = bin2hex(openssl_ran
 //ini_set('display_errors', 1);
 
 define('PATH','');
-define('MAXPATH', str_replace("includes","",dirname(__FILE__)).'');
+define('MAXPATH', str_replace("includes","",__DIR__).'');
 if(!ini_get('date.timezone')) date_default_timezone_set('GMT');
 setlocale(LC_TIME, 'ita', 'it_IT');
 
@@ -42,12 +42,12 @@ include_once(PATH."wscms/classes/class.Orders.php");
 Config::setGlobalSettings($globalSettings);
 Config::init();
 Config::$defPath = 'wscms/';
-Core::$globalSettings['requestoption']['coremodules'] = array('moduleassociated','login','logout','account','password','profile','nopassword','nousername','moduleassociated','error');
-Core::$globalSettings['requestoption']['othermodules'] = array_merge(array('listpage','help'),Core::$globalSettings['requestoption']['coremodules']);
+Core::$globalSettings['requestoption']['coremodules'] = ['moduleassociated','login','logout','account','password','profile','nopassword','nousername','moduleassociated','error'];
+Core::$globalSettings['requestoption']['othermodules'] = array_merge(['listpage','help'],Core::$globalSettings['requestoption']['coremodules']);
 Core::$globalSettings['requestoption']['defaultaction'] = 'home';
 Core::$globalSettings['requestoption']['defaultpagesmodule'] = 'pages';
 Core::$globalSettings['requestoption']['sectionadmin'] = 1;
-Core::$globalSettings['requestoption']['methods'] = array();
+Core::$globalSettings['requestoption']['methods'] = [];
 Core::$globalSettings['requestoption']['isRoot'] = 0;
 Core::$globalSettings['requestoption']['getlasturlparam'] = false;
 Core::init();
@@ -80,7 +80,7 @@ Core::getRequest();
 
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
-$_MY_SESSION_VARS = array();
+$_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
@@ -136,7 +136,7 @@ if ($renderAjax == true){
 	}
 	$renderTlp = false;
 }		
-	
+
 $App->lang = $_lang;
 $App->mySessionVars = $_MY_SESSION_VARS;
 $App->globalSettings = $globalSettings;
@@ -176,7 +176,7 @@ echo '<br>pathtemplateApp: '.$pathtemplateApp;
 
 if ($renderTpl == true && $App->templateApp != '') {
 
-	$arrayVars = array(
+	$arrayVars = [
 		'App'=>$App,
 		'Lang'=>Config::$langVars,
 		'LangVars'=>Config::$langVars,
@@ -191,7 +191,7 @@ if ($renderTpl == true && $App->templateApp != '') {
 		'MySessionVars'=>$_MY_SESSION_VARS,
 		'Session'   => $_SESSION,
 		'GlobalSettings'=>$globalSettings
-	);
+	];
 
 	$loader = new \Twig\Loader\FilesystemLoader($pathtemplateBase);
 	$loader->addPath($pathtemplateApp);

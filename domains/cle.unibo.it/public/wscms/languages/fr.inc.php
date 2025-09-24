@@ -15,8 +15,8 @@ $_lang['data format string'] = "%DAY%th, %STRINGMONTH% %YEAR%";
 $_lang['charset'] = 'fr-FR';
 $_lang['charset date'] = 'fr_FR';
 
-$_lang['lista giorni'] = array('N.D.','lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche');
-$_lang['lista mesi'] = array('N.D.','janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre');
+$_lang['lista giorni'] = ['N.D.','lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+$_lang['lista mesi'] = ['N.D.','janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
 $_lang['lingue'] = "langues";
 $_lang['lingua'] = "langue";
@@ -131,8 +131,8 @@ $_lang['ordinamento'] = "ordinamento";
 $_lang['ordine abb'] = 'ord.';
 $_lang['ordine'] = 'ordine';
 
-$_lang['page-type'] = array('default'=>'contenuto','label'=>'etichetta','url'=>'url','module-link'=>'link a modulo');
-$_lang['menu-type'] = array('default'=>'Default','label'=>'Etichetta','url'=>'Url','module-link'=>'Link a modulo','module-menu'=>'Menu generato da modulo');
+$_lang['page-type'] = ['default'=>'contenuto','label'=>'etichetta','url'=>'url','module-link'=>'link a modulo'];
+$_lang['menu-type'] = ['default'=>'Default','label'=>'Etichetta','url'=>'Url','module-link'=>'Link a modulo','module-menu'=>'Menu generato da modulo'];
 $_lang['tipi di moduli menu gestiti'] = 'tipi di moduli menu gestiti';
 $_lang['tipi di moduli menu gestiti info'] = '* <i>I menu in elenco possono essere disponibili solo se i relativi moduli sono installati e attivi.</i>';
 
@@ -377,7 +377,7 @@ $_lang['testo errore mail'] = "Non è stato possibile inviare emails per un prob
 $_lang['Nessuna voce trovata!'] = 'Nessuna voce trovata!';
 $_lang['indirizzo email NON valido'] = 'indirizzo email NON valido';
 
-$_lang = array_merge($_lang,array(
+$_lang = array_merge($_lang,[
 
     'altro comune' => 'altro comune',
     'cap' => 'cap',
@@ -491,5 +491,5 @@ $_lang = array_merge($_lang,array(
     'cookie tecnici' => 'cookies techniques',
     'cookie di terze parti' => 'cookies tiers'
     
-));
+]);
 ?>

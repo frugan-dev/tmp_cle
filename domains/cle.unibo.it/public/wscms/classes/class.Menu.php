@@ -5,7 +5,7 @@ class Menu extends Core {
 
 	public static $output = '';
 	public static $level = 0;
-	public static $colum = array();
+	public static $colum = [];
 	public static $subItems = 0;
 	public static $treeData = '';
 	
@@ -15,9 +15,9 @@ class Menu extends Core {
 
 	public static function createMenuOutputFromTemplate($obj,$parent,$opt) 
 	{	
-		$optDef = array(
+		$optDef = [
 			'ulIsMain'=>1, 
-		);
+		];
 		$opt = array_merge($optDef,$opt);
 
 		$has_children = false;
@@ -33,10 +33,10 @@ class Menu extends Core {
 							foreach($opt['modulesmenu'] AS $mmkey=>$mmvalue) {
 								//echo '<br>module: #'.$mmkey.'#';
 								//echo '<br>replaces: #'.$mmvalue['replace'].'#';
-								$alias = preg_replace($mmvalue['replace'],$mmvalue['values'],$alias);
+								$alias = preg_replace($mmvalue['replace'],(string) $mmvalue['values'],(string) $alias);
 							}
 						}
-						$alias = preg_replace('/%SUBMODULEMENULABEL%/',$value->title,$alias);
+						$alias = preg_replace('/%SUBMODULEMENULABEL%/',(string) $value->title,(string) $alias);
 						self::$output .= $alias;
 	
 					} else {
@@ -122,24 +122,24 @@ class Menu extends Core {
 						self::$output .= $href.PHP_EOL;
 
 						if ($value->alias == $opt['activepage']) {
-							self::$output = preg_replace('/%CLASSACTIVE%/',$opt['classactive'],self::$output);
-							self::$output = preg_replace('/%TEXTACTIVE%/',$opt['textactive'],self::$output);
+							self::$output = preg_replace('/%CLASSACTIVE%/',(string) $opt['classactive'],self::$output);
+							self::$output = preg_replace('/%TEXTACTIVE%/',(string) $opt['textactive'],(string) self::$output);
 						} else {
 							self::$output = preg_replace('/%CLASSACTIVE%/','',self::$output);
-							self::$output = preg_replace('/%TEXTACTIVE%/','',self::$output);
+							self::$output = preg_replace('/%TEXTACTIVE%/','',(string) self::$output);
 						}
 
-						self::$output = preg_replace('/%URL%/',$url,self::$output);
-						self::$output = preg_replace('/%URLTITLE%/',$value->title,self::$output);
-						self::$output = preg_replace('/%TITLE%/',$value->title,self::$output);
+						self::$output = preg_replace('/%URL%/',(string) $url,(string) self::$output);
+						self::$output = preg_replace('/%URLTITLE%/',(string) $value->title,(string) self::$output);
+						self::$output = preg_replace('/%TITLE%/',(string) $value->title,(string) self::$output);
 						
 						
-						self::$output = preg_replace('/%LEVEL%/',self::$level,self::$output);
-						self::$output = preg_replace('/%SONS%/',$value->sons,self::$output);
-						self::$output = preg_replace('/%ID%/',$value->id,self::$output);
-						self::$output = preg_replace('/%PARENT%/',$value->parent,self::$output);
+						self::$output = preg_replace('/%LEVEL%/',(string) self::$level,(string) self::$output);
+						self::$output = preg_replace('/%SONS%/',(string) $value->sons,(string) self::$output);
+						self::$output = preg_replace('/%ID%/',(string) $value->id,(string) self::$output);
+						self::$output = preg_replace('/%PARENT%/',(string) $value->parent,(string) self::$output);
 						if (isset($value->alias)) {
-							self::$output = preg_replace('/%ALIAS%/',$value->alias,self::$output);
+							self::$output = preg_replace('/%ALIAS%/',$value->alias,(string) self::$output);
 						}
 
 
@@ -164,9 +164,9 @@ class Menu extends Core {
 
 	public static function createMenuOutput($obj,$parent,$opt) 
 	{	
-		$optDef = array(
-			'modulesmenu'=>array(),'ulIsMain'=>0, 'ulMain'=>'<ul>', 'ulSubMenu'=>'<ul>',	 'ulDefault'=>'<ul>',	 'liMain'=>'<li>', 'liSubMenu'=>'<li>', 'liSubSubMenu'=>'<li>', 'liDefault'=>'<li>', 'hrefMain'=>'<a>', 'hrefSubMenu'=>'<a>', 'hrefdefault'=>'<a>', 'lang'=>'it', 'urldefault'=>'#!', 'pagesModule'=>'pages/', 'valueUrlDefault'=>'%ID%/%SEOCLEAN%', 'titleField'=>'', 'activepage'=>'pages'
-			); 
+		$optDef = [
+			'modulesmenu'=>[],'ulIsMain'=>0, 'ulMain'=>'<ul>', 'ulSubMenu'=>'<ul>',	 'ulDefault'=>'<ul>',	 'liMain'=>'<li>', 'liSubMenu'=>'<li>', 'liSubSubMenu'=>'<li>', 'liDefault'=>'<li>', 'hrefMain'=>'<a>', 'hrefSubMenu'=>'<a>', 'hrefdefault'=>'<a>', 'lang'=>'it', 'urldefault'=>'#!', 'pagesModule'=>'pages/', 'valueUrlDefault'=>'%ID%/%SEOCLEAN%', 'titleField'=>'', 'activepage'=>'pages'
+			]; 
 		$opt = array_merge($optDef,$opt);
 
 		$has_children = false;
@@ -181,10 +181,10 @@ class Menu extends Core {
 							foreach($opt['modulesmenu'] AS $mmkey=>$mmvalue) {
 								//echo '<br>module: #'.$mmkey.'#';
 								//echo '<br>replaces: #'.$mmvalue['replace'].'#';
-								$alias = preg_replace($mmvalue['replace'],$mmvalue['values'],$alias);
+								$alias = preg_replace($mmvalue['replace'],(string) $mmvalue['values'],(string) $alias);
 							}
 						}
-						$alias = preg_replace('/%SUBMODULEMENULABEL%/',$value->title,$alias);
+						$alias = preg_replace('/%SUBMODULEMENULABEL%/',(string) $value->title,(string) $alias);
 						self::$output .= $alias;
 						
 					} else {
@@ -196,7 +196,7 @@ class Menu extends Core {
 							$has_children = true;											
 							if (self::$level == 0) $ul = $opt['ulMain'];
 							if (self::$level > 0) $ul = $opt['ulSubMenu'];	
-							$ul = preg_replace('/%ACTIVEPAGE%%/',$opt['activepage'],$ul);						
+							$ul = preg_replace('/%ACTIVEPAGE%%/',(string) $opt['activepage'],(string) $ul);						
 						if (self::$level > $opt['ulIsMain']) self::$output .= $ul.PHP_EOL;  
 						}								
 						/* gestione tag dinamici */
@@ -210,9 +210,9 @@ class Menu extends Core {
 						
 						//echo 'alias: '.$value->alias;
 						if (self::$level == 0 && $value->alias == $opt['activepage']) {
-							$li = preg_replace('/%CLASSACTIVE%/',' active',$li);
+							$li = preg_replace('/%CLASSACTIVE%/',' active',(string) $li);
 						} else {
-							$li = preg_replace('/%CLASSACTIVE%/','',$li);
+							$li = preg_replace('/%CLASSACTIVE%/','',(string) $li);
 						}
 						
 						$li = preg_replace('/%CLASSACTIVE%/','',$li);	
@@ -222,12 +222,12 @@ class Menu extends Core {
 						if (isset($value->type)) {
 							$hrefUrl = self::getUrlFromType($value,$value->title,$opt);
 						}           
-						$li = preg_replace('/%URL%/',$hrefUrl,$li);
-						$li = preg_replace('/%URLTITLE%/',$value->title,$li);
-						$li = preg_replace('/%TITLE%/',$value->title,$li);
-						$href = preg_replace('/%URL%/',$hrefUrl,$href);
-						$href = preg_replace('/%URLTITLE%/',$value->title,$href);
-						$href = preg_replace('/%TITLE%/',$value->title,$href);
+						$li = preg_replace('/%URL%/',(string) $hrefUrl,$li);
+						$li = preg_replace('/%URLTITLE%/',(string) $value->title,$li);
+						$li = preg_replace('/%TITLE%/',(string) $value->title,$li);
+						$href = preg_replace('/%URL%/',(string) $hrefUrl,(string) $href);
+						$href = preg_replace('/%URLTITLE%/',(string) $value->title,$href);
+						$href = preg_replace('/%TITLE%/',(string) $value->title,$href);
 							
 						if (self::$level == 0 && $value->alias == $opt['activepage']) {
 							$href = preg_replace('/%CLASSACTIVE%/',' active',$href);
@@ -237,12 +237,12 @@ class Menu extends Core {
 						
 						$target = $value->target;
 						if ($target == '') $target = '_self';
-						$href = preg_replace('/%TARGET%/',$target,$href);
+						$href = preg_replace('/%TARGET%/',(string) $target,$href);
 						
 						self::$output .= $li.PHP_EOL;
 						self::$output .= $href.PHP_EOL;
-						self::$output = preg_replace('/%LEVEL%/',self::$level,self::$output);
-						self::$output = preg_replace('/%SONS%/',$value->sons,self::$output);
+						self::$output = preg_replace('/%LEVEL%/',(string) self::$level,self::$output);
+						self::$output = preg_replace('/%SONS%/',(string) $value->sons,(string) self::$output);
 						$id = intval($value->id);
 						self::$level++;	
 							self::createMenuOutput($obj,$id,$opt); 
@@ -268,7 +268,7 @@ class Menu extends Core {
 	/* SQL QUERIES */
 	public static function setMenuTreeData($opt) 
 	{
-		$optDef = array('langUser'=>'it','ordering'=>'ASC','getbreadcrumbs'=>0,'hideactive'=>1); 
+		$optDef = ['langUser'=>'it','ordering'=>'ASC','getbreadcrumbs'=>0,'hideactive'=>1]; 
 		$opt = array_merge($optDef,$opt);
 		$languages = self::$globalSettings['languages'];
 
@@ -302,32 +302,24 @@ class Menu extends Core {
 
 	private static function getTitlesVal($value,$opt) 
 	{
-		$titlesVal = array();
+		$titlesVal = [];
 		$fieldTitle = 'title_';
  		$fieldTitleSeo = 'title_seo_';
  		$fieldTitleMeta = 'title_meta_';         		        		
- 		$titlesVal['title'] = Multilanguage::getLocaleObjectValue($value,$fieldTitle,Config::$langVars['user'],array());
- 		$titlesVal['titleSeo'] = Multilanguage::getLocaleObjectValue($value,$fieldTitleSeo,Config::$langVars['user'],array());
- 		$titlesVal['titleMeta'] = Multilanguage::getLocaleObjectValue($value,$fieldTitleMeta,Config::$langVars['user'],array()); 
+ 		$titlesVal['title'] = Multilanguage::getLocaleObjectValue($value,$fieldTitle,Config::$langVars['user'],[]);
+ 		$titlesVal['titleSeo'] = Multilanguage::getLocaleObjectValue($value,$fieldTitleSeo,Config::$langVars['user'],[]);
+ 		$titlesVal['titleMeta'] = Multilanguage::getLocaleObjectValue($value,$fieldTitleMeta,Config::$langVars['user'],[]); 
 		return $titlesVal;	
 	}
 
 	private static function getUrlFromType($value,$title,$opt) 
 	{
-		switch($value->type) {
-			case 'label':
-				$url = $opt['urlDefault'];						
-			break;
-			case 'module-link':
-				$url = URL_SITE.$value->url;
-			break;	
-			case 'modulemenu':
-				$url = 'javascript:void(0);';
-			break;		
-			default:		      
-	  			$url = $value->url;
-			break;
-	  	}
+		$url = match ($value->type) {
+            'label' => $opt['urlDefault'],
+            'module-link' => URL_SITE.$value->url,
+            'modulemenu' => 'javascript:void(0);',
+            default => $value->url,
+        };
 	  		
 	  	$parentstring = '';
 	  	/* trova il parent alias */
@@ -336,13 +328,13 @@ class Menu extends Core {
 	  		if (isset($value->breadcrumbs[0]['alias'])) $parentalias = $value->breadcrumbs[0]['alias'].'/';
 	  	}
 		
-		$url = preg_replace('/%URLSITE%/',URL_SITE,$url);	
-		$url = preg_replace('/%ID%/',$value->id,$url);
+		$url = preg_replace('/%URLSITE%/',URL_SITE,(string) $url);	
+		$url = preg_replace('/%ID%/',(string) $value->id,$url);
 		//$url = preg_replace('/%ALIAS%/',$value->alias,$url);
-		$url = preg_replace('/%SEO%/',$title,$url);
-		$url = preg_replace('/%SEOCLEAN%/', SanitizeStrings::urlslug($title,array('delimiter'=>'-')),$url);
-		$url = preg_replace('/%SEOENCODE%/', urlencode($title),$url);
-		$url = preg_replace('/%TITLE%/', urlencode($title),$url); 
+		$url = preg_replace('/%SEO%/',(string) $title,$url);
+		$url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($title,['delimiter'=>'-']),$url);
+		$url = preg_replace('/%SEOENCODE%/', urlencode((string) $title),$url);
+		$url = preg_replace('/%TITLE%/', urlencode((string) $title),$url); 
 		$url = preg_replace('/%PARENTSTRING%/', urlencode($parentstring),$url);
 		$url = preg_replace('/%PARENTALIAS%/', $parentalias,$url);
 				

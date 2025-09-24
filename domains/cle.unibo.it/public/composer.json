@@ -32,5 +32,9 @@
         "classmap": [
             "./wscms/classes/"
         ]
+    },
+    "scripts": {
+        "amwscan": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/marcocesarato/amwscan/dist/scanner -- --report --ignore-paths=\"/vendor\" --path-logs=\"/tmp/scanner.log\" --path-report=\"../../../private/scanner-report.html\" .",
+        "rector": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/bin/rector -- process --ansi --clear-cache"
     }
 }

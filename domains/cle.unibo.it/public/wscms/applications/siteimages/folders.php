@@ -14,7 +14,7 @@ switch(Core::$request->method) {
 
 	case 'activeFold':
 	case 'disactiveFold':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-4),$tableFold,$App->id,array('label'=>$_lang['categoria'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']));
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-4),$tableFold,$App->id,['label'=>$_lang['categoria'],'attivata'=>$_lang['attivata'],'disattivata'=>$_lang['disattivata']]);
 		$_SESSION['message'] = '0|'.Core::$resultOp->message;
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listFold');
 		die();
@@ -24,7 +24,7 @@ switch(Core::$request->method) {
 		if ($App->id > 0) {
 
 		
-			Sql::initQuery($App->tableItem,array('id'),array($App->id),'id_folder = ?');
+			Sql::initQuery($App->tableItem,['id'],[$App->id],'id_folder = ?');
 			$count = Sql::countRecord();
 			if( $count > 0 ) {
 				$_SESSION['message'] = '1|'.'Errore! La '.$App->labels['fold']['item'].' ha ancora '.$App->labels['fold']['sons'].' associat'.$App->labels['fold']['sonsSex'].'!';	
@@ -33,19 +33,19 @@ switch(Core::$request->method) {
 			}	
 
 			/* preleva il titolo_it per cancellare la cartella */
-			Sql::initQuery($App->tableFold,array('*'),array($App->id),'id = ?');
+			Sql::initQuery($App->tableFold,['*'],[$App->id],'id = ?');
 			$App->itemOld = Sql::getRecord();
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); }	
 			
 
-			Sql::initQuery($tableFold,array('id'),array($App->id),'id = ?');
+			Sql::initQuery($tableFold,['id'],[$App->id],'id = ?');
 			Sql::deleteRecord();
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); }
 			// cancella la cartella galleria 
 			if ( file_exists($App->itemUploadPathDir.$App->itemOld->folder_name) ) {
 				rmdir($App->itemUploadPathDir.$App->itemOld->folder_name) or die('impossibile cancellare la cartella'.$App->itemUploadPathDir.$App->itemOld->folder_name);
 			}				
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',$_lang['categoria'],$_lang['%ITEM% cancellata'])).'!';	
+			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) $_lang['categoria'],(string) $_lang['%ITEM% cancellata'])).'!';	
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listFold');		
 			
 		} else {
@@ -65,7 +65,7 @@ switch(Core::$request->method) {
 	   	/* crea il folder name */
 		   $folder_name = SanitizeStrings::cleanTitleUrl($_POST['title_it']);	   	
 	   	/* controlla se esiste già una cartella con lo stesso nome */
-	   	Sql::initQuery($tableFold,array('id'),array($folder_name),'folder_name = ?');
+	   	Sql::initQuery($tableFold,['id'],[$folder_name],'folder_name = ?');
 			$count = Sql::countRecord();
 			if (Core::$resultOp->error == 0) { 	
 		   	if ($count == 0) {
@@ -96,7 +96,7 @@ switch(Core::$request->method) {
 			$App->viewMethod = 'formNew';
 			} else {
 				$App->viewMethod = 'list';
-				Core::$resultOp->message = ucfirst($App->labels['fold']['item']).' inserit'.$App->labels['fold']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['fold']['item']).' inserit'.$App->labels['fold']['itemSex'].'!';				
 				}		
 	break;
 	
@@ -113,12 +113,12 @@ switch(Core::$request->method) {
 			/* crea il folder name */
 		   $newFold_name = SanitizeStrings::cleanTitleUrl($_POST['title_it']);
 			/* preleva il folder name del categoria memorizzato prima */	
-			Sql::initQuery($tableFold,array('*'),array($App->id),'id = ?');
+			Sql::initQuery($tableFold,['*'],[$App->id],'id = ?');
 			$App->itemOld = Sql::getRecord();
 			if (Core::$resultOp->error == 0) {		
 				$oldFold_name = $App->itemOld->folder_name;					
 				/* controlla se esiste già una cartella con lo stesso nome */
-				Sql::initQuery($tableFold,array('id'),array($newFold_name),'folder_name = ?');
+				Sql::initQuery($tableFold,['id'],[$newFold_name],'folder_name = ?');
 				$count = Sql::countRecord();	
 				if (Core::$resultOp->error == 0) {	
 		   		if ($oldFold_name == $newFold_name || ($oldFold_name != $newFold_name && $count == 0)) {
@@ -139,7 +139,7 @@ switch(Core::$request->method) {
 				   			if ($oldFold_name != $newFold_name) {
 				   				$oldfolder = $oldFold_name.'/';
 				   				$newfolder = $newFold_name.'/';
-				   				Sql::initQuery($App->tableItem,array('folder_name'),array($newfolder,$oldfolder),'folder_name = ?');
+				   				Sql::initQuery($App->tableItem,['folder_name'],[$newfolder,$oldfolder],'folder_name = ?');
 				   				Sql::updateRecord();
 				   				if (Core::$resultOp->error == 0) {
 				   					Core::$resultOp->messages[] = 'Ho cambiato il folder name alle '.$App->labels['fold']['sons'].' associat'.$App->labels['fold']['sonsSex'].'!';	
@@ -163,7 +163,7 @@ switch(Core::$request->method) {
 			} else {
 				if (isset($_POST['submitForm'])) {	
 					$App->viewMethod = 'list';
-					Core::$resultOp->message = ucfirst($App->labels['fold']['item']).' modificat'.$App->labels['fold']['itemSex'].'!';								
+					Core::$resultOp->message = ucfirst((string) $App->labels['fold']['item']).' modificat'.$App->labels['fold']['itemSex'].'!';								
 					} else {						
 						if (isset($_POST['id'])) {
 							$App->id = $_POST['id'];
@@ -185,7 +185,7 @@ switch(Core::$request->method) {
 	
 	case 'messageFold':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';
 	break;
 	
@@ -212,7 +212,7 @@ switch((string)$App->viewMethod) {
 	
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($tableFold,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($tableFold,['*'],[$App->id],'id = ?');
 		if (Core::$resultOp->error == 0) $App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$fieldsFold);
 		$App->templateApp = 'formFolders.tpl.php';
@@ -224,14 +224,14 @@ switch((string)$App->viewMethod) {
 
 
 		$App->items = new stdClass;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);	
-		$qryFields = array('c.*','(SELECT COUNT(i.id) FROM '.$App->tableItem.' AS i WHERE i.id_folder = c.id) AS numimages');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);	
+		$qryFields = ['c.*','(SELECT COUNT(i.id) FROM '.$App->tableItem.' AS i WHERE i.id_folder = c.id) AS numimages'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$fieldsFold,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$fieldsFold,'');
 			}		
 		if (isset($sessClause) && $sessClause != '') $clause .= $sessClause;
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {

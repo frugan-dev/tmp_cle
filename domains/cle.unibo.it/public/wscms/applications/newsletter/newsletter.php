@@ -2,7 +2,7 @@
 /* wscms/newsletter/newsletter.php v.3.1.0. 10/01/2016 */
 
 /* prende i codici newsletter */
-Sql::initQuery($App->tableNewCode,array('*'),array(),'active = 1');
+Sql::initQuery($App->tableNewCode,['*'],[],'active = 1');
 $App->newsletter_code = Sql::getRecords();
 
 if(isset($_POST['itemsforpage'])) $_MY_SESSION_VARS = $my_session->addSessionsModuleSingleVar($_MY_SESSION_VARS,$App->sessionName,'ifp',$_POST['itemsforpage']);
@@ -11,16 +11,16 @@ if(isset($_POST['searchFromTable'])) $_MY_SESSION_VARS = $my_session->addSession
 switch(Core::$request->method) {
 	case 'activeNew':
 	case 'disactiveNew':
-		Sql::manageFieldActive(substr(Core::$request->method,0,-3),$App->tableNew,$App->id,ucfirst($App->labels['new']['item']),$App->labels['new']['itemSex']);
+		Sql::manageFieldActive(substr((string) Core::$request->method,0,-3),$App->tableNew,$App->id,ucfirst((string) $App->labels['new']['item']));
 		$App->viewMethod = 'list';		
 	break;
 	
 	case 'deleteNew':
 		if ($App->id > 0) {
-			Sql::initQuery($App->tableNew,array(),array($App->id),'id = ?');
+			Sql::initQuery($App->tableNew,[],[$App->id],'id = ?');
 			Sql::deleteRecord();
 			if (Core::$resultOp->error == 0) {
-				Core::$resultOp->message = ucfirst($App->labels['new']['item']).' cancellat'.$App->labels['new']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['new']['item']).' cancellat'.$App->labels['new']['itemSex'].'!';				
 				}
 			}		
 		$App->viewMethod = 'list';
@@ -68,7 +68,7 @@ switch(Core::$request->method) {
 			$App->viewMethod = 'formNew';
 			} else {
 				$App->viewMethod = 'list';
-				Core::$resultOp->message = ucfirst($App->labels['new']['item']).' inserit'.$App->labels['new']['itemSex'].'!';				
+				Core::$resultOp->message = ucfirst((string) $App->labels['new']['item']).' inserit'.$App->labels['new']['itemSex'].'!';				
 				}		
 	break;
 
@@ -100,7 +100,7 @@ switch(Core::$request->method) {
 			Sql::checkRequireFields($App->fieldsNew);
 			if (Core::$resultOp->error == 0) {
 			
-				$_POST['content_it'] = ToolsStrings::encodeHtmlContent($_POST['content_it'],array('customtag'=>'uploads\/','customtagvalue'=>'%ABSURLFOLDER%'));
+				$_POST['content_it'] = ToolsStrings::encodeHtmlContent($_POST['content_it'],['customtag'=>'uploads\/','customtagvalue'=>'%ABSURLFOLDER%']);
 				
 				Sql::stripMagicFields($_POST);
 				Sql::updateRawlyPost($App->fieldsNew,$App->tableNew,'id',$App->id);
@@ -116,7 +116,7 @@ switch(Core::$request->method) {
 			} else {
 				if (isset($_POST['submitForm'])) {	
 					$App->viewMethod = 'list';
-					Core::$resultOp->message = ucfirst($App->labels['new']['item']).' modificat'.$App->labels['new']['itemSex'].'!';								
+					Core::$resultOp->message = ucfirst((string) $App->labels['new']['item']).' modificat'.$App->labels['new']['itemSex'].'!';								
 					} else {						
 						if (isset($_POST['id'])) {
 							$App->id = $_POST['id'];
@@ -138,7 +138,7 @@ switch(Core::$request->method) {
 	
 	case 'messageNew':
 		Core::$resultOp->error = $App->id;
-		Core::$resultOp->message = urldecode(Core::$request->params[0]);
+		Core::$resultOp->message = urldecode((string) Core::$request->params[0]);
 		$App->viewMethod = 'list';		
 	break;
 	
@@ -148,21 +148,21 @@ switch(Core::$request->method) {
 	
 	case 'previewNew':
 		$App->item = new stdClass;	
-		Sql::initQuery($App->tableNew,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tableNew,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error == 0) {	
 			$App->item->finalOutput = '';
 			$file = ADMIN_PATH_UPLOAD_DIR.$App->templatesFolder.$App->item->template;
 			$urldelete = URL_SITE.$App->settings['admin url delete address']->value_it;
-			$App->item->content_it = ToolsStrings::parseHtmlContent($App->item->content_it,array('customtag'=>'%PATHNEWSLETTER%','customtagvalue'=>UPLOAD_DIR.$App->templatesFolder));
+			$App->item->content_it = ToolsStrings::parseHtmlContent($App->item->content_it,['customtag'=>'%PATHNEWSLETTER%','customtagvalue'=>UPLOAD_DIR.$App->templatesFolder]);
 			if (file_exists($file) == true) {
 				$App->item->finalOutput = file_get_contents($file);
 				$App->item->finalOutput = preg_replace('/{{PATHNEWSLETTER%/',UPLOAD_DIR.$App->templatesFolder,$App->item->finalOutput);	
-				$App->item->finalOutput = preg_replace('/{{DATATIMEINS%/',$App->item->datatimeins,$App->item->finalOutput);
-				$App->item->finalOutput = preg_replace('/{{TITLE%/', htmlspecialchars($App->item->title_it),$App->item->finalOutput);
-				$App->item->finalOutput = preg_replace('/{{CONTENT%/',$App->item->content_it,$App->item->finalOutput);	
-				$App->item->finalOutput = preg_replace('/{{URLDELETE%/',$urldelete,$App->item->finalOutput);
-				$App->item->finalOutput = preg_replace('/{{URLSITE%/',URL_SITE,$App->item->finalOutput);
+				$App->item->finalOutput = preg_replace('/{{DATATIMEINS%/',(string) $App->item->datatimeins,(string) $App->item->finalOutput);
+				$App->item->finalOutput = preg_replace('/{{TITLE%/', htmlspecialchars((string) $App->item->title_it),(string) $App->item->finalOutput);
+				$App->item->finalOutput = preg_replace('/{{CONTENT%/',(string) $App->item->content_it,(string) $App->item->finalOutput);	
+				$App->item->finalOutput = preg_replace('/{{URLDELETE%/',$urldelete,(string) $App->item->finalOutput);
+				$App->item->finalOutput = preg_replace('/{{URLSITE%/',URL_SITE,(string) $App->item->finalOutput);
 		      } else {
 		         $App->item->finalOutput = $App->item->content_it;
 		         }   
@@ -182,11 +182,11 @@ switch(Core::$request->method) {
 		$id_newletter = (isset(Core::$request->params[0]) ? intval(Core::$request->params[0]) : 0);
 		if ($id_newletter == 0) {
 			/* trova la prima newsletter */
-			Sql::initQuery($App->tableNew,array('*'),array(),'');
+			Sql::initQuery($App->tableNew,['*'],[],'');
 			$App->item = Sql::getRecord();		
 			if (Core::$resultOp->error > 0) die();
 			} else {
-				Sql::initQuery($App->tableNew,array('*'),array($id_newletter),'id = ?');
+				Sql::initQuery($App->tableNew,['*'],[$id_newletter],'id = ?');
 				$App->item = Sql::getRecord();		
 				}
 			
@@ -197,21 +197,21 @@ switch(Core::$request->method) {
 	
 //print_r($App->item);
 
-		Sql::initQuery($App->tableNewCode,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tableNewCode,['*'],[$App->id],'id = ?');
 		$App->item_code = Sql::getRecord();
 		
 		if (Core::$resultOp->error == 0) {	
 			$App->item->finalOutput = '';
 			$file = PATH_UPLOAD_DIR.$App->templatesFolder.$App->item->template;
 			$urldelete = URL_SITE.$App->settings['admin url delete address']->value_it;
-			$App->item_code->content_it = ToolsStrings::parseHtmlContent($App->item_code->content_it,array('customtag'=>'{{PATHNEWSLETTER%','customtagvalue'=>UPLOAD_DIR.$App->templatesFolder));
+			$App->item_code->content_it = ToolsStrings::parseHtmlContent($App->item_code->content_it,['customtag'=>'{{PATHNEWSLETTER%','customtagvalue'=>UPLOAD_DIR.$App->templatesFolder]);
 			if (file_exists($file) == true) {
 				$App->item->finalOutput = file_get_contents($file);
 				$App->item->finalOutput = preg_replace('/%PATHNEWSLETTER%/',UPLOAD_DIR.$App->templatesFolder,$App->item->finalOutput);	
-				if (isset($App->item->datatimeins)) $App->item->finalOutput = preg_replace('/%DATATIMEINS%/',$App->item->datatimeins,$App->item->finalOutput);
-				if (isset($App->item->title_it)) $App->item->finalOutput = preg_replace('/%TITLE%/', htmlspecialchars($App->item->title_it),$App->item->finalOutput);
-				if (isset($App->item->content_it)) $App->item->finalOutput = preg_replace('/%CONTENT%/',$App->item_code->content_it,$App->item->finalOutput);	
-				$App->item->finalOutput = preg_replace('/%URLDELETE%/',$urldelete,$App->item->finalOutput);
+				if (isset($App->item->datatimeins)) $App->item->finalOutput = preg_replace('/%DATATIMEINS%/',$App->item->datatimeins,(string) $App->item->finalOutput);
+				if (isset($App->item->title_it)) $App->item->finalOutput = preg_replace('/%TITLE%/', htmlspecialchars($App->item->title_it),(string) $App->item->finalOutput);
+				if (isset($App->item->content_it)) $App->item->finalOutput = preg_replace('/%CONTENT%/',(string) $App->item_code->content_it,(string) $App->item->finalOutput);	
+				$App->item->finalOutput = preg_replace('/%URLDELETE%/',$urldelete,(string) $App->item->finalOutput);
 		      } else {
 		         $App->item->finalOutput = $App->item_code->content_it;
 		         }   
@@ -247,12 +247,12 @@ switch((string)$App->viewMethod) {
 	
 	case 'formMod':
 		$App->item = new stdClass;
-		Sql::initQuery($App->tableNew,array('*'),array($App->id),'id = ?');
+		Sql::initQuery($App->tableNew,['*'],[$App->id],'id = ?');
 		$App->item = Sql::getRecord();
 		if (Core::$resultOp->error > 0) Utilities::setItemDataObjWithPost($App->item,$App->fieldsNew);
 		if (!isset($App->item->datatimeins)) $App->item->datatimeins = Config::$nowDateTimeIso;
 		$App->item->templatesAvaiable = $Module->getTemplatesArray($App->templatesFolder);
-		$App->item->content_it = ToolsStrings::parseHtmlContent($App->item->content_it,array('ulrsite'=>1));
+		$App->item->content_it = ToolsStrings::parseHtmlContent($App->item->content_it,['ulrsite'=>1]);
 		$App->templateApp = 'formNewsletter.html';
 		$App->methodForm = 'updateNew';
 	break;
@@ -261,14 +261,14 @@ switch((string)$App->viewMethod) {
 		$App->item = new stdClass;		
 		$App->item->datatimeins =Config::$nowDateTimeIso;
 		$App->items = new stdClass;
-		$App->itemsForPage = (isset($_MY_SESSION_VARS[$App->sessionName]['ifp']) ? $_MY_SESSION_VARS[$App->sessionName]['ifp'] : 5);
-		$App->page = (isset($_MY_SESSION_VARS[$App->sessionName]['page']) ? $_MY_SESSION_VARS[$App->sessionName]['page'] : 1);
-		$qryFields = array('*');
-		$qryFieldsValues = array();
-		$qryFieldsValuesClause = array();
+		$App->itemsForPage = ($_MY_SESSION_VARS[$App->sessionName]['ifp'] ?? 5);
+		$App->page = ($_MY_SESSION_VARS[$App->sessionName]['page'] ?? 1);
+		$qryFields = ['*'];
+		$qryFieldsValues = [];
+		$qryFieldsValuesClause = [];
 		$clause = '';
 		if (isset($_MY_SESSION_VARS[$App->sessionName]['srcTab']) && $_MY_SESSION_VARS[$App->sessionName]['srcTab'] != '') {
-			list($sessClause,$qryFieldsValuesClause) = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsNew,'');
+			[$sessClause, $qryFieldsValuesClause] = Sql::getClauseVarsFromAppSession($_MY_SESSION_VARS[$App->sessionName]['srcTab'],$App->fieldsNew,'');
 			}		
 		if (isset($sessClause) && $sessClause != '') $clause .= $sessClause;
 		if (is_array($qryFieldsValuesClause) && count($qryFieldsValuesClause) > 0) {

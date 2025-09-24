@@ -16,29 +16,29 @@ if (isset($App->moduleConfig->org_image_header) && $App->moduleConfig->org_image
 
 // preleva le sliders - modulo tbl_slides_home_rev
 
-$layerTemplatedefault = array(
+$layerTemplatedefault = [
     'it' => '<div class="container"><div class="row"><div class="col-lg-8"><h1>%TITLE%</h1><p class="hero-text pr-5">%CONTENT%</p><div class="CTAs"><a href="%URL%" target="%TARGET%" class="btn btn-outline-light%URLCLASS%">'.Config::$langVars['Read More'].'</a></div></div></div></div>',
-  
-    'en' => '<div class="container"><div class="row"><div class="col-lg-8"><h1>%TITLE%</h1><p class="hero-text pr-5">%CONTENT%</p><div class="CTAs"><a href="%URL%" target="%TARGET%" class="btn btn-outline-light%URLCLASS%">'.Config::$langVars['Read More'].'</a></div></div></div></div>',
-  
-    'fr' => '<div class="container"><div class="row"><div class="col-lg-8"><h1>%TITLE%</h1><p class="hero-text pr-5">%CONTENT%</p><div class="CTAs"><a href="%URL%" target="%TARGET%" class="btn btn-outline-light%URLCLASS%">'.Config::$langVars['Read More'].'</a></div></div></div></div>',
-  
-    'el' => '<div class="container"><div class="row"><div class="col-lg-8"><h1>%TITLE%</h1><p class="hero-text pr-5">%CONTENT%</p><div class="CTAs"><a href="%URL%" target="%TARGET%" class="btn btn-outline-light%URLCLASS%">'.Config::$langVars['Read More'].'</a></div></div></div></div>',
-  
-);
 
-Sql::initQuery(Config::$dbTablePrefix.'slides_home_rev',array('*'),array(),'active = 1',' ordering ASC');
+    'en' => '<div class="container"><div class="row"><div class="col-lg-8"><h1>%TITLE%</h1><p class="hero-text pr-5">%CONTENT%</p><div class="CTAs"><a href="%URL%" target="%TARGET%" class="btn btn-outline-light%URLCLASS%">'.Config::$langVars['Read More'].'</a></div></div></div></div>',
+
+    'fr' => '<div class="container"><div class="row"><div class="col-lg-8"><h1>%TITLE%</h1><p class="hero-text pr-5">%CONTENT%</p><div class="CTAs"><a href="%URL%" target="%TARGET%" class="btn btn-outline-light%URLCLASS%">'.Config::$langVars['Read More'].'</a></div></div></div></div>',
+
+    'el' => '<div class="container"><div class="row"><div class="col-lg-8"><h1>%TITLE%</h1><p class="hero-text pr-5">%CONTENT%</p><div class="CTAs"><a href="%URL%" target="%TARGET%" class="btn btn-outline-light%URLCLASS%">'.Config::$langVars['Read More'].'</a></div></div></div></div>',
+
+];
+
+Sql::initQuery(Config::$dbTablePrefix.'slides_home_rev',['*'],[],'active = 1',' ordering ASC');
 $pdoObject = Sql::getPdoObjRecords();
-$arr = array();
+$arr = [];
 while ($row = $pdoObject->fetch()) {		
-    $row->li_data  = preg_replace('/%TITLE%/',$row->title,$row->li_data);					
-    $row->layers = array();
-    Sql::initQuery(Config::$dbTablePrefix.'slides_home_rev_layers',array('*'),array($row->id),'slide_id = ? AND active = 1',' ordering ASC');
+    $row->li_data  = preg_replace('/%TITLE%/',(string) $row->title,(string) $row->li_data);					
+    $row->layers = [];
+    Sql::initQuery(Config::$dbTablePrefix.'slides_home_rev_layers',['*'],[$row->id],'slide_id = ? AND active = 1',' ordering ASC');
     $layers = Sql::getRecords();
-    $arrL = array();
+    $arrL = [];
 
     $row->li_data = preg_replace('/%SLIDEIMAGE%/',UPLOAD_DIR.'slides-home-rev/'.$row->filename,$row->li_data);	
-    
+
     // ipmosta l'immagine header come prima innagine delle slider
     if ($App->moduleData->imageheader == '') {
         $App->moduleData->imageheader = UPLOAD_DIR.'slides-home-rev/'.$row->filename;
@@ -48,34 +48,34 @@ while ($row = $pdoObject->fetch()) {
     if (is_array($layers) && is_array($layers) && count($layers) > 0) {
         foreach ($layers AS $valueL) {	
 
-            $valueL->title = MultiLanguage::getLocaleObjectValue($valueL,'title_',Config::$langVars['user'],array('htmLawed'=>1,'parse'=>1));
+            $valueL->title = MultiLanguage::getLocaleObjectValue($valueL,'title_',Config::$langVars['user'],['htmLawed'=>1,'parse'=>1]);
 
-            $valueL->content = MultiLanguage::getLocaleObjectValue($valueL,'content_',Config::$langVars['user'],array('htmLawed'=>1,'parse'=>1));
-            $valueL->contentNoP = preg_replace('/<p[^>]*>(.*)<\/p[^>]*>/i', '$1', $valueL->content);
+            $valueL->content = MultiLanguage::getLocaleObjectValue($valueL,'content_',Config::$langVars['user'],['htmLawed'=>1,'parse'=>1]);
+            $valueL->contentNoP = preg_replace('/<p[^>]*>(.*)<\/p[^>]*>/i', '$1', (string) $valueL->content);
 
-            $valueL->url = MultiLanguage::getLocaleObjectValue($valueL,'url_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1));
-            $valueL->target = MultiLanguage::getLocaleObjectValue($valueL,'target_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1));
+            $valueL->url = MultiLanguage::getLocaleObjectValue($valueL,'url_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]);
+            $valueL->target = MultiLanguage::getLocaleObjectValue($valueL,'target_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]);
             if($valueL->target == '') $valueL->target = '_blank';
-            
+
             $field = 'template_'.Config::$langVars['user'];
             $valueL->$field = '';
             if ($valueL->$field != '') {
-                $valueL->template = MultiLanguage::getLocaleObjectValue($valueL,'template_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1));
+                $valueL->template = MultiLanguage::getLocaleObjectValue($valueL,'template_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]);
             } else {
                 $valueL->template = $layerTemplatedefault[Config::$langVars['user']];
             }
-             				
-            $valueL->template = preg_replace('/%TITLE%/',$valueL->title,$valueL->template);	
-            $valueL->template = preg_replace('/%CONTENT%/',$valueL->contentNoP,$valueL->template);	
-            $valueL->template = preg_replace('/%URL%/',$valueL->url,$valueL->template);
-            $valueL->template = preg_replace('/%TARGET%/',$valueL->target,$valueL->template);   
-            
+
+            $valueL->template = preg_replace('/%TITLE%/',(string) $valueL->title,$valueL->template);	
+            $valueL->template = preg_replace('/%CONTENT%/',$valueL->contentNoP,(string) $valueL->template);	
+            $valueL->template = preg_replace('/%URL%/',(string) $valueL->url,(string) $valueL->template);
+            $valueL->template = preg_replace('/%TARGET%/',(string) $valueL->target,(string) $valueL->template);   
+
             // nascond il link 
             // usa la classe '.d-none' di bootstrap 4 per nascondere l'elemento
             if ($valueL->url == '') {
-                $valueL->template = preg_replace('/%URLCLASS%/',' d-none',$valueL->template);
+                $valueL->template = preg_replace('/%URLCLASS%/',' d-none',(string) $valueL->template);
             } else {
-                $valueL->template = preg_replace('/%URLCLASS%/','',$valueL->template);
+                $valueL->template = preg_replace('/%URLCLASS%/','',(string) $valueL->template);
             }
 
             $arrL[] = $valueL;				
@@ -89,21 +89,21 @@ $App->homeSliders = $arr;
 
 
 // INFOBOX
-$App->homeinfobox = array();
-Sql::initQuery(DB_TABLE_PREFIX.'homeinfobox',array('*'),array(),'active = 1',' id ASC');
+$App->homeinfobox = [];
+Sql::initQuery(DB_TABLE_PREFIX.'homeinfobox',['*'],[],'active = 1',' id ASC');
 $pdoObject = Sql::getPdoObjRecords();
 while ($row = $pdoObject->fetch()) {
-    
-    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
-    $row->content = Multilanguage::getLocaleObjectValue($row,'content_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
 
-    $row->content = preg_replace("/(<\s*\/?\s*\ba\b[^>]*\/?\s*>)/i", "", $row->content);
+    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
+    $row->content = Multilanguage::getLocaleObjectValue($row,'content_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
 
-    $row->url = Multilanguage::getLocaleObjectValue($row,'url_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1));
-    
-    $target = Multilanguage::getLocaleObjectValue($row,'target_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>0)); 
+    $row->content = preg_replace("/(<\s*\/?\s*\ba\b[^>]*\/?\s*>)/i", "", (string) $row->content);
+
+    $row->url = Multilanguage::getLocaleObjectValue($row,'url_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]);
+
+    $target = Multilanguage::getLocaleObjectValue($row,'target_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>0]); 
     $row->target = ($target != '' ? $target : '_self' );
-    
+
     if ($row->url == '') {
         $row->url = "javascript:void(0);";
         $row->target = '';
@@ -116,22 +116,22 @@ while ($row = $pdoObject->fetch()) {
 //ToolsStrings::dump($App->homeinfobox);die();
 
 //PARTNERS
-$App->partners = array();
-Sql::initQuery(DB_TABLE_PREFIX.'partners',array('*'),array(),'active = 1',' ordering ASC');
+$App->partners = [];
+Sql::initQuery(DB_TABLE_PREFIX.'partners',['*'],[],'active = 1',' ordering ASC');
 $pdoObject = Sql::getPdoObjRecords();
 while ($row = $pdoObject->fetch()) {
-    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
+    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
     $row->target = ($row->target != '' ? $row->target : '_self' );
     $App->partners[] = $row;		
 }
 //ToolsStrings::dump($App->partners);
 
 // SPONSOR
-$App->sponsor = array();
-Sql::initQuery(DB_TABLE_PREFIX.'sponsor',array('*'),array(),'active = 1',' ordering ASC');
+$App->sponsor = [];
+Sql::initQuery(DB_TABLE_PREFIX.'sponsor',['*'],[],'active = 1',' ordering ASC');
 $pdoObject = Sql::getPdoObjRecords();
 while ($row = $pdoObject->fetch()) {
-    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
+    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
     $row->target = ($row->target != '' ? $row->target : '_self' );
     $App->sponsor[] = $row;		
 }
@@ -162,11 +162,11 @@ if (Core::$request->method == 'ncpg' && Core::$request->param != '') {
 //echo '<br>page'.$_SESSION['home_news_page'];
 
 // categories news
-$App->news_categories = array();
-Sql::initQuery(DB_TABLE_PREFIX.'news_cat',array('*'),array(),'active = 1',' ordering ASC');
+$App->news_categories = [];
+Sql::initQuery(DB_TABLE_PREFIX.'news_cat',['*'],[],'active = 1',' ordering ASC');
 $pdoObject = Sql::getPdoObjRecords();
 while ($row = $pdoObject->fetch()) {
-    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
+    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
     $App->news_categories[] = $row;		
 }
 //ToolsStrings::dump($App->news_categories);
@@ -227,10 +227,10 @@ $App->meta_og_description = $App->moduleConfig->meta_description;
 
 // BREADCRUMBS
 $App->breadcrumbs->title = '';
-$App->breadcrumbs->items = array();
+$App->breadcrumbs->items = [];
 
 // messaggi 
-$App->messagesCore =  Utilities::getHTMLMessagesCore(Core::$resultOp,array('template'=>$templateMessagesBar));
+$App->messagesCore =  Utilities::getHTMLMessagesCore(Core::$resultOp,['template'=>$templateMessagesBar]);
 /*
 echo '<br>bb'.$App->moduleData->imageheader;
 echo '<br>aa'.$App->meta_og_image;

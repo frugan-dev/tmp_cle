@@ -16,7 +16,7 @@ $_lang['immagine bottom'] = "immagine bottom";
 $_lang['inserisci un titolo alt'] = "inserisci uno slogan";
 
 
-Config::$langVars = array_merge(Config::$langVars, array(
+Config::$langVars = array_merge(Config::$langVars, [
     'voce' => 'pagina',
     'voci' => 'pagine',
     'blocchi' => 'blocchi',
@@ -37,5 +37,5 @@ Config::$langVars = array_merge(Config::$langVars, array(
 
     'altro' => 'altro'
 
-));
+]);
 ?>

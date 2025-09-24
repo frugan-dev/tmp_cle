@@ -59,7 +59,7 @@ Kint::$enabled_mode = (bool) $_ENV['APP_DEBUG'];
 
 if (!empty($_ENV['APP_DEBUG'])) {
     //error_reporting(-1);
-    error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING ^ E_STRICT ^ E_DEPRECATED);
+    error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED);
 
     @Kint::trace();
 } else {
@@ -113,7 +113,7 @@ $transports = [];
 // https://symfony.com/doc/current/mailer.html
 // https://github.com/swiftmailer/swiftmailer/issues/866
 // https://github.com/swiftmailer/swiftmailer/issues/633
-foreach (array_map('trim', explode(',', $_ENV['MAIL_TRANSPORTS'])) as $key => $val) {
+foreach (array_map('trim', explode(',', (string) $_ENV['MAIL_TRANSPORTS'])) as $key => $val) {
     switch ($val) {
         // it requires proc_*() functions
         case 'smtp':
@@ -178,12 +178,12 @@ $mailer = new Mailer($transport);
 // https://github.com/symfony/symfony/issues/41322
 // https://stackoverflow.com/a/14253556/3929620
 // https://stackoverflow.com/a/25873119/3929620
-$message = (new Email())
+$message = new Email()
     ->returnPath($_ENV['MAIL_RETURN_PATH']) // overwritten by the Sender
     ->sender(new Address($_ENV['MAIL_SENDER_EMAIL'], $_ENV['MAIL_SENDER_NAME']))
     ->from(new Address($_ENV['MAIL_FROM_EMAIL'], $_ENV['MAIL_FROM_NAME']))
     ->subject(sprintf(_('Error reporting from %1$s - %2$s'), $_SERVER['HTTP_HOST'], $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV']))
-    ->to(...array_map('trim', explode(',', $_ENV['MAIL_TO_EMAILS'])))
+    ->to(...array_map('trim', explode(',', (string) $_ENV['MAIL_TO_EMAILS'])))
 ;
 
 $handler = new SymfonyMailerHandler($mailer, $message, Level::Error);

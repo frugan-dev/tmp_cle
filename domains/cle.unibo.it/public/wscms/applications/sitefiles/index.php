@@ -25,10 +25,10 @@ $App->fieldsItem = $App->params->fieldsItem;
 $App->id = intval(Core::$request->param);
 if (isset($_POST['id'])) $App->id = intval($_POST['id']);
 	
-switch(substr(Core::$request->method,-4,4)) {	
+switch(substr((string) Core::$request->method,-4,4)) {	
 	case 'Fold':
 		$App->sessionName = $App->sessionName.'-fold';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10'));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10']);
 		$Module = new Module(Core::$request->action,$App->tableFold);
 		include_once(PATH.'applications/'.Core::$request->action."/folders.php");	
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.'applications/'.Core::$request->action.'/folders.js"></script>';		
@@ -36,7 +36,7 @@ switch(substr(Core::$request->method,-4,4)) {
 	
 	default:
 		$App->sessionName = $App->sessionName.'-items';
-		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,array('page'=>1,'ifp'=>'10'));
+		$_MY_SESSION_VARS = $my_session->addSessionsModuleVars($_MY_SESSION_VARS,$App->sessionName,['page'=>1,'ifp'=>'10']);
 		$Module = new Module(Core::$request->action,$App->tableItem);
 		include_once(PATH.'applications/'.Core::$request->action."/items.php");	
 		$App->jscript[] = '<script src="'.URL_SITE_ADMIN.'applications/'.Core::$request->action.'/items.js"></script>';		

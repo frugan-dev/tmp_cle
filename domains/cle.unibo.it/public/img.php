@@ -24,7 +24,7 @@ define("CIMAGE_BUNDLE", true);
  * The settings below are only a few of the available ones. Check the file in
  * webroot/img_config.php for a complete list of configuration options.
  */
-$config = array(
+$config = [
 
     'mode'         => 'production',               // 'production', 'development', 'strict'
     'image_path'   =>  __DIR__ . '/uploads/',
@@ -32,7 +32,7 @@ $config = array(
     'alias_path'   =>  __DIR__ . '/uploads/',
     //'password'     => false,                      // "secret-password",
 
-);
+];
 
 
 
@@ -90,16 +90,11 @@ function errorPage($msg, $type = 500)
 {
     global $mode;
 
-    switch ($type) {
-        case 403:
-            $header = "403 Forbidden";
-            break;
-        case 404:
-            $header = "404 Not Found";
-            break;
-        default:
-            $header = "500 Internal Server Error";
-    }
+    $header = match ($type) {
+        403 => "403 Forbidden",
+        404 => "404 Not Found",
+        default => "500 Internal Server Error",
+    };
 
     if ($mode == "strict") {
         $header = "404 Not Found";
@@ -168,9 +163,7 @@ function getDefined($key, $defined, $undefined)
 function getConfig($key, $default)
 {
     global $config;
-    return isset($config[$key])
-        ? $config[$key]
-        : $default;
+    return $config[$key] ?? $default;
 }
 
 
@@ -185,7 +178,7 @@ function getConfig($key, $default)
 function verbose($msg = null)
 {
     global $verbose, $verboseFile;
-    static $log = array();
+    static $log = [];
 
     if (!($verbose || $verboseFile)) {
         return;
@@ -212,7 +205,7 @@ function checkExternalCommand($what, $enabled, $commandString)
     $no = $enabled ? null : 'NOT';
     $text = "Post processing $what is $no enabled.<br>";
 
-    list($command) = explode(" ", $commandString);
+    [$command] = explode(" ", (string) $commandString);
     $no = is_executable($command) ? null : 'NOT';
     $text .= "The command for $what is $no an executable.<br>";
 
@@ -227,8 +220,8 @@ function checkExternalCommand($what, $enabled, $commandString)
  */
 class CHttpGet
 {
-    private $request  = array();
-    private $response = array();
+    private $request  = [];
+    private $response = [];
 
 
 
@@ -238,7 +231,7 @@ class CHttpGet
     */
     public function __construct()
     {
-        $this->request['header'] = array();
+        $this->request['header'] = [];
     }
 
 
@@ -289,7 +282,7 @@ class CHttpGet
                 $path .= "/" . rawurlencode($value);
             }
         }
-        $url = $this->buildUrl($url, array("path" => $path));
+        $url = $this->buildUrl($url, ["path" => $path]);
 
         $this->request['url'] = $url;
         return $this;
@@ -325,16 +318,16 @@ class CHttpGet
     {
         //$header = explode("\r\n", rtrim($this->response['headerRaw'], "\r\n"));
         
-        $rawHeaders = rtrim($this->response['headerRaw'], "\r\n");
+        $rawHeaders = rtrim((string) $this->response['headerRaw'], "\r\n");
         # Handle multiple responses e.g. with redirections (proxies too)
         $headerGroups = explode("\r\n\r\n", $rawHeaders);
         # We're only interested in the last one
         $header = explode("\r\n", end($headerGroups));
 
-        $output = array();
+        $output = [];
 
-        if ('HTTP' === substr($header[0], 0, 4)) {
-            list($output['version'], $output['status']) = explode(' ', $header[0]);
+        if (str_starts_with($header[0], 'HTTP')) {
+            [$output['version'], $output['status']] = explode(' ', $header[0]);
             unset($header[0]);
         }
 
@@ -360,7 +353,7 @@ class CHttpGet
      */
     public function doGet($debug = false)
     {
-        $options = array(
+        $options = [
             CURLOPT_URL             => $this->request['url'],
             CURLOPT_HEADER          => 1,
             CURLOPT_HTTPHEADER      => $this->request['header'],
@@ -371,7 +364,7 @@ class CHttpGet
             CURLOPT_TIMEOUT         => 5,
             CURLOPT_FOLLOWLOCATION  => true,
             CURLOPT_MAXREDIRS       => 2,
-        );
+        ];
 
         $ch = curl_init();
         curl_setopt_array($ch, $options);
@@ -435,11 +428,9 @@ class CHttpGet
      */
     public function getContentType()
     {
-        $type = isset($this->response['header']['Content-Type'])
-            ? $this->response['header']['Content-Type']
-            : null;
+        $type = $this->response['header']['Content-Type'] ?? null;
 
-        return preg_match('#[a-z]+/[a-z]+#', $type)
+        return preg_match('#[a-z]+/[a-z]+#', (string) $type)
             ? $type
             : null;
     }
@@ -474,14 +465,12 @@ class CHttpGet
      */
     public function getMaxAge($default = false)
     {
-        $cacheControl = isset($this->response['header']['Cache-Control'])
-            ? $this->response['header']['Cache-Control']
-            : null;
+        $cacheControl = $this->response['header']['Cache-Control'] ?? null;
 
         $maxAge = null;
         if ($cacheControl) {
             // max-age=2592000
-            $part = explode('=', $cacheControl);
+            $part = explode('=', (string) $cacheControl);
             $maxAge = ($part[0] == "max-age")
                 ? (int) $part[1]
                 : null;
@@ -495,7 +484,7 @@ class CHttpGet
             ? strtotime($this->response['header']['Expires'])
             : null;
 
-        return $expire ? $expire : $default;
+        return $expire ?: $default;
     }
 
 
@@ -615,7 +604,7 @@ class CRemoteImage
      */
     public function setCache($path)
     {
-        $this->saveFolder = rtrim($path, "/") . "/";
+        $this->saveFolder = rtrim((string) $path, "/") . "/";
         return $this;
     }
 
@@ -686,7 +675,7 @@ class CRemoteImage
      */
     public function save()
     {
-        $this->cache = array();
+        $this->cache = [];
         $date         = $this->http->getDate(time());
         $maxAge       = $this->http->getMaxAge($this->defaultMaxAge);
         $lastModified = $this->http->getLastModified();
@@ -791,7 +780,7 @@ class CRemoteImage
      */
     public function loadCacheDetails()
     {
-        $cacheFile = md5($this->url);
+        $cacheFile = md5((string) $this->url);
         $this->fileName = $this->saveFolder . $cacheFile;
         $this->fileJson = $this->fileName . ".json";
         if (is_readable($this->fileJson)) {
@@ -811,7 +800,7 @@ class CRemoteImage
         $imageExists = is_readable($this->fileName);
 
         // Is cache valid?
-        $date   = strtotime($this->cache['Date']);
+        $date   = strtotime((string) $this->cache['Date']);
         $maxAge = $this->cache['Max-Age'];
         $now    = time();
         
@@ -839,7 +828,7 @@ class CWhitelist
     /**
      * Array to contain the whitelist options.
      */
-    private $whitelist = array();
+    private $whitelist = [];
 
 
 
@@ -852,7 +841,7 @@ class CWhitelist
      *
      * @return $this
      */
-    public function set($whitelist = array())
+    public function set($whitelist = [])
     {
         if (!is_array($whitelist)) {
             throw new Exception("Whitelist is not of a supported format.");
@@ -903,11 +892,11 @@ class CAsciiArt
     /**
      * Character set to use.
      */
-    private $characterSet = array(
+    private $characterSet = [
         'one' => "#0XT|:,.' ",
         'two' => "@%#*+=-:. ",
         'three' => "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
-    );
+    ];
 
 
 
@@ -972,14 +961,14 @@ class CAsciiArt
      *
      * @return $this
      */
-    public function setOptions($options = array())
+    public function setOptions($options = [])
     {
-        $default = array(
+        $default = [
             "characterSet" => 'two',
             "scale" => 14,
             "luminanceStrategy" => 3,
             "customCharacterSet" => null,
-        );
+        ];
         $default = array_merge($default, $options);
         
         if (!is_null($default['customCharacterSet'])) {
@@ -989,7 +978,7 @@ class CAsciiArt
         
         $this->scale = $default['scale'];
         $this->characters = $this->characterSet[$default['characterSet']];
-        $this->charCount = strlen($this->characters);
+        $this->charCount = strlen((string) $this->characters);
         $this->luminanceStrategy = $default['luminanceStrategy'];
         
         return $this;
@@ -1007,7 +996,7 @@ class CAsciiArt
     public function createFromFile($filename)
     {
         $img = imagecreatefromstring(file_get_contents($filename));
-        list($width, $height) = getimagesize($filename);
+        [$width, $height] = getimagesize($filename);
 
         $ascii = null;
         $incY = $this->scale;
@@ -1070,20 +1059,12 @@ class CAsciiArt
      */
     public function getLuminance($red, $green, $blue)
     {
-        switch ($this->luminanceStrategy) {
-            case 1:
-                $luminance = ($red * 0.2126 + $green * 0.7152 + $blue * 0.0722) / 255;
-                break;
-            case 2:
-                $luminance = ($red * 0.299 + $green * 0.587 + $blue * 0.114) / 255;
-                break;
-            case 3:
-                $luminance = sqrt(0.299 * pow($red, 2) + 0.587 * pow($green, 2) + 0.114 * pow($blue, 2)) / 255;
-                break;
-            case 0:
-            default:
-                $luminance = ($red + $green + $blue) / (255 * 3);
-        }
+        $luminance = match ($this->luminanceStrategy) {
+            1 => ($red * 0.2126 + $green * 0.7152 + $blue * 0.0722) / 255,
+            2 => ($red * 0.299 + $green * 0.587 + $blue * 0.114) / 255,
+            3 => sqrt(0.299 * $red ** 2 + 0.587 * $green ** 2 + 0.114 * $blue ** 2) / 255,
+            default => ($red + $green + $blue) / (255 * 3),
+        };
 
         return $luminance;
     }
@@ -1175,7 +1156,7 @@ class CImage
     /**
      * Add HTTP headers for outputing image.
      */
-    private $HTTPHeader = array();
+    private $HTTPHeader = [];
 
 
 
@@ -1200,12 +1181,12 @@ class CImage
      * @todo remake when upgrading to PHP 5.5
      */
     //private $bgColorDefault = self::BACKGROUND_COLOR;
-    private $bgColorDefault = array(
+    private $bgColorDefault = [
         'red'   => 0,
         'green' => 0,
         'blue'  => 0,
         'alpha' => null,
-    );
+    ];
 
 
     /**
@@ -1281,7 +1262,7 @@ class CImage
     /**
      * Keep a log/trace on what happens
      */
-    private $log = array();
+    private $log = [];
 
 
 
@@ -1386,7 +1367,7 @@ class CImage
     /**
      * Custom convolution expressions, matrix 3x3, divisor and offset.
      */
-    private $convolves = array(
+    private $convolves = [
         'lighten'       => '0,0,0, 0,12,0, 0,0,0, 9, 0',
         'darken'        => '0,0,0, 0,6,0, 0,0,0, 9, 0',
         'sharpen'       => '-1,-1,-1, -1,16,-1, -1,-1,-1, 8, 0',
@@ -1400,7 +1381,7 @@ class CImage
         'draw'          => '0,-1,0, -1,5,-1, 0,-1,0, 0, 0',
         'mean'          => '1,1,1, 1,1,1, 1,1,1, 9, 0',
         'motion'        => '1,0,0, 0,1,0, 0,0,1, 3, 0',
-    );
+    ];
 
 
     /**
@@ -1528,7 +1509,7 @@ class CImage
     /*
      * Output to ascii can take som options as an array.
      */
-    private $asciiOptions = array();
+    private $asciiOptions = [];
 
 
 
@@ -1654,8 +1635,8 @@ class CImage
      */
     public function createDummyImage($width = null, $height = null)
     {
-        $this->newWidth  = $this->newWidth  ?: $width  ?: 100;
-        $this->newHeight = $this->newHeight ?: $height ?: 100;
+        $this->newWidth  = ($this->newWidth ?: $width)  ?: 100;
+        $this->newHeight = ($this->newHeight ?: $height) ?: 100;
 
         $this->image = $this->CreateImageKeepTransparency($this->newWidth, $this->newHeight);
 
@@ -1764,7 +1745,7 @@ class CImage
      */
     private function checkFileExtension($extension)
     {
-        $valid = array('jpg', 'jpeg', 'png', 'gif', 'webp');
+        $valid = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
         in_array(strtolower($extension), $valid)
             or $this->raiseError('Not a valid file extension.');
@@ -1783,7 +1764,7 @@ class CImage
      */
     private function normalizeFileExtension($extension = null)
     {
-        $extension = strtolower($extension ? $extension : $this->extension);
+        $extension = strtolower($extension ?: $this->extension);
 
         if ($extension == 'jpeg') {
                 $extension = 'jpg';
@@ -1915,7 +1896,7 @@ class CImage
     {
         $this->log("Set new options for processing image.");
 
-        $defaults = array(
+        $defaults = [
             // Options for calculate dimensions
             'newWidth'    => null,
             'newHeight'   => null,
@@ -1954,34 +1935,34 @@ class CImage
 
             // Postprocessing using external tools
             'lossy' => null,
-        );
+        ];
 
         // Convert crop settings from string to array
         if (isset($args['crop']) && !is_array($args['crop'])) {
-            $pices = explode(',', $args['crop']);
-            $args['crop'] = array(
+            $pices = explode(',', (string) $args['crop']);
+            $args['crop'] = [
                 'width'   => $pices[0],
                 'height'  => $pices[1],
                 'start_x' => $pices[2],
                 'start_y' => $pices[3],
-            );
+            ];
         }
 
         // Convert area settings from string to array
         if (isset($args['area']) && !is_array($args['area'])) {
-                $pices = explode(',', $args['area']);
-                $args['area'] = array(
+                $pices = explode(',', (string) $args['area']);
+                $args['area'] = [
                     'top'    => $pices[0],
                     'right'  => $pices[1],
                     'bottom' => $pices[2],
                     'left'   => $pices[3],
-                );
+                ];
         }
 
         // Convert filter settings from array of string to array of array
         if (isset($args['filters']) && is_array($args['filters'])) {
             foreach ($args['filters'] as $key => $filterStr) {
-                $parts = explode(',', $filterStr);
+                $parts = explode(',', (string) $filterStr);
                 $filter = $this->mapFilter($parts[0]);
                 $filter['str'] = $filterStr;
                 for ($i=1; $i<=$filter['argc']; $i++) {
@@ -2029,20 +2010,20 @@ class CImage
      */
     private function mapFilter($name)
     {
-        $map = array(
-            'negate'          => array('id'=>0,  'argc'=>0, 'type'=>IMG_FILTER_NEGATE),
-            'grayscale'       => array('id'=>1,  'argc'=>0, 'type'=>IMG_FILTER_GRAYSCALE),
-            'brightness'      => array('id'=>2,  'argc'=>1, 'type'=>IMG_FILTER_BRIGHTNESS),
-            'contrast'        => array('id'=>3,  'argc'=>1, 'type'=>IMG_FILTER_CONTRAST),
-            'colorize'        => array('id'=>4,  'argc'=>4, 'type'=>IMG_FILTER_COLORIZE),
-            'edgedetect'      => array('id'=>5,  'argc'=>0, 'type'=>IMG_FILTER_EDGEDETECT),
-            'emboss'          => array('id'=>6,  'argc'=>0, 'type'=>IMG_FILTER_EMBOSS),
-            'gaussian_blur'   => array('id'=>7,  'argc'=>0, 'type'=>IMG_FILTER_GAUSSIAN_BLUR),
-            'selective_blur'  => array('id'=>8,  'argc'=>0, 'type'=>IMG_FILTER_SELECTIVE_BLUR),
-            'mean_removal'    => array('id'=>9,  'argc'=>0, 'type'=>IMG_FILTER_MEAN_REMOVAL),
-            'smooth'          => array('id'=>10, 'argc'=>1, 'type'=>IMG_FILTER_SMOOTH),
-            'pixelate'        => array('id'=>11, 'argc'=>2, 'type'=>IMG_FILTER_PIXELATE),
-        );
+        $map = [
+            'negate'          => ['id'=>0,  'argc'=>0, 'type'=>IMG_FILTER_NEGATE],
+            'grayscale'       => ['id'=>1,  'argc'=>0, 'type'=>IMG_FILTER_GRAYSCALE],
+            'brightness'      => ['id'=>2,  'argc'=>1, 'type'=>IMG_FILTER_BRIGHTNESS],
+            'contrast'        => ['id'=>3,  'argc'=>1, 'type'=>IMG_FILTER_CONTRAST],
+            'colorize'        => ['id'=>4,  'argc'=>4, 'type'=>IMG_FILTER_COLORIZE],
+            'edgedetect'      => ['id'=>5,  'argc'=>0, 'type'=>IMG_FILTER_EDGEDETECT],
+            'emboss'          => ['id'=>6,  'argc'=>0, 'type'=>IMG_FILTER_EMBOSS],
+            'gaussian_blur'   => ['id'=>7,  'argc'=>0, 'type'=>IMG_FILTER_GAUSSIAN_BLUR],
+            'selective_blur'  => ['id'=>8,  'argc'=>0, 'type'=>IMG_FILTER_SELECTIVE_BLUR],
+            'mean_removal'    => ['id'=>9,  'argc'=>0, 'type'=>IMG_FILTER_MEAN_REMOVAL],
+            'smooth'          => ['id'=>10, 'argc'=>1, 'type'=>IMG_FILTER_SMOOTH],
+            'pixelate'        => ['id'=>11, 'argc'=>2, 'type'=>IMG_FILTER_PIXELATE],
+        ];
 
         if (isset($map[$name])) {
             return $map[$name];
@@ -2063,12 +2044,12 @@ class CImage
      */
     public function loadImageDetails($file = null)
     {
-        $file = $file ? $file : $this->pathToImage;
+        $file = $file ?: $this->pathToImage;
 
         is_readable($file)
             or $this->raiseError('Image file does not exist.');
 
-        $info = list($this->width, $this->height, $this->fileType) = getimagesize($file);
+        $info = [$this->width, $this->height, $this->fileType] = getimagesize($file);
         if (empty($info)) {
             // To support webp
             $this->fileType = false;
@@ -2132,14 +2113,14 @@ class CImage
         $this->log("Init dimension (before) newWidth x newHeight is {$this->newWidth} x {$this->newHeight}.");
 
         // width as %
-        if ($this->newWidth[strlen($this->newWidth)-1] == '%') {
-            $this->newWidth = $this->width * substr($this->newWidth, 0, -1) / 100;
+        if ($this->newWidth[strlen((string) $this->newWidth)-1] == '%') {
+            $this->newWidth = $this->width * substr((string) $this->newWidth, 0, -1) / 100;
             $this->log("Setting new width based on % to {$this->newWidth}");
         }
 
         // height as %
-        if ($this->newHeight[strlen($this->newHeight)-1] == '%') {
-            $this->newHeight = $this->height * substr($this->newHeight, 0, -1) / 100;
+        if ($this->newHeight[strlen((string) $this->newHeight)-1] == '%') {
+            $this->newHeight = $this->height * substr((string) $this->newHeight, 0, -1) / 100;
             $this->log("Setting new height based on % to {$this->newHeight}");
         }
 
@@ -2325,8 +2306,8 @@ class CImage
         // Crop, ensure to set new width and height
         if ($this->crop) {
             $this->log("Crop.");
-            $this->newWidth = round(isset($this->newWidth) ? $this->newWidth : $this->crop['width']);
-            $this->newHeight = round(isset($this->newHeight) ? $this->newHeight : $this->crop['height']);
+            $this->newWidth = round($this->newWidth ?? $this->crop['width']);
+            $this->newHeight = round($this->newHeight ?? $this->crop['height']);
         }
 
         // Fill to fit, ensure to set new width and height
@@ -2337,8 +2318,8 @@ class CImage
         }*/
 
         // No new height or width is set, use existing measures.
-        $this->newWidth  = round(isset($this->newWidth) ? $this->newWidth : $this->width);
-        $this->newHeight = round(isset($this->newHeight) ? $this->newHeight : $this->height);
+        $this->newWidth  = round($this->newWidth ?? $this->width);
+        $this->newHeight = round($this->newHeight ?? $this->height);
         $this->log("Calculated new width x height as {$this->newWidth} x {$this->newHeight}.");
 
         return $this;
@@ -2403,9 +2384,7 @@ class CImage
             $this->useQuality = true;
         }
 
-        $this->quality = isset($quality)
-            ? $quality
-            : self::JPEG_QUALITY_DEFAULT;
+        $this->quality = $quality ?? self::JPEG_QUALITY_DEFAULT;
 
         (is_numeric($this->quality) and $this->quality > 0 and $this->quality <= 100)
             or $this->raiseError('Quality not in range.');
@@ -2430,9 +2409,7 @@ class CImage
             $this->useCompress = true;
         }
 
-        $this->compress = isset($compress)
-            ? $compress
-            : self::PNG_COMPRESSION_DEFAULT;
+        $this->compress = $compress ?? self::PNG_COMPRESSION_DEFAULT;
 
         (is_numeric($this->compress) and $this->compress >= -1 and $this->compress <= 9)
             or $this->raiseError('Quality not in range.');
@@ -2497,7 +2474,7 @@ class CImage
      */
     public function generateFilename($base = null, $useSubdir = true, $prefix = null)
     {
-        $filename     = basename($this->pathToImage);
+        $filename     = basename((string) $this->pathToImage);
         $cropToFit    = $this->cropToFit    ? '_cf'                      : null;
         $fillToFit    = $this->fillToFit    ? '_ff'                      : null;
         $crop_x       = $this->crop_x       ? "_x{$this->crop_x}"        : null;
@@ -2554,7 +2531,7 @@ class CImage
 
         $convolve = null;
         if ($this->convolve) {
-            $convolve = '_conv' . preg_replace('/[^a-zA-Z0-9]/', '', $this->convolve);
+            $convolve = '_conv' . preg_replace('/[^a-zA-Z0-9]/', '', (string) $this->convolve);
         }
 
         $upscale = null;
@@ -2564,7 +2541,7 @@ class CImage
 
         $subdir = null;
         if ($useSubdir === true) {
-            $subdir = str_replace('/', '-', dirname($this->imageSrc));
+            $subdir = str_replace('/', '-', dirname((string) $this->imageSrc));
             $subdir = ($subdir == '.') ? '_.' : $subdir;
             $subdir .= '_';
         }
@@ -2683,7 +2660,7 @@ class CImage
      */
     public function getPngType($filename = null)
     {
-        $filename = $filename ? $filename : $this->pathToImage;
+        $filename = $filename ?: $this->pathToImage;
 
         $pngType = ord(file_get_contents($filename, false, null, 25, 1));
 
@@ -2718,31 +2695,14 @@ class CImage
             $transparent = " (transparent)";
         }
 
-        switch ($pngType) {
-
-            case self::PNG_GREYSCALE:
-                $text = "PNG is type 0, Greyscale$transparent";
-                break;
-
-            case self::PNG_RGB:
-                $text = "PNG is type 2, RGB$transparent";
-                break;
-
-            case self::PNG_RGB_PALETTE:
-                $text = "PNG is type 3, RGB with palette$transparent";
-                break;
-
-            case self::PNG_GREYSCALE_ALPHA:
-                $text = "PNG is type 4, Greyscale with alpha channel";
-                break;
-
-            case self::PNG_RGB_ALPHA:
-                $text = "PNG is type 6, RGB with alpha channel (PNG 32-bit)";
-                break;
-
-            default:
-                $text = "PNG is UNKNOWN type, is it really a PNG image?";
-        }
+        $text = match ($pngType) {
+            self::PNG_GREYSCALE => "PNG is type 0, Greyscale$transparent",
+            self::PNG_RGB => "PNG is type 2, RGB$transparent",
+            self::PNG_RGB_PALETTE => "PNG is type 3, RGB with palette$transparent",
+            self::PNG_GREYSCALE_ALPHA => "PNG is type 4, Greyscale with alpha channel",
+            self::PNG_RGB_ALPHA => "PNG is type 6, RGB with alpha channel (PNG 32-bit)",
+            default => "PNG is UNKNOWN type, is it really a PNG image?",
+        };
 
         return $text;
     }
@@ -2763,7 +2723,7 @@ class CImage
             $this->log("Colors as true color.");
             $h = imagesy($im);
             $w = imagesx($im);
-            $c = array();
+            $c = [];
             for ($x=0; $x < $w; $x++) {
                 for ($y=0; $y < $h; $y++) {
                     @$c['c'.imagecolorat($im, $x, $y)]++;
@@ -3144,7 +3104,7 @@ class CImage
      */
     public function rotateExif()
     {
-        if (!in_array($this->fileType, array(IMAGETYPE_JPEG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM))) {
+        if (!in_array($this->fileType, [IMAGETYPE_JPEG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM])) {
             $this->log("Autorotate ignored, EXIF not supported by this filetype.");
             return $this;
         }
@@ -3260,7 +3220,7 @@ class CImage
             $expression = $this->convolves[$expression];
         }
 
-        $part = explode(',', $expression);
+        $part = explode(',', (string) $expression);
         $this->log("Creating convolution expressen: $expression");
 
         // Expect list of 11 numbers, split by , and build up arguments
@@ -3277,15 +3237,15 @@ class CImage
             }
         });
 
-        return array(
-            array(
-                array($part[0], $part[1], $part[2]),
-                array($part[3], $part[4], $part[5]),
-                array($part[6], $part[7], $part[8]),
-            ),
+        return [
+            [
+                [$part[0], $part[1], $part[2]],
+                [$part[3], $part[4], $part[5]],
+                [$part[6], $part[7], $part[8]],
+            ],
             $part[9],
             $part[10],
-        );
+        ];
     }
 
 
@@ -3316,15 +3276,15 @@ class CImage
     public function imageConvolution($options = null)
     {
         // Use incoming options or use $this.
-        $options = $options ? $options : $this->convolve;
+        $options = $options ?: $this->convolve;
 
         // Treat incoming as string, split by +
         $this->log("Convolution with '$options'");
-        $options = explode(":", $options);
+        $options = explode(":", (string) $options);
 
         // Check each option if it matches constant value
         foreach ($options as $option) {
-            list($matrix, $divisor, $offset) = $this->createConvolveArguments($option);
+            [$matrix, $divisor, $offset] = $this->createConvolveArguments($option);
             imageconvolution($this->image, $matrix, $divisor, $offset);
         }
 
@@ -3374,12 +3334,12 @@ class CImage
         }
 
         $this->bgColor = strtolower($color);
-        $this->bgColorDefault = array(
+        $this->bgColorDefault = [
             'red'   => $red,
             'green' => $green,
             'blue'  => $blue,
             'alpha' => $alpha
-        );
+        ];
 
         return $this;
     }
@@ -3395,7 +3355,7 @@ class CImage
     */
     private function getBackgroundColor($img = null)
     {
-        $img = isset($img) ? $img : $this->image;
+        $img ??= $this->image;
 
         if ($this->bgColorDefault) {
 
@@ -3556,7 +3516,7 @@ class CImage
                         clearstatcache();
                         $this->log("Filesize before optimize: " . filesize($this->cacheFileName) . " bytes.");
                     }
-                    $res = array();
+                    $res = [];
                     $cmd = $this->jpegOptimizeCmd . " -outfile $this->cacheFileName $this->cacheFileName";
                     exec($cmd, $res);
                     $this->log($cmd);
@@ -3594,7 +3554,7 @@ class CImage
                         $this->log("Lossy soft enabled: $lossySoftEnabled");
                         $this->Log("Filesize before lossy optimize: " . filesize($this->cacheFileName) . " bytes.");
                     }
-                    $res = array();
+                    $res = [];
                     $cmd = $this->pngLossyCmd . " $this->cacheFileName $this->cacheFileName";
                     exec($cmd, $res);
                     $this->Log($cmd);
@@ -3607,7 +3567,7 @@ class CImage
                         clearstatcache();
                         $this->Log("Filesize before filter optimize: " . filesize($this->cacheFileName) . " bytes.");
                     }
-                    $res = array();
+                    $res = [];
                     $cmd = $this->pngFilterCmd . " $this->cacheFileName";
                     exec($cmd, $res);
                     $this->Log($cmd);
@@ -3620,7 +3580,7 @@ class CImage
                         clearstatcache();
                         $this->Log("Filesize before deflate optimize: " . filesize($this->cacheFileName) . " bytes.");
                     }
-                    $res = array();
+                    $res = [];
                     $cmd = $this->pngDeflateCmd . " $this->cacheFileName";
                     exec($cmd, $res);
                     $this->Log($cmd);
@@ -3815,7 +3775,7 @@ class CImage
         }
 
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
-            && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $lastModified) {
+            && strtotime((string) $_SERVER['HTTP_IF_MODIFIED_SINCE']) == $lastModified) {
 
             if ($this->verbose) {
                 $this->log("304 not modified");
@@ -3825,7 +3785,7 @@ class CImage
 
             header("HTTP/1.0 304 Not Modified");
             if (CIMAGE_DEBUG) {
-                trace(__CLASS__ . " 304");
+                trace(self::class . " 304");
             }
 
         } else {
@@ -3856,7 +3816,7 @@ class CImage
             $this->fastTrackCache->setSource($file);
             $this->fastTrackCache->writeToCache();
             if (CIMAGE_DEBUG) {
-                trace(__CLASS__ . " 200");
+                trace(self::class . " 200");
             }
             readfile($file);
         }
@@ -3875,9 +3835,9 @@ class CImage
      */
     public function json($file = null)
     {
-        $file = $file ? $file : $this->cacheFileName;
+        $file = $file ?: $this->cacheFileName;
 
-        $details = array();
+        $details = [];
 
         clearstatcache();
 
@@ -3885,14 +3845,14 @@ class CImage
         $lastModified         = filemtime($this->pathToImage);
         $details['srcGmdate'] = gmdate("D, d M Y H:i:s", $lastModified);
 
-        $details['cache']       = basename($this->cacheFileName);
+        $details['cache']       = basename((string) $this->cacheFileName);
         $lastModified           = filemtime($this->cacheFileName);
         $details['cacheGmdate'] = gmdate("D, d M Y H:i:s", $lastModified);
 
         $this->load($file);
 
-        $details['filename']    = basename($file);
-        $details['mimeType']    = $this->getMimeType($this->fileType);
+        $details['filename']    = basename((string) $file);
+        $details['mimeType']    = $this->getMimeType();
         $details['width']       = $this->width;
         $details['height']      = $this->height;
         $details['aspectRatio'] = round($this->width / $this->height, 3);
@@ -3928,7 +3888,7 @@ class CImage
      *
      * @return void.
      */
-    public function setAsciiOptions($options = array())
+    public function setAsciiOptions($options = [])
     {
         $this->asciiOptions = $options;
     }
@@ -3944,7 +3904,7 @@ class CImage
      */
     public function ascii($file = null)
     {
-        $file = $file ? $file : $this->cacheFileName;
+        $file = $file ?: $this->cacheFileName;
 
         $asciiArt = new CAsciiArt();
         $asciiArt->setOptions($this->asciiOptions);
@@ -4005,10 +3965,10 @@ class CImage
         foreach ($this->log as $val) {
             if (is_array($val)) {
                 foreach ($val as $val1) {
-                    $log .= htmlentities($val1) . '<br/>';
+                    $log .= htmlentities((string) $val1) . '<br/>';
                 }
             } else {
-                $log .= htmlentities($val) . '<br/>';
+                $log .= htmlentities((string) $val) . '<br/>';
             }
         }
 
@@ -4035,7 +3995,7 @@ EOD;
      * @return void
      * @throws Exception
      */
-    private function raiseError($message)
+    private function raiseError($message): never
     {
         throw new Exception($message);
     }
@@ -4370,10 +4330,10 @@ class CFastTrackCache
         }
 
         if (isset($_SERVER["HTTP_IF_MODIFIED_SINCE"])
-            && strtotime($_SERVER["HTTP_IF_MODIFIED_SINCE"]) == $item["last-modified"]) {
+            && strtotime((string) $_SERVER["HTTP_IF_MODIFIED_SINCE"]) == $item["last-modified"]) {
             header("HTTP/1.0 304 Not Modified");
             if (CIMAGE_DEBUG) {
-                trace(__CLASS__ . " 304");
+                trace(self::class . " 304");
             }
             exit;
         }
@@ -4383,7 +4343,7 @@ class CFastTrackCache
         }
 
         if (CIMAGE_DEBUG) {
-            trace(__CLASS__ . " 200");
+            trace(self::class . " 200");
         }
         readfile($item["source"]);
         exit;
@@ -4426,7 +4386,7 @@ $configFile = __DIR__.'/'.basename(__FILE__, '.php').'_config.php';
 if (is_file($configFile)) {
     $config = require $configFile;
 } elseif (!isset($config)) {
-    $config = array();
+    $config = [];
 }
 
 // Make CIMAGE_DEBUG false by default, if not already defined
@@ -4453,7 +4413,7 @@ if (!defined("CIMAGE_BUNDLE")) {
 * verbose, v - do a verbose dump of what happens
 * vf - do verbose dump to file
 */
-$verbose = getDefined(array('verbose', 'v'), true, false);
+$verbose = getDefined(['verbose', 'v'], true, false);
 $verboseFile = getDefined('vf', true, false);
 verbose("img.php version = " . CIMAGE_VERSION);
 
@@ -4541,24 +4501,17 @@ if ($defaultTimezone) {
 $pwdConfig   = getConfig('password', false);
 $pwdAlways   = getConfig('password_always', false);
 $pwdType     = getConfig('password_type', 'text');
-$pwd         = get(array('password', 'pwd'), null);
+$pwd         = get(['password', 'pwd'], null);
 
 // Check if passwords match, if configured to use passwords
 $passwordMatch = null;
 if ($pwd) {
-    switch ($pwdType) {
-        case 'md5':
-            $passwordMatch = ($pwdConfig === md5($pwd));
-            break;
-        case 'hash':
-            $passwordMatch = password_verify($pwd, $pwdConfig);
-            break;
-        case 'text':
-            $passwordMatch = ($pwdConfig === $pwd);
-            break;
-        default:
-            $passwordMatch = false;
-    }
+    $passwordMatch = match ($pwdType) {
+        'md5' => $pwdConfig === md5((string) $pwd),
+        'hash' => password_verify((string) $pwd, (string) $pwdConfig),
+        'text' => $pwdConfig === $pwd,
+        default => false,
+    };
 }
 
 if ($pwdAlways && $passwordMatch !== true) {
@@ -4575,11 +4528,11 @@ verbose("password match = $passwordMatch");
  *
  */
 $allowHotlinking = getConfig('allow_hotlinking', true);
-$hotlinkingWhitelist = getConfig('hotlinking_whitelist', array());
+$hotlinkingWhitelist = getConfig('hotlinking_whitelist', []);
 
-$serverName  = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : null;
-$referer     = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
-$refererHost = parse_url($referer, PHP_URL_HOST);
+$serverName  = $_SERVER['SERVER_NAME'] ?? null;
+$referer     = $_SERVER['HTTP_REFERER'] ?? null;
+$refererHost = parse_url((string) $referer, PHP_URL_HOST);
 
 if (!$allowHotlinking) {
     if ($passwordMatch) {
@@ -4589,7 +4542,7 @@ if (!$allowHotlinking) {
         errorPage("Hotlinking/leeching not allowed when password missmatch.", 403);
     } elseif (!$referer) {
         errorPage("Hotlinking/leeching not allowed and referer is missing.", 403);
-    } elseif (strcmp($serverName, $refererHost) == 0) {
+    } elseif (strcmp((string) $serverName, $refererHost) == 0) {
         ; // Allow when serverName matches refererHost
         verbose("Hotlinking disallowed but serverName matches refererHost.");
     } elseif (!empty($hotlinkingWhitelist)) {
@@ -4635,7 +4588,7 @@ $cache->setDir($cachePath);
 /**
  * no-cache, nc - skip the cached version and process and create a new version in cache.
  */
-$useCache = getDefined(array('no-cache', 'nc'), false, true);
+$useCache = getDefined(['no-cache', 'nc'], false, true);
 
 verbose("use cache = $useCache");
 
@@ -4651,7 +4604,7 @@ $CFastTrackCache = getConfig('CFastTrackCache', 'CFastTrackCache');
 $ftc = new $CFastTrackCache();
 $ftc->setCacheDir($cache->getPathToSubdir($fastTrackCache))
     ->enable($allowFastTrackCache)
-    ->setFilename(array('no-cache', 'nc'));
+    ->setFilename(['no-cache', 'nc']);
 $img->injectDependency("fastTrackCache", $ftc);
 
 
@@ -4692,10 +4645,10 @@ if ($allowRemote && $passwordMatch !== false) {
  * shortcut, sc - extend arguments with a constant value, defined
  * in config-file.
  */
-$shortcut       = get(array('shortcut', 'sc'), null);
-$shortcutConfig = getConfig('shortcut', array(
+$shortcut       = get(['shortcut', 'sc'], null);
+$shortcutConfig = getConfig('shortcut', [
     'sepia' => "&f=grayscale&f0=brightness,-10&f1=contrast,-20&f2=colorize,120,60,0,0&sharpen",
-));
+]);
 
 verbose("shortcut = $shortcut");
 
@@ -4712,11 +4665,11 @@ if (isset($shortcut)
 /**
  * src - the source image file.
  */
-$srcImage = urldecode(get('src'))
+$srcImage = urldecode((string) get('src'))
     or errorPage('Must set src-attribute.', 404);
 
 // Get settings for src-alt as backup image
-$srcAltImage = urldecode(get('src-alt', null));
+$srcAltImage = urldecode((string) get('src-alt', null));
 $srcAltConfig = getConfig('src_alt', null);
 if (empty($srcAltImage)) {
     $srcAltImage = $srcAltConfig;
@@ -4762,7 +4715,7 @@ if ($dummyEnabled && $srcImage === $dummyFilename) {
         $srcImage = $srcAltImage;
         $pathToImage = realpath($imagePath . $srcImage);
 
-        preg_match($validFilename, $srcImage)
+        preg_match($validFilename, (string) $srcImage)
             or errorPage('Source (alt) filename contains invalid characters.', 404);
 
         if ($dummyEnabled && $srcImage === $dummyFilename) {
@@ -4785,7 +4738,7 @@ if ($imagePathConstraint && !$dummyImage && !$remoteSource) {
     // Check that the image is a file below the directory 'image_path'.
     $imageDir = realpath($imagePath);
 
-    substr_compare($imageDir, $pathToImage, 0, strlen($imageDir)) == 0
+    substr_compare($imageDir, (string) $pathToImage, 0, strlen($imageDir)) == 0
         or errorPage(
             'Security constraint: Source image is not below the directory "image_path"
             as specified in the config file img_config.php.',
@@ -4804,10 +4757,10 @@ verbose("src = $srcImage");
 $sizeConstant = getConfig('size_constant', function () {
 
     // Set sizes to map constant to value, easier to use with width or height
-    $sizes = array(
+    $sizes = [
         'w1' => 613,
         'w2' => 630,
-    );
+    ];
 
     // Add grid column width, useful for use as predefined size for width (or height).
     $gridColumnWidth = 30;
@@ -4828,7 +4781,7 @@ $sizes = call_user_func($sizeConstant);
 /**
  * width, w - set target width, affecting the resulting image width, height and resize options
  */
-$newWidth     = get(array('width', 'w'));
+$newWidth     = get(['width', 'w']);
 $maxWidth     = getConfig('max_width', 2000);
 
 // Check to replace predefined size
@@ -4837,8 +4790,8 @@ if (isset($sizes[$newWidth])) {
 }
 
 // Support width as % of original width
-if ($newWidth[strlen($newWidth)-1] == '%') {
-    is_numeric(substr($newWidth, 0, -1))
+if ($newWidth[strlen((string) $newWidth)-1] == '%') {
+    is_numeric(substr((string) $newWidth, 0, -1))
         or errorPage('Width % not numeric.', 404);
 } else {
     is_null($newWidth)
@@ -4853,7 +4806,7 @@ verbose("new width = $newWidth");
 /**
  * height, h - set target height, affecting the resulting image width, height and resize options
  */
-$newHeight = get(array('height', 'h'));
+$newHeight = get(['height', 'h']);
 $maxHeight = getConfig('max_height', 2000);
 
 // Check to replace predefined size
@@ -4862,8 +4815,8 @@ if (isset($sizes[$newHeight])) {
 }
 
 // height
-if ($newHeight[strlen($newHeight)-1] == '%') {
-    is_numeric(substr($newHeight, 0, -1))
+if ($newHeight[strlen((string) $newHeight)-1] == '%') {
+    is_numeric(substr((string) $newHeight, 0, -1))
         or errorPage('Height % out of range.', 404);
 } else {
     is_null($newHeight)
@@ -4878,23 +4831,21 @@ verbose("new height = $newHeight");
 /**
  * aspect-ratio, ar - affecting the resulting image width, height and resize options
  */
-$aspectRatio         = get(array('aspect-ratio', 'ar'));
-$aspectRatioConstant = getConfig('aspect_ratio_constant', function () {
-    return array(
-        '3:1'    => 3/1,
-        '3:2'    => 3/2,
-        '4:3'    => 4/3,
-        '8:5'    => 8/5,
-        '16:10'  => 16/10,
-        '16:9'   => 16/9,
-        'golden' => 1.618,
-    );
-});
+$aspectRatio         = get(['aspect-ratio', 'ar']);
+$aspectRatioConstant = getConfig('aspect_ratio_constant', fn() => [
+    '3:1'    => 3/1,
+    '3:2'    => 3/2,
+    '4:3'    => 4/3,
+    '8:5'    => 8/5,
+    '16:10'  => 16/10,
+    '16:9'   => 16/9,
+    'golden' => 1.618,
+]);
 
 // Check to replace predefined aspect ratio
 $aspectRatios = call_user_func($aspectRatioConstant);
 $negateAspectRatio = ($aspectRatio[0] == '!') ? true : false;
-$aspectRatio = $negateAspectRatio ? substr($aspectRatio, 1) : $aspectRatio;
+$aspectRatio = $negateAspectRatio ? substr((string) $aspectRatio, 1) : $aspectRatio;
 
 if (isset($aspectRatios[$aspectRatio])) {
     $aspectRatio = $aspectRatios[$aspectRatio];
@@ -4915,7 +4866,7 @@ verbose("aspect ratio = $aspectRatio");
 /**
  * crop-to-fit, cf - affecting the resulting image width, height and resize options
  */
-$cropToFit = getDefined(array('crop-to-fit', 'cf'), true, false);
+$cropToFit = getDefined(['crop-to-fit', 'cf'], true, false);
 
 verbose("crop to fit = $cropToFit");
 
@@ -4936,7 +4887,7 @@ if ($backgroundColor) {
 /**
  * bgColor - Default background color to use
  */
-$bgColor = get(array('bgColor', 'bg-color', 'bgc'), null);
+$bgColor = get(['bgColor', 'bg-color', 'bgc'], null);
 
 verbose("bgColor = $bgColor");
 
@@ -4945,7 +4896,7 @@ verbose("bgColor = $bgColor");
 /**
  * Do or do not resample image when resizing.
  */
-$resizeStrategy = getDefined(array('no-resample'), true, false);
+$resizeStrategy = getDefined(['no-resample'], true, false);
 
 if ($resizeStrategy) {
     $img->setCopyResizeStrategy($img::RESIZE);
@@ -4958,7 +4909,7 @@ if ($resizeStrategy) {
 /**
  * fill-to-fit, ff - affecting the resulting image width, height and resize options
  */
-$fillToFit = get(array('fill-to-fit', 'ff'), null);
+$fillToFit = get(['fill-to-fit', 'ff'], null);
 
 verbose("fill-to-fit = $fillToFit");
 
@@ -4978,7 +4929,7 @@ if ($fillToFit !== null) {
 /**
  * no-ratio, nr, stretch - affecting the resulting image width, height and resize options
  */
-$keepRatio = getDefined(array('no-ratio', 'nr', 'stretch'), false, true);
+$keepRatio = getDefined(['no-ratio', 'nr', 'stretch'], false, true);
 
 verbose("keep ratio = $keepRatio");
 
@@ -4987,7 +4938,7 @@ verbose("keep ratio = $keepRatio");
 /**
  * crop, c - affecting the resulting image width, height and resize options
  */
-$crop = get(array('crop', 'c'));
+$crop = get(['crop', 'c']);
 
 verbose("crop = $crop");
 
@@ -4996,7 +4947,7 @@ verbose("crop = $crop");
 /**
  * area, a - affecting the resulting image width, height and resize options
  */
-$area = get(array('area', 'a'));
+$area = get(['area', 'a']);
 
 verbose("area = $area");
 
@@ -5005,7 +4956,7 @@ verbose("area = $area");
 /**
  * skip-original, so - skip the original image and always process a new image
  */
-$useOriginal = getDefined(array('skip-original', 'so'), false, true);
+$useOriginal = getDefined(['skip-original', 'so'], false, true);
 $useOriginalDefault = getConfig('skip_original', false);
 
 if ($useOriginalDefault === true) {
@@ -5020,7 +4971,7 @@ verbose("use original = $useOriginal");
 /**
  * quality, q - set level of quality for jpeg images
  */
-$quality = get(array('quality', 'q'));
+$quality = get(['quality', 'q']);
 $qualityDefault = getConfig('jpg_quality', null);
 
 is_null($quality)
@@ -5038,7 +4989,7 @@ verbose("quality = $quality");
 /**
  * compress, co - what strategy to use when compressing png images
  */
-$compress = get(array('compress', 'co'));
+$compress = get(['compress', 'co']);
 $compressDefault = getConfig('png_compression', null);
 
 is_null($compress)
@@ -5056,7 +5007,7 @@ verbose("compress = $compress");
 /**
  * save-as, sa - what type of image to save
  */
-$saveAs = get(array('save-as', 'sa'));
+$saveAs = get(['save-as', 'sa']);
 
 verbose("save as = $saveAs");
 
@@ -5065,7 +5016,7 @@ verbose("save as = $saveAs");
 /**
  * scale, s - Processing option, scale up or down the image prior actual resize
  */
-$scale = get(array('scale', 's'));
+$scale = get(['scale', 's']);
 
 is_null($scale)
     or ($scale >= 0 and $scale <= 400)
@@ -5078,7 +5029,7 @@ verbose("scale = $scale");
 /**
  * palette, p - Processing option, create a palette version of the image
  */
-$palette = getDefined(array('palette', 'p'), true, false);
+$palette = getDefined(['palette', 'p'], true, false);
 
 verbose("palette = $palette");
 
@@ -5114,7 +5065,7 @@ verbose("blur = $blur");
 /**
  * rotateBefore - Rotate the image with an angle, before processing
  */
-$rotateBefore = get(array('rotateBefore', 'rotate-before', 'rb'));
+$rotateBefore = get(['rotateBefore', 'rotate-before', 'rb']);
 
 is_null($rotateBefore)
     or ($rotateBefore >= -360 and $rotateBefore <= 360)
@@ -5127,7 +5078,7 @@ verbose("rotateBefore = $rotateBefore");
 /**
  * rotateAfter - Rotate the image with an angle, before processing
  */
-$rotateAfter = get(array('rotateAfter', 'rotate-after', 'ra', 'rotate', 'r'));
+$rotateAfter = get(['rotateAfter', 'rotate-after', 'ra', 'rotate', 'r']);
 
 is_null($rotateAfter)
     or ($rotateAfter >= -360 and $rotateAfter <= 360)
@@ -5140,7 +5091,7 @@ verbose("rotateAfter = $rotateAfter");
 /**
  * autoRotate - Auto rotate based on EXIF information
  */
-$autoRotate = getDefined(array('autoRotate', 'auto-rotate', 'aro'), true, false);
+$autoRotate = getDefined(['autoRotate', 'auto-rotate', 'aro'], true, false);
 
 verbose("autoRotate = $autoRotate");
 
@@ -5149,14 +5100,14 @@ verbose("autoRotate = $autoRotate");
 /**
  * filter, f, f0-f9 - Processing option, post filter for various effects using imagefilter()
  */
-$filters = array();
-$filter = get(array('filter', 'f'));
+$filters = [];
+$filter = get(['filter', 'f']);
 if ($filter) {
     $filters[] = $filter;
 }
 
 for ($i = 0; $i < 10; $i++) {
-    $filter = get(array("filter{$i}", "f{$i}"));
+    $filter = get(["filter{$i}", "f{$i}"]);
     if ($filter) {
         $filters[] = $filter;
     }
@@ -5178,15 +5129,15 @@ verbose("outputformat = $outputFormat");
 if ($outputFormat == 'ascii') {
     $defaultOptions = getConfig(
         'ascii-options',
-        array(
+        [
             "characterSet" => 'two',
             "scale" => 14,
             "luminanceStrategy" => 3,
             "customCharacterSet" => null,
-        )
+        ]
     );
     $options = get('ascii');
-    $options = explode(',', $options);
+    $options = explode(',', (string) $options);
 
     if (isset($options[0]) && !empty($options[0])) {
         $defaultOptions['characterSet'] = $options[0];
@@ -5205,7 +5156,7 @@ if ($outputFormat == 'ascii') {
         unset($options[0]);
         unset($options[1]);
         unset($options[2]);
-        $characterString = implode($options);
+        $characterString = implode('', $options);
         $defaultOptions['customCharacterSet'] = $characterString;
     }
 
@@ -5218,7 +5169,7 @@ if ($outputFormat == 'ascii') {
 /**
  * dpr - change to get larger image to easier support larger dpr, such as retina.
  */
-$dpr = get(array('ppi', 'dpr', 'device-pixel-ratio'), 1);
+$dpr = get(['ppi', 'dpr', 'device-pixel-ratio'], 1);
 
 verbose("dpr = $dpr");
 
@@ -5228,7 +5179,7 @@ verbose("dpr = $dpr");
  * convolve - image convolution as in http://php.net/manual/en/function.imageconvolution.php
  */
 $convolve = get('convolve', null);
-$convolutionConstant = getConfig('convolution_constant', array());
+$convolutionConstant = getConfig('convolution_constant', []);
 
 // Check if the convolve is matching an existing constant
 if ($convolve && isset($convolutionConstant)) {
@@ -5243,7 +5194,7 @@ verbose("convolve = " . print_r($convolve, 1));
 /**
  * no-upscale, nu - Do not upscale smaller image to larger dimension.
  */
-$upscale = getDefined(array('no-upscale', 'nu'), false, true);
+$upscale = getDefined(['no-upscale', 'nu'], false, true);
 
 verbose("upscale = $upscale");
 
@@ -5252,7 +5203,7 @@ verbose("upscale = $upscale");
 /**
  * Get details for post processing
  */
-$postProcessing = getConfig('postprocessing', array(
+$postProcessing = getConfig('postprocessing', [
     'png_lossy'        => false,
     'png_lossy_cmd'    => '/usr/local/bin/pngquant --force --output',
 
@@ -5264,14 +5215,14 @@ $postProcessing = getConfig('postprocessing', array(
 
     'jpeg_optimize'     => false,
     'jpeg_optimize_cmd' => '/usr/local/bin/jpegtran -copy none -optimize',
-));
+]);
 
 
 
 /**
  * lossy - Do lossy postprocessing, if available.
  */
-$lossy = getDefined(array('lossy'), true, null);
+$lossy = getDefined(['lossy'], true, null);
 
 verbose("lossy = $lossy");
 
@@ -5294,7 +5245,7 @@ if ($alias && $aliasPath && $passwordMatch) {
     is_writable($aliasPath)
         or errorPage("Directory for alias is not writable.", 403);
 
-    preg_match($validAliasname, $alias)
+    preg_match($validAliasname, (string) $alias)
         or errorPage('Filename for alias contains invalid characters. Do not add extension.', 404);
 
 } elseif ($alias) {
@@ -5326,11 +5277,11 @@ if ($dummyImage === true) {
     $img->setSaveFolder($dummyDir)
         ->setSource($dummyFilename, $dummyDir)
         ->setOptions(
-            array(
+            [
                 'newWidth'  => $newWidth,
                 'newHeight' => $newHeight,
                 'bgColor'   => $bgColor,
-            )
+            ]
         )
         ->setJpegQuality($quality)
         ->setPngCompression($compress)
@@ -5450,7 +5401,7 @@ $hookBeforeCImage = getConfig('hook_before_CImage', null);
 if (is_callable($hookBeforeCImage)) {
     verbose("hookBeforeCImage activated");
 
-    $allConfig = $hookBeforeCImage($img, array(
+    $allConfig = $hookBeforeCImage($img, [
             // Options for calculate dimensions
             'newWidth'  => $newWidth,
             'newHeight' => $newHeight,
@@ -5486,7 +5437,7 @@ if (is_callable($hookBeforeCImage)) {
             // Other
             'postProcessing' => $postProcessing,
             'lossy' => $lossy,
-    ));
+    ]);
     verbose(print_r($allConfig, 1));
     extract($allConfig);
 }
@@ -5497,8 +5448,8 @@ if (is_callable($hookBeforeCImage)) {
  * Display image if verbose mode
  */
 if ($verbose) {
-    $query = array();
-    parse_str($_SERVER['QUERY_STRING'], $query);
+    $query = [];
+    parse_str((string) $_SERVER['QUERY_STRING'], $query);
     unset($query['verbose']);
     unset($query['v']);
     unset($query['nocache']);
@@ -5538,7 +5489,7 @@ $img->log("Incoming arguments: " . print_r(verbose(), 1))
     ->useCache($useCache)
     ->setSource($srcImage, $imagePath)
     ->setOptions(
-        array(
+        [
             // Options for calculate dimensions
             'newWidth'  => $newWidth,
             'newHeight' => $newHeight,
@@ -5573,7 +5524,7 @@ $img->log("Incoming arguments: " . print_r(verbose(), 1))
 
             // Postprocessing using external tools
             'lossy' => $lossy,
-        )
+        ]
     )
     ->loadImageDetails()
     ->initDimensions()
