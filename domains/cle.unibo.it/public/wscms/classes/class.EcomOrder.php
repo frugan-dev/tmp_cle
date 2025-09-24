@@ -131,9 +131,9 @@ class EcomOrder extends Core {
 			$opt = [];
 			/* manda la email di conferma ordine al cliente */								
 			$subject = $lang['ecom - cliente - soggetto email conferma ordine'];			
-			$opt['subject'] = SiteMails::parseEmailContent($subject,$_POST,$opt1=[]);				
+			$opt['subject'] = Mails::parseEmailContent($subject,$_POST,$opt1=[]);				
 			$content = $lang['ecom - cliente - contenuto email conferma ordine'];
-			$opt['content'] = SiteMails::parseEmailContent($content,$_POST,$opzz=[]);	
+			$opt['content'] = Mails::parseEmailContent($content,$_POST,$opzz=[]);	
 			//FIXED - DKIM requirements							
 			$opt['from email'] = $_ENV['MAIL_FROM_EMAIL'] ?? $globalSettings['ecom - from email'];
 			$opt['from label'] = $globalSettings['ecom - from email label'];
@@ -147,7 +147,7 @@ class EcomOrder extends Core {
 			//$opt['smtp server port'] = '25';	
 			//$opt['smtp server user'] = 'smtpauth@hibot.co.jp';
 			//$opt['smtp server password'] = '*BuildRobotMakeMoney*';							
-			SiteMails::sendEmail($opt);
+			Mails::sendEmail($opt);
 			if (Core::$resultOp->error == 1) Core::$resultOp->messages[] = $lang['La tua email di conferma ordine NON è stata spedita! Riprova.'];
 			}		
 		}	
@@ -164,14 +164,14 @@ class EcomOrder extends Core {
 			$opt = array_merge($optDef,$opt);
 			/* manda la email di conferma ordine al cliente */						
 			$subject = $lang['ecom - staff - soggetto email conferma ordine'];			
-			$opt['subject'] = SiteMails::parseEmailContent($subject,$_POST,$opt1=[]);				
+			$opt['subject'] = Mails::parseEmailContent($subject,$_POST,$opt1=[]);				
 			$content = $lang['ecom - staff - contenuto email conferma ordine'];
 			$ulradminorder = '<a href="'.URL_SITE_ADMIN.'ecommerce/viewOrdi/'.self::$orderId.'" target="_blank">'.self::$orderId.'</a>';			
 			$opt1 = [];
 			$opt1['others']['%URLADMINORDER%'] = $ulradminorder;
 			$opt1['others']['%ORDERDATA%'] = self::$orderData;
 			$opt1['others']['%ORDERTOTAL%'] = number_format(self::$orderTotal,0,',',',');
-			$opt['content'] = SiteMails::parseEmailContent($content,$_POST,$opt1);
+			$opt['content'] = Mails::parseEmailContent($content,$_POST,$opt1);
 			//FIXED - DKIM requirements				
 			$opt['from email'] = $_ENV['MAIL_FROM_EMAIL'] ?? $globalSettings['ecom - from email'];
 			$opt['from label'] = $globalSettings['ecom - from email label'];
@@ -185,7 +185,7 @@ class EcomOrder extends Core {
 			//$opt['smtp server port'] = '25';	
 			//$opt['smtp server user'] = 'smtpauth@hibot.co.jp';
 			//$opt['smtp server password'] = '*BuildRobotMakeMoney*';	
-			SiteMails::sendEmail($opt);
+			Mails::sendEmail($opt);
 			if (Core::$resultOp->error == 1) Core::$resultOp->messages[] = $lang['La email di conferma ordine allo staff del sito NON è stata spedita! Riprova.'];									
 			}		
 		}	
