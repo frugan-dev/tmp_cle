@@ -1,0 +1,175 @@
+<!-- Hero Section-->
+<section class="hero hero-page">
+  <div style="background: url('{{ App.pageData.image_top }}')" class="hero-banner"> </div>
+  <div class="container">
+    <nav aria-label="breadcrumb" role="navigation">
+      <ol class="breadcrumb">
+        {% if App.breadcrumbs.items is iterable and App.breadcrumbs.items|length > 0 %}
+        {% for key,value in App.breadcrumbs.items %}
+        <li aria-current="page" class="{{ value.class }}">
+          {% if loop.first %}
+          <a href="{{ value.url }}" title=" {{ value.title }}">{{ value.title }}</a>
+          {% else %}
+          {{ value.title }}
+          {% endif %}
+        </li>
+        {% endfor %}
+        {% endif %}
+      </ol>
+    </nav>
+    <h1>{{ App.pageTitleSeo }}</h1>
+    <div class="row block-page">
+
+    </div>
+  </div>
+</section>
+
+<section class="tour">
+
+
+  <div class="container">
+
+    {% if App.pageData.blocks is iterable and App.pageData.blocks|length > 0 %}
+    {% for key,value in App.pageData.blocks %}
+
+
+    <div class="row d-flex align-items-center">
+
+
+      {% if value.filename != '' %}
+      {% set classBlockContent = 'col-lg-8' %}
+
+      <div class="col-lg-4 py-4">
+        <img src="{{ UPLOADDIR }}pages/blocks/{{ value.filename }}" alt="{{ value.org_filename }}" style="width:100%;">
+      </div>
+
+      {% endif %}
+
+
+      <div class="{{ classBlockContent }} text">
+        <header>
+          <h2> {{ value.title }}</h2>
+        </header>
+        {{ value.content|raw }}
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if App.pageData.show_updated is defined and App.pageData.show_updated == 1 %}
+    <ul class="post-meta list-inline mt-4">
+      <li class="list-inline-item"><i class="icon-clock-1"></i> {{ LangVars['ultimo aggiornamento']|capitalize }}: {{
+        App.pageData.updatedFormatted }}</li>
+    </ul>
+    {% endif %}
+
+    {% if App.blocks_pagination.totalpage > 1 %}
+    <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+      <ul class="pagination">
+        <li class="page-item">
+          <a href="{{ App.pageDataUrl }}/page/{{ App.blocks_pagination.itemNext }}" title="{{ LangVars['precedente'] }}"
+            aria-label="Previous" class="page-link"><span aria-hidden="true">«</span><span class="sr-only">{{
+              LangVars['precedente'] }}</span></a>
+        </li>
+        {% if App.blocks_pagination.pagePrevious is iterable %}
+        {% for key,value in App.blocks_pagination.pagePrevious %}
+        <li class="page-item">
+          <a class="page-link" title="{{ Lang['vai alla pagina %ITEM%']|replace({'%ITEM%':value })|capitalize }}"
+            href="{{ App.pageDataUrl }}/page/{{ value }}">{{ value }}</a>
+        </li>
+        {% endfor %}
+        {% endif %}
+        <li class="page-item active">
+          <a href="{{ App.pageDataUrl }}/page/{{ App.news_pagination.page }}"
+            title="{{ Lang['vai alla pagina %ITEM%']|replace({'%ITEM%':App.blocks_pagination.page })|capitalize }}"
+            class="page-link">{{ App.blocks_pagination.page }}</a>
+        </li>
+        {% if App.blocks_pagination.pageNext is iterable %}
+        {% for key,value in App.blocks_pagination.pageNext %}
+        <li class="page-item">
+          <a class="page-link" title="{{ Lang['vai alla pagina %ITEM%']|replace({'%ITEM%':value })|capitalize }}"
+            href="{{ App.pageDataUrl }}home/page/{{ value }}">{{ value }}</a>
+        </li>
+        {% endfor %}
+        {% endif %}
+        <li class="page-item">
+          <a href="{{ App.pageDataUrl }}/page/{{ App.blocks_pagination.itemNext }}" title="{{ LangVars['successivo'] }}"
+            aria-label="Next" class="page-link"><span aria-hidden="true">»</span><span class="sr-only">{{
+              LangVars['successivo'] }}</span></a>
+        </li>
+      </ul>
+    </nav>
+    {% endif %}
+    <!-- files associati pagina -->
+    {% if App.pageData_files is iterable and App.pageData_files|length > 0 %}
+    <div class="col-lg-12">
+      <hr>
+      <h4>{{ LangVars['downloads']|capitalize }}</h4>
+      {% for key,value in App.pageData_files %}
+      <p>
+        <a title="{{ value.title }}" target="_blank" href="{{ value.url }}">{{ value.title }}</a>
+      </p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- images associate pagina -->
+    {% if App.pageData_images is iterable and App.pageData_images|length > 0 %}
+    <div class="col-lg-12">
+      <hr>
+      <h4>{{ LangVars['immagini']|capitalize }}</h4>
+      <div class="row">
+        {% for key,value in App.pageData_images %}
+        <div class="col-md-3">
+          <p class="text-center">
+            <a title="{{ value.org_filename }}" href="{{ UPLOADDIR }}pages/{{ value.filename }}" data-lity>
+              <img src="{{ UPLOADDIR }}pages/{{ value.filename }}" alt="{{ value.org_filename }}"
+                class="rounded img-fluid">
+            </a>
+          </p>
+          <p class="text-center">{{ value.title }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+
+    <!-- galleria associata pagina -->
+    {% if App.pageData_galleriesimages_items_count > 0 %}
+    <div class="col-lg-12" id="galleriesimagesID">
+      <hr>
+      <h4>{{ LangVars['galleria immagini']|capitalize }}</h4>
+      <nav class="nav nav-pills nav-justified d-flex justify-content-center">
+        <a href="{{ URLSITE }}{{ CoreRequest.action }}/{{ App.pageData.id }}/gaimctag/0#galleriesimagesID"
+          class="nav-link{% if Session[CoreRequest.action]['galleriesimage_tag_id'] == 0 %} active{% endif %}">{{
+          LangVars['tutte'] }}</a>
+        {% if App.pageData_galleriesimages_tags is iterable and App.pageData_galleriesimages_tags|length > 0 %}
+        {% for key,value in App.pageData_galleriesimages_tags %}
+        <a title="{{ value.title }}"
+          href="{{ URLSITE }}{{ CoreRequest.action }}/{{ App.pageData.id }}/gaimctag/{{ value.id }}#galleriesimagesID"
+          class="nav-link{% if Session[CoreRequest.action]['galleriesimage_tag_id'] == value.id %} active{% endif %}">{{
+          value.title }}</a>
+        {% endfor %}
+        {% endif %}
+      </nav>
+      <p></p>
+      <div class="row">
+        {% for key,value in App.pageData_galleriesimages %}
+        <div class="col-md-3">
+          <p class="text-center">
+            <a title="{{ value.org_filename }}" href="{{ UPLOADDIR }}galleriesimages/{{ value.filename }}" data-lity>
+              <img src="{{ URLSITE }}img.php?src=/galleriesimages/{{ value.filename }}&width=500&height=500&crop-to-fit"
+                alt="{{ value.org_filename }}" class="rounded img-fluid">
+            </a>
+          </p>
+          <p class="text-center">{{ value.title }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+
+  </div>
+</section>

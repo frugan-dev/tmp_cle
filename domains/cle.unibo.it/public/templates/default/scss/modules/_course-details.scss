@@ -1,0 +1,125 @@
+/*
+* ==========================================================
+*     COURSE DETAILS PAGE
+* ==========================================================
+*/
+.course-details {
+    .image {
+        height: 400px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding: 20px 0;
+    }
+}
+
+
+.course-details-header {
+    margin-bottom: 40px;
+
+
+    .course-instructor {
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        strong {
+            font-size: 1.1rem;
+            display: block;
+            line-height: 1;
+            margin-top: 10px;
+        }
+        span {
+            font-size: 0.85rem;
+            display: block;
+            color: #666;
+        }
+    }
+
+    .course-information {
+        width: 600px;
+        .cell {
+            width: 33.3333%;
+            padding: 10px 20px;
+            border: 1px solid #eee;
+        }
+        small {
+            text-transform: uppercase;
+            color: #aaa;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            display: block;
+        }
+        strong {
+            color: #555;
+        }
+    }
+
+    .course-price {
+        small {
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+        }
+        .current {
+            font-size: 3rem;
+            font-weight: 700;
+            color: $brand-primary;
+            line-height: 1;
+        }
+        sup {
+            font-size: 1.4rem;
+            display: inline-block;
+            transform: translateY(-10px);
+        }
+        .discounted {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #aaa;
+            text-decoration: line-through;
+        }
+    }
+
+    .CTAs {
+        a {
+            margin-top: 5px;
+            margin-left: 5px;
+        }
+    }
+
+    .review {
+        margin-top: 20px;
+        span {
+            display: block;
+            line-height: 1;
+            font-weight: 400;
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        li {
+            margin: 0;
+            padding: 0;
+        }
+
+        i {
+            font-size: 1.1rem;
+            font-size: 0.7rem;
+            color: $brand-primary;
+        }
+    }
+}
+
+.course-details-body {
+    ul li {
+        font-size: 0.95rem;
+        margin-bottom: 5px;
+    }
+    h5 {
+        margin-bottom: 20px;
+    }
+}

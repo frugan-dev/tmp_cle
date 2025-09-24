@@ -1,0 +1,71 @@
+<!-- newsletter/formNewCode.tpl.php v.3.1.0. 10/01/2017 -->
+<div class="row">
+	<div class="col-md-3 new"></div>
+	<div class="col-md-7 help-small-form">{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}</div>
+	<div class="col-md-2 help text-right">
+		{% if (App.params.help is defined) and (App.params.help != '') %}
+			<button class="btn btn-warning btn-sm" type="button" data-target="#helpModal" data-toggle="modal">Come funziona?</button>
+		{% endif %}
+	</div>
+</div>
+
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">
+
+		<ul class="nav nav-tabs" id="formTab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active" href="#datibase" data-toggle="tab" role="tab" aria-controls="datibase" aria-selected="false">Dati Base</a>
+			</li>			
+		</ul>
+		
+		<form id="applicationForm" class="form-horizontal" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.methodForm }}"  enctype="multipart/form-data" method="post">
+			
+			<!--Tab panes -->	
+			<div class="tab-content">
+			
+			<!-- sezione dati base --> 	
+			<div class="tab-pane fade show active" id="datibase" role="tabpanel" aria-labelledby="datibase">						
+				<fieldset>
+					<div class="form-group row">
+						<label for="content_itID" class="col-md-2 control-label">Contenuto HTML</label>
+						<div class="col-md-9">
+							<textarea name="content_it" class="form-control editorHTML" id="content_itID" rows="15">{{ App.item.content_it }}</textarea>
+						</div>
+					</div>
+								
+					<hr>
+					<div class="form-group row">
+						<label for="activeID" class="col-sm-12 col-md-12 col-lg-2 col-xl-3 col-form-label">{{ Lang['attiva']|capitalize }}</label>
+						<div class="col-md-7">
+							<input type="checkbox" name="active" id="activeID" class="form-check-input"{% if App.item.active == 1 %} checked="checked"{% endif %} value="1">     					
+						</div>
+					</div>
+				</fieldset>		
+			</div>
+			<!-- /sezione dati base --> 
+
+			</div>
+			<!--/Tab panes -->	
+			<hr>
+			
+			<div class="form-group row">
+				<div class="col-md-6 col-xs-12 text-center">
+					<input type="hidden" name="created" id="createdID" value="{{ App.item.created }}">				
+					<input type="hidden" name="datatimesent" value="{{ App.item.datatimesent }}">				
+					<input type="hidden" name="id" id="idID" value="{{ App.id }}">
+					<input type="hidden" name="method" value="{{ App.methodForm }}">
+					<button type="submit" name="submitForm" value="submit" class="btn btn-primary submittheform">Invia</button>
+					{% if App.id > 0 %}
+						<button type="submit" name="applyForm" value="apply" class="btn btn-primary submittheform ml-5">Applica</button>
+					{% endif %}
+				</div>
+				<div class="col-md-6 col-xs-12 text-right">				
+					<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listNew" title="Torna alla lista" class="btn btn-success">Indietro</a>
+				</div>
+			</div>
+			
+		</form>
+
+	</div>
+</div>
+

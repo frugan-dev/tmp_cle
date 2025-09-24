@@ -1,0 +1,75 @@
+<!-- footer-->
+<footer class="footer pb-0">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="logo"><strong>{{ LangVars['footer title'] }}</strong></div>
+        <ul class="social list-inline">
+          <li class="list-inline-item">
+            {% if GlobalSettings['facebook link'] is defined and GlobalSettings['facebook link'] != '' %}
+            <a title="{{ GlobalSettings['facebook link'] }}" href="{{ GlobalSettings['facebook link'] }}"
+              target="_blank"><i class="fa fa-facebook"></i></a>
+            {% endif %}
+            {% if GlobalSettings['twitter link'] is defined and GlobalSettings['twitter link'] != '' %}
+            <a title="{{ GlobalSettings['twitter link'] }}" href="{{ GlobalSettings['twitter link'] }}"
+              target="_blank"><i class="fa fa-twitter"></i></a>
+            {% endif %}
+            {% if GlobalSettings['instagram link'] is defined and GlobalSettings['instagram link'] != '' %}
+            <a title="{{ GlobalSettings['instagram link'] }}" href="{{ GlobalSettings['instagram link'] }}"
+              target="_blank"><i class="fa fa-instagram"></i></a>
+            {% endif %}
+            {% if GlobalSettings['youtube link'] is defined and GlobalSettings['youtube link'] != '' %}
+            <a title="{{ GlobalSettings['youtube link'] }}" href="{{ GlobalSettings['youtube link'] }}"
+              target="_blank"><i class="fa fa-youtube-play"></i></a>
+            {% endif %}
+            {% if GlobalSettings['vimeo link'] is defined and GlobalSettings['vimeo link'] != '' %}
+            <a title="{{ GlobalSettings['vimeo link'] }}" href="{{ GlobalSettings['facebook link'] }}"
+              target="_blank"><i class="fa fa-vimeo"></i></a>
+            {% endif %}
+          </li>
+        </ul>
+        <p>
+          {{ GlobalSettings['azienda indirizzo'] }}<br>
+          {{ GlobalSettings['azienda cap'] }} {{ GlobalSettings['azienda comune'] }}<br>
+          P.IVA {{ GlobalSettings['azienda partita iva'] }} <br>
+          C.F. {{ GlobalSettings['azienda codice fiscale'] }}
+        </p>
+      </div>
+      <div class="col-lg-3">
+        <h4 class="text-thin">{{ LangVars['navigazione']|capitalize }}</h4>
+        <div class="d-flex flex-wrap">
+          <ul class="navigation list-unstyled">
+            <li><a href="{{ URLSITE }}contacts" title="{{ LangVars['contatti']|capitalize }}">{{ LangVars['contatti']|capitalize }}</a></li>
+            <li><a href="{{ URLSITE }}faq" title="{{ LangVars['FAQ'] }}">{{ LangVars['FAQ'] }}</a></li>
+
+          </ul>
+          <ul class="navigation list-unstyled">
+
+            <li><a href="{{ App.urlprivacypolicypage }}" title="{{ LangVars['Privacy Policy'] }}">{{ LangVars['Privacy Policy'] }}</a></li>
+            <li><a href="{{ App.urlcookiepolicypage }}" title="{{ LangVars['Cookie Policy'] }}">{{ LangVars['Cookie Policy'] }}</a></li>
+            
+
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-5 newsletter">
+        <h4 class="text-thin">{{ LangVars['newsletter']|capitalize }}</h4>
+        <p>{{ LangVars['iscriviti alla nostra newsletter']|capitalize }}</p>
+        <form method="post" action="{{ URLSITE }}newsletter" class="newsletter-form">
+          <div class="form-group">
+            <input type="email" name="fromFormEmail" placeholder="{{ LangVars['inserisci il tuo indirizzo email']|capitalize }}"
+              class="form-control">
+            <button type="submit">{{ LangVars['iscriviti']|capitalize }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="copyrights">
+    <div class="container text-center">
+      <p>Made with <i class="fa fa-heart" aria-hidden="true"></i> by <a title="{{ GlobalSettings['sito credits'] }}" target="_blank"
+          href="{{ GlobalSettings['sito credits url'] }}">{{ GlobalSettings['sito credits'] }}</a>
+        &copy; {{ GlobalSettings['anno creazione'] }}</p>
+    </div>
+  </div>
+</footer>

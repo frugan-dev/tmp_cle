@@ -1,0 +1,153 @@
+<!-- newsletter/formNew.tpl.php v.3.1.0. 10/01/2017 -->
+<div class="row">
+	<div class="col-md-3 new"></div>
+	<div class="col-md-7 help-small-form">{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}</div>
+	<div class="col-md-2 help text-right">
+		{% if (App.params.help is defined) and (App.params.help != '') %}
+			<button class="btn btn-warning btn-sm" type="button" data-target="#helpModal" data-toggle="modal">Come funziona?</button>
+		{% endif %}
+	</div>
+</div>
+
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">
+		
+		<ul class="nav nav-tabs" id="formTab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active" href="#datibase" data-toggle="tab" role="tab" aria-controls="datibase" aria-selected="false">Dati Base</a>
+			</li>	
+			
+			<li class="nav-item">
+				<a class="nav-link" href="#codici" data-toggle="tab" role="tab" aria-controls="codici" aria-selected="false">Codici esempio</a>
+			</li>
+		</ul>
+		
+		<form id="applicationForm" class="form-horizontal" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.methodForm }}"  enctype="multipart/form-data" method="post">
+		
+			<!--Tab panes -->	
+			<div class="tab-content">
+
+				<!-- sezione dati base --> 	
+				<div class="tab-pane fade show active" id="datibase" role="tabpanel" aria-labelledby="datibase">		
+					<fieldset>
+
+						<div class="row">
+							<label for="datatimeinsID" class="col-sm-12 col-md-12 col-lg-2 col-xl-3 col-form-label">Data</label>
+							<div class="col-sm-3">
+								<div class="form-group">
+									<div class="input-group date" id="datatimeinsID" data-target-input="nearest">
+										<input type="text" class="form-control datetimepicker-input" data-target="#datatimeinsID" name="datatimeins" />
+										<div class="input-group-append" data-target="#datatimeinsID" data-toggle="datetimepicker">
+											<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>  
+				
+						<div class="form-group row">
+							<label for="title_itID" class="col-sm-12 col-md-12 col-lg-2 col-xl-3 col-form-label">Titolo</label>
+							<div class="col-md-7">
+								<input required type="text" name="title_it" class="form-control" placeholder="Inserisci un titolo" id="title_itID" rows="3" 
+								value="{{ App.item.title_it|e('html') }}"
+								>
+							</div>
+						</div>
+				
+						<div class="form-group row">
+							<label for="content_itID" class="col-sm-12 col-md-12 col-lg-2 col-xl-3 col-form-label">Contenuto HTML</label>
+							<div class="col-md-9">
+								<textarea name="content_it" class="form-control editorHTML" id="content_itID" rows="15">{{ App.item.content_it|e('html') }}</textarea>
+							</div>
+						</div>
+				
+						<div class="form-group row">
+							<label for="templateID" class="col-md-3 control-label">Template</label>
+							<div class="col-md-7">
+								{% if App.item.templatesAvaiable is iterable and App.item.templatesAvaiable|length > 0 %}
+								<select name="template" class="form-control">
+									{% for key,value in App.item.templatesAvaiable %}
+										<option value="{{ value }}"{% if App.item.template == value %} selected="selected"{% endif %}>{{ value }}</option>								
+									{% endfor %}
+								</select>
+								{% endif %}		
+							</div>
+						</div>	
+						
+						<hr>
+
+						<div class="form-group row">
+							<label for="sentID" class="col-sm-12 col-md-12 col-lg-2 col-xl-3 col-form-label">Inviata</label>
+							<div class="col-md-1">
+								<input type="checkbox" name="sent" id="sentID" class="form-check-input"{% if App.item.sent == 1 %} checked="checked"{% endif %} value="1">     					
+							</div>
+							{% if App.item.sent == 1 %}
+								<div class="col-md-5">
+									il {{ App.item.datatimesent|date('d/m/Y H:i:s') }}	
+								</div>			
+							{% endif %}	
+						</div>
+						
+						<div class="form-group row">
+							<label for="activeID" class="col-sm-12 col-md-12 col-lg-2 col-xl-3 col-form-label">{{ Lang['attiva']|capitalize }}</label>
+							<div class="col-md-7">
+								<input type="checkbox" name="active" id="activeID" class="form-check-input"{% if App.item.active == 1 %} checked="checked"{% endif %} value="1">     					
+							</div>
+						</div>
+
+					</fieldset>	
+
+				</div>
+				<!-- /sezione dati base --> 
+								
+				<div class="tab-pane fade" id="codici" role="tabpanel" aria-labelledby="codici">	
+					<table class="table table-striped table-bordered table-hover listData">
+						<thead>
+							<tr>								
+								<th>Codice
+									{% if (App.userLoggedData.is_root is defined) and (App.userLoggedData.is_root is same as(1)) %}	
+										<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listNewCode/{{ App.item.id }}" title="Gestione templates codici" class="pull-right">Gestisci</a>
+									{% endif %}							
+								</th>
+								{% if App.id > 0 %}<th>Anteprima</th>{% endif %}											
+							</tr>
+						</thead>
+						<tbody>	
+							{% if App.newsletter_code is iterable and App.newsletter_code|length > 0 %}
+								{% for key,value in App.newsletter_code %}
+									<tr>										
+										<td>{{ value.content_it|e('html') }}</td>
+										<td>											
+											<a target="_blank" class="btn btn-default btn-circle" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/previewNew1/{{ value.id }}/{{ App.id }}" title="Anteprima"><i class="fa fa-eye fa-2"> </i> </a>																				
+										</td>										
+									</tr>	
+								{% endfor %}
+							{% endif %}	
+						</tbody>
+					</table>			
+				</div>
+
+			</div>
+			<!--/Tab panes -->	
+			<hr>
+
+		
+			<div class="form-group row">
+				<div class="col-md-6 col-xs-12 text-center">
+					<input type="hidden" name="created" id="createdID" value="{{ App.item.created }}">				
+					<input type="hidden" name="datatimesent" value="{{ App.item.datatimesent }}">				
+					<input type="hidden" name="id" id="idID" value="{{ App.id }}">
+					<input type="hidden" name="method" value="{{ App.methodForm }}">
+					<button type="submit" name="submitForm" value="submit" class="btn btn-primary submittheform">Invia</button>
+					{% if App.id > 0 %}
+						<button type="submit" name="applyForm" value="apply" class="btn btn-primary submittheform ml-5">Applica</button>
+					{% endif %}
+				</div>
+				<div class="col-md-6 col-xs-12 text-right">				
+					<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listNew" title="Torna alla lista" class="btn btn-success">Indietro</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+

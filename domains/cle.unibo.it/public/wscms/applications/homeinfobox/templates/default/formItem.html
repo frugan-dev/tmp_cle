@@ -1,0 +1,143 @@
+<!-- wscms/homeinfobox/form.html v.4.0.0. 15/12/2021 -->
+<div class="row">
+	<div class="col-md-3 new"></div>
+	<div class="col-md-7 help-small-form">{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}</div>
+	<div class="col-md-2 help text-right">
+		{% if (App.params.help is defined) and (App.params.help != '') %}
+			<button class="btn btn-warning btn-sm" type="button" data-target="#helpModal" data-toggle="modal">Come funziona?</button>
+		{% endif %}
+	</div>
+</div>
+
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">
+		<!-- Nav tabs -->
+		<ul class="nav nav-tabs" id="formTab" role="tablist">
+			
+			{% for lang in GlobalSettings['languages'] %}		
+				<li class="nav-item">
+					<a class="nav-link{% if lang == Lang['user'] %} active{% endif %}" href="#datibase{{ lang }}" id="datibase{{ lang }}-tab" aria-controls="datibase{{ lang }}" aria-selected="true" data-toggle="tab">{{ Lang['dati base']|capitalize }} {{ lang }}</a>
+				</li>
+			{% endfor %}
+
+			<li class="nav-item">
+				<a class="nav-link" href="#options" id="options-tab" data-toggle="tab" role="tab" aria-controls="options" aria-selected="false">{{ Lang['opzioni']|capitalize }}</a>
+			</li>
+		</ul>		
+		<form id="applicationForm" class="form-horizontal" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.methodForm }}"  enctype="multipart/form-data" method="post">
+			<!-- Tab panes -->
+			<div class="tab-content" id="formTabContent">
+					
+				<!-- sezione dati base dinamica lingue -->
+				{% for lang in GlobalSettings['languages'] %} 
+					{% set titleField = "title_#{lang}" %}
+					{% set contentField = "content_#{lang}" %}
+					{% set urlField = "url_#{lang}" %}
+					{% set targetField = "target_#{lang}" %}
+					
+					<div class="tab-pane fade show {% if lang == Lang['user'] %} active{% endif %}" id="datibase{{ lang }}" role="tabpanel" aria-labelledby="datibase{{ lang }}">	
+					
+						<div class="form-group row">
+							<label for="title_{{ lang }}ID" class="col-md-2 control-label">
+								{{ App.params.fields['item'][titleField]['label']|capitalize }}
+								{% if App.params.fields['item'][titleField]['required'] == true %}
+										<span class="required-sign">*</span>
+								{% endif %}
+							
+							</label>
+							<div class="col-md-7">
+								<input 
+								type="text" 
+								name="title_{{ lang }}" 
+								id="title_{{ lang }}ID" 
+								value="{{ attribute(App.item, titleField) }}" 
+								class="form-control"  
+								placeholder="{{ Lang['inserisci un %ITEM%']|replace({'%ITEM%': Lang['titolo']})|capitalize }}"
+								{% if App.params.fields['item'][titleField]['required'] == true %} required="required"{% endif %}
+								{% set label = Lang['Devi inserire un %ITEM%!']|replace({'%ITEM%':Lang['titolo']}) %}
+								oninvalid="this.setCustomValidity('{{ label }}')" 
+								oninput="setCustomValidity('')">
+							</div>
+						</div>			
+	
+						<hr>
+						<div class="form-group row">
+							<label for="content_{{ lang }}ID" class="col-md-2 control-label">{{ App.params.fields['item'][contentField]['label']|capitalize }}</label>
+							<div class="col-md-8">
+								<textarea 
+								name="content_{{ lang }}" 
+								id="content_{{ lang }}ID" 
+								class="form-control editorHTML" 
+								rows="5"
+								>{{ attribute(App.item, contentField) }}</textarea>
+							</div>
+						</div>		
+						
+						<hr>
+						<div class="form-group row">
+							<label for="url_{{ lang }}ID" class="col-md-2 control-label">{{ App.params.fields['item'][urlField]['label']|capitalize }}<br>
+							<small>%URLSITE% per url dinamico</small></label>
+							<div class="col-md-6">
+								<input 
+								type="text" 
+								class="form-control" 
+								name="url_{{ lang }}" 
+								placeholder="Inserisci un URL" 
+								id="url_{{ lang }}ID" 
+								rows="3" 
+								value="{{ attribute(App.item, urlField) }}"
+								>
+							</div>								
+					
+							<label for="target_{{ lang }}ID" class="col-md-1 control-label">{{ App.params.fields['item'][targetField]['label']|capitalize }}</label>
+							<div class="col-md-2">							
+								<select class="form-control input-sm" name="target_{{ lang }}" id="target_{{ lang }}ID">	
+								<option></option>			
+									{% if GlobalSettings['url-targets'] is iterable and GlobalSettings['url-targets']|length > 0 %}			
+										{% for value in GlobalSettings['url-targets'] %}												
+											<option 
+											 value="{{ value }}"
+											 {% if attribute(App.item, targetField) == value %} selected="selected"{% endif %}
+											>{{ value }}</option>														
+										{% endfor %}
+									{% endif %}
+								</select>							
+							</div>
+						</div>
+					
+					</div>
+				{% endfor %}
+				<!-- /sezione dati base dinamica lingue -->  
+
+				<div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="options">	
+					<fieldset>
+
+
+						<div class="form-group row">
+							<label for="activeID" class="col-md-2 control-label">{{ App.params.fields['item']['active']['label']|capitalize }}</label>
+							<div class="col-md-7">
+								<input type="checkbox" name="active" id="activeID" class="form-check-input"{% if App.item.active == 1 %} checked="checked"{% endif %} value="1">     					
+	   					</div>
+	   				</div>
+					</fieldset>
+				</div>	
+							
+			</div>
+			<!--/Tab panes -->	
+			<hr>			
+			<div class="form-group row">
+				<div class="col-md-6 col-xs-12 text-center">
+					<input type="hidden" name="id" id="idID" value="{{ App.id }}">
+					<input type="hidden" name="method" value="{{ App.methodForm }}">
+					<button type="submit" name="submitForm" value="submit" class="btn btn-primary submittheform">{{ Lang['invia']|capitalize }}</button>
+					{% if App.id > 0 %}
+						<button type="submit" name="applyForm" value="apply" class="btn btn-primary submittheform ml-5">{{ Lang['applica']|capitalize }}</button>
+					{% endif %}
+				</div>
+				<div class="col-md-6 col-xs-12 text-right">				
+					<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/list" title="{{ Lang['torna alla %ITEM%']|replace({'%ITEM%': Lang['lista']})|capitalize }}" class="btn btn-success">{{ Lang['indietro']|capitalize }}</a>
+				</div>
+			</div>	
+		</form>
+	</div>
+</div>

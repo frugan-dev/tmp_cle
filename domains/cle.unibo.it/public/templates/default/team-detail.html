@@ -1,0 +1,72 @@
+<!-- Hero Section-->
+<section class="hero hero-page">
+    <div {% if App.moduleData.imageheader !=''
+        %}style="background: url({{ UPLOADDIR }}/team/{{ App.moduleData.imageheader }})" {% endif %}
+        class="hero-banner"> </div>
+</section>
+<section>
+    <div class="container">
+        <nav aria-label="breadcrumb" role="navigation">
+            <ol class="breadcrumb">
+                {% if App.breadcrumbs.items is iterable and App.breadcrumbs.items|length > 0 %}
+                {% for key,value in App.breadcrumbs.items %}
+                <li aria-current="page" class="{{ value.class }}">
+                    {% if value.url != '' %}
+                    <a href="{{ value.url }}" title=" {{ value.title }}">{{ value.title }}</a>
+                    {% else %}
+                    {{ value.title }}
+                    {% endif %}
+                </li>
+                {% endfor %}
+                {% endif %}
+            </ol>
+        </nav>
+        <div class="row">
+            <div class="col-md-8 col-lg-7 text-content">
+                <h1>{{ App.item.name }}</h1>
+                
+                {{ App.item.content|raw }}
+                <div class="d-flex flex-wrap align-items-center">
+                    <div class="mr-3"><strong>Share</strong></div>
+                    <ul class="social-buttons list-inline mb-0">
+                        <li class="list-inline-item"><a href="#" class="twitter mb-0">
+                                <div class="icon"> <i class="fa fa-twitter"></i></div>
+                            </a></li>
+                        <li class="list-inline-item"><a href="#" class="facebook mb-0">
+                                <div class="icon"> <i class="fa fa-facebook"></i></div>
+                            </a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-5">
+                {% if App.item.filename != '' %}
+                <p>
+                  <img src="{{ UPLOADDIR }}team/{{ App.item.filename }}" alt="{{ App.item.org_filename }}" class="img-fluid rounded-circle">
+                </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12  text-right">
+
+                <a href="{{ URLSITE }}{{ CoreRequest.action }}" title="{{ LangVars['indietro']|capitalize }}" class="btn btn-primary">{{ LangVars['indietro']|capitalize }}</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type=text/javascript>
+    function fbshareCurrentPage(){
+      window.open("https://www.facebook.com/sharer/sharer.php?u={{ App.meta_og_url }}&t={{ App.name }}","","menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600")
+    }
+  
+    function twitshareCurrentPage(){
+      var n = escape('{{ App.meta_og_url }}');
+      window.open("http://twitter.com/share?url={{ App.meta_og_url }}&text={{ App.meta_og_title }}","twitterwindow","height=450, width=550, top=100,left=100,toolbar=0,location=0,menubar=0, directories=0, scrollbars=0")
+    }
+    
+    function linkedinShareCurrentPage(){
+      window.open("https://www.linkedin.com/sharing/share-offsite/?url={{ App.meta_og_url }}","linkedinwindow","height=450, width=550, top=100, left=100, toolbar=0, location=0, menubar=0, directories=0, scrollbars=0")
+    }
+  </script>

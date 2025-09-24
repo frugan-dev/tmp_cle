@@ -1,0 +1,142 @@
+<!-- Hero Section-->
+<section class="hero hero-page">
+    <div {% if App.moduleData.imageheader !=''
+        %}style="background: url({{ UPLOADDIR }}/newsletter/{{ App.moduleData.imageheader }})" {% endif %}
+        class="hero-banner"> </div>
+    <div class="container">
+        <nav aria-label="breadcrumb" role="navigation">
+            <ol class="breadcrumb">
+                {% if App.breadcrumbs.items is iterable and App.breadcrumbs.items|length > 0 %}
+                {% for key,value in App.breadcrumbs.items %}
+                <li aria-current="page" class="{{ value.class }}">
+                    {% if value.url != '' %}
+                    <a href="{{ value.url }}" title=" {{ value.title }}">{{ value.title }}</a>
+                    {% else %}
+                    {{ value.title }}
+                    {% endif %}
+                </li>
+                {% endfor %}
+                {% endif %}
+            </ol>
+        </nav>
+        <h1>{{ App.moduleConfig.title }}</h1>
+        {% if App.moduleConfig.text_intro != '' %}
+        <div class="row">
+            <div class="col-lg-8">{{ App.moduleConfig.text_intro|raw }}</div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="contact">
+
+    <div class="container">
+
+        {% if App.subview != '' %}
+        <div class="row">
+            <div class="col-md-12">
+                {{ App.systemMessages }}
+            </div
+        </div>
+        {% endif %}
+
+
+        {% if App.subview == '' %}
+        <div class="row">
+            <div class="col-md-7">
+                <form id="contact-form" name="contactForm" id="contactFormID" method="post" action="{{ URLSITE }}{{ CoreRequest.action }}/register" class="custom-form form">
+                    <div class="controls">
+
+                        {{ App.systemMessages }}
+                        <div class="form-group">
+                            <label for="nameID" class="form-label">{{ Lang['nome']|capitalize }} *</label>
+                            <input 
+                                type="text" 
+                                name="name" 
+                                id="nameID" 
+                                arequired="required" 
+                                class="form-control"
+                                placeholder="{{ LangVars['inserisci un %ITEM%']|replace({ '%ITEM%': LangVars['nome'] })|capitalize }}"
+                                {% set label = LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['nome'] }) %}
+                                oninvalid="this.setCustomValidity('{{ label }}')" 
+                                oninput="setCustomValidity('')"
+                                value=""
+                                >
+                                <small for="nameID" class="form-control-feedback"
+                                    data-mess="{{ LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['nome'] }) }}">
+                                </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="surnameID" class="form-label">{{ Lang['cognome']|capitalize }} *</label>
+                            <input 
+                                type="text" 
+                                name="surname" 
+                                id="surnameID" 
+                                arequired="required" 
+                                class="form-control"
+                                placeholder="{{ LangVars['inserisci un %ITEM%']|replace({ '%ITEM%': LangVars['cognome'] })|capitalize }}"
+                                {% set label = LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['nome'] }) %}
+                                oninvalid="this.setCustomValidity('{{ label }}')" 
+                                oninput="setCustomValidity('')"
+                                value=""
+                                >
+                                <small for="surnameID" class="form-control-feedback"
+                                    data-mess="{{ LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['cognome'] }) }}">
+                                </small>
+                        </div>
+                    
+                        <div class="form-group">
+                            <label for="emailID" class="form-label">{{ Lang['indirizzo email']|capitalize }} *</label>
+                            <input 
+                            type="email" 
+                            name="email" 
+                            id="emailID"
+                            arequired="required" 
+                            class="form-control"
+                            placeholder="{{ LangVars['inserisci un %ITEM%']|replace({ '%ITEM%': LangVars['indirizzo email valido'] })|capitalize }}"
+                            {% set label = LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['indirizzo email valido'] }) %}
+                            oninvalid="this.setCustomValidity('{{ label }}')" 
+                            oninput="setCustomValidity('')"
+                            value="{{ App.fromFormEmail }}"
+                            >
+                            <small for="nameID" class="form-control-feedback"
+                            data-mess="{{ LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['indirizzo email valido'] }) }}">
+                            </small>
+                        </div>
+                          
+                        <div class="form-group">
+                            <div class="g-recaptcha" data-sitekey="{{ GlobalSettings['google recaptcha key'] }}"></div>
+                            <input type="hidden" class="hiddenRecaptcha required" name="hiddenRecaptcha" id="hiddenRecaptcha">
+                        </div>
+
+                        <div class="form-group">
+                            <input 
+                            required 
+                            name="privacy" 
+                            type="checkbox" 
+                            id="privacyID" 
+                            class="" 
+                            value="1" 
+                            {% set label = LangVars['Devi accettare i termini e le condizioni relativi alla Privacy Policy!'] %}
+                            oninvalid="this.setCustomValidity('{{ label }}')" 
+                            oninput="setCustomValidity('')"                            
+                            >
+                            {{ LangVars['autorizzo il trattamento della']|capitalize }}
+                             (<a href="{{ App.moduleConfig.url_privacy_page }}" title="{{ LangVars['autorizzo il trattamento della']|capitalize }} {{ LangVars['privacy policy'] }}" target="_blank">{{ LangVars['privacy policy'] }}</a>)
+                            <br>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">{{ LangVars['invia']|capitalize }}</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-5">
+                {% if App.moduleConfig.page_content != '' %}
+                    <p class="text-muted text-small">{{ App.moduleConfig.page_content|raw }}</p>
+                {% endif %}           
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>

@@ -1,0 +1,6 @@
+#http://stackoverflow.com/a/932982
+*
+
+!log/
+!.gitignore
+!.htaccess

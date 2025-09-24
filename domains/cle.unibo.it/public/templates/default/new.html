@@ -1,0 +1,137 @@
+<!-- Hero Section-->
+<section class="hero hero-page">
+  <div {% if App.moduleData.imageheader !=''
+    %}style="background: url({{ UPLOADDIR }}/news/{{ App.moduleData.imageheader }})" {% endif %} class="hero-banner">
+  </div>
+</section>
+<section class="blogpost-full">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        <nav aria-label="breadcrumb" role="navigation">
+          <ol class="breadcrumb">
+
+            {% if App.breadcrumbs.items is iterable and App.breadcrumbs.items|length > 0 %}
+            {% for key,value in App.breadcrumbs.items %}
+            <li aria-current="page" class="{{ value.class }}">
+              {% if value.url != '' %}
+              <a href="{{ value.url }}" title=" {{ value.title }}">{{ value.title }}</a>
+              {% else %}
+              {{ value.title }}
+              {% endif %}
+            </li>
+            {% endfor %}
+            {% endif %}
+
+          </ol>
+        </nav>
+
+        <h1 class="mb-5">{{ App.item.title }}</h1>
+
+        {% if App.item.filename != '' %}
+        <p>
+          <img src="{{ UPLOADDIR }}news/{{ App.item.filename }}" alt="{{ App.item.org_filename }}" class="img-fluid">
+        </p>
+        {% elseif App.item.embedded != '' %}
+            {{ App.item.embedded|raw }}
+        {% endif %}
+
+        <div class="post-meta d-flex align-items-center flex-wrap">
+          <div class="date"><i class="fa fa-calendar"></i> {{ App.item.dataformatted }}</div>
+        </div>
+
+        <div class="text-content">
+          {{ App.item.content|raw }}
+        </div>
+
+        <div class="post-footer mt-5">
+          <div class="row">
+            <div class="col-lg-12 d-flex flex-wrap align-items-center">
+              <div class="shares mr-3"></strong><span>Shares</span></div>
+              <ul class="social-buttons list-inline mb-0">
+
+                <li class="list-inline-item"><a href="javascript:twitshareCurrentPage()" title="Share on twitter" class="twitter d-flex mb-0">
+                    <div class="icon"> <i class="fa fa-twitter"></i></div>
+                    <div class="text text-enter"><strong>Share Post</strong></div>
+                  </a>
+                </li>
+
+                <li class="list-inline-item"><a href="javascript:fbshareCurrentPage()" title="Share on facebook" class="facebook d-flex mb-0">
+                    <div class="icon"> <i class="fa fa-facebook"></i></div>
+                    <div class="text text-enter"><strong>Share Post</strong></div>
+                  </a>
+                </li>
+
+              </ul>
+            </div>
+
+          </div>
+
+
+        </div>
+
+
+          <!-- files associati item -->
+          {% if App.item.files is iterable and App.item.files|length > 0 %}
+          <div class="col-lg-12">
+            <hr>
+            <h4>{{ LangVars['downloads']|capitalize }}</h4>
+            {% for key,value in App.item.files %}
+            <p>
+              <a title="{{ value.title }}" target="_blank" href="{{ value.url }}">{{ value.title }}</a>
+            </p>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+
+      </div>
+
+      <div class="col-lg-4">
+        <!-- sidebar-->
+        <div class="blog-sidebar">
+
+          <div class="widget categoris">
+            <div class="widget-header"><strong>{{ LangVars['categorie']|capitalize }}</strong></div>
+            <div class="widget-body">
+              <ul class="categoris-list list-unstyled">
+                <li class="active"><a href="" {{ URLSITE }}{{ CoreRequest.action }}/idcat/0" title="{{
+                          LangVars['categorie'] }} {{
+                          LangVars['tutte'] }}" class="d-flex align-items-end justify-content-between"><strong>{{
+                      LangVars['tutte']|capitalize }}</strong><strong>{{ App.category_all_tot_news
+                      }}</strong></a></li>
+                {% if App.news_categories is iterable and App.news_categories|length > 0 %}
+                {% for value in App.news_categories %}
+                <li><a href="{{ URLSITE }}{{ CoreRequest.action }}/idcat/{{ value.id }}" title="{{
+                          LangVars['categoria'] }} {{
+                              value.title }}" class="d-flex align-items-end justify-content-between"><strong>{{
+                      value.title }}</strong><strong>{{ value.category_news
+                      }}</strong></a></li>
+                {% endfor %}
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<script type=text/javascript>
+  function fbshareCurrentPage(){
+    window.open("https://www.facebook.com/sharer/sharer.php?u={{ App.meta_og_url }}&t={{ App.meta_og_title }}","","menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600")
+  }
+
+  function twitshareCurrentPage(){
+    var n = escape('{{ App.meta_og_url }}');
+    window.open("http://twitter.com/share?url={{ App.meta_og_url }}&text={{ App.meta_og_title }}","twitterwindow","height=450, width=550, top=100,left=100,toolbar=0,location=0,menubar=0, directories=0, scrollbars=0")
+  }
+  
+  function linkedinShareCurrentPage(){
+    window.open("https://www.linkedin.com/sharing/share-offsite/?url={{ App.meta_og_url }}","linkedinwindow","height=450, width=550, top=100, left=100, toolbar=0, location=0, menubar=0, directories=0, scrollbars=0")
+  }
+</script>

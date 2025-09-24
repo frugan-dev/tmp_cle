@@ -1,0 +1,122 @@
+<!-- Hero Section-->
+<section class="hero hero-page">
+    <div {% if App.moduleData.imageheader !=''
+        %}style="background: url({{ UPLOADDIR }}/team/{{ App.moduleData.imageheader }})" {% endif %}
+        class="hero-banner"> </div>
+    <div class="container">
+        <nav aria-label="breadcrumb" role="navigation">
+            <ol class="breadcrumb">
+                {% if App.breadcrumbs.items is iterable and App.breadcrumbs.items|length > 0 %}
+                {% for key,value in App.breadcrumbs.items %}
+                <li aria-current="page" class="{{ value.class }}">
+                    {% if value.url != '' %}
+                    <a href="{{ value.url }}" title=" {{ value.title }}">{{ value.title }}</a>
+                    {% else %}
+                    {{ value.title }}
+                    {% endif %}
+                </li>
+                {% endfor %}
+                {% endif %}
+            </ol>
+        </nav>
+        <h1>Staff</h1>
+        {% if App.moduleConfig.text_intro != '' %}
+        <div class="row">
+            <div class="col-lg-8">{{ App.moduleConfig.text_intro|raw }}</div>
+        </div>
+        {% endif %}
+
+        {% if App.moduleConfig.page_content != '' %}
+        <div class="row">
+            <div class="col-lg-8">{{ App.moduleConfig.page_content|raw }}</div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+<!-- Staff Section-->
+<section class="staff bg-gray">
+    <div class="container">
+
+        <div class="row">
+            {% if App.items is iterable and App.items|length > 0 %}
+                {% for value in App.items %}
+
+                <div class="col-sm-12 col-md-6 col-lg-5 col-xl-5 offset-sm-0 offset-md-0 offset-lg-1 offset-xl-1">
+                    <div class="staff-member">
+                        
+                        {% if value.filename != '' %}
+                            <img src="{{ UPLOADDIR }}team/{{ value.filename }}" alt="{{ value.org_filename }}">
+                        {% else %}
+                            <img src="{{ UPLOADDIR }}default/image.png" alt="{{ value.title }}">
+                        {% endif %}
+                        
+                    
+                        <div class="info">
+                            <h3 class="h5 teacher mb-0">{{ value.name }}</h3><span>{{ value.universita }}</span><br>{{ value.role }}
+                        </div>
+                        <div class="overlay d-flex align-items-center justify-content-center">
+                            <div class="overlay-inner">
+                                <p class="teacher-quote">
+                                    {{ value.summary|raw }}
+                                </p>
+                                <ul class="social list-inline">
+                                {% if value.email != '' %}
+                                    <li class="list-inline-item"><a title="{{ value.name }}" href="mailto:{{ value.email }}" target="_blank"><i class="fa fa-envelope"></i></a></li>                           
+                                {% endif %}
+                                {% if value.url != '' %}
+                                    <li class="list-inline-item"><a title="{{ value.url }}" href="{{ value.url }}" target="{{ value.target }}"><i class="fa fa-link"></i></a></li>                           
+                                {% endif %}
+                                </ul>
+                                <p class="teacher-see-profile"><a href="{{ URLSITE }}{{ CoreRequest.action }}/dt/{{ value.id }}" title="{{ LangVars['vedi il profilo di %ITEM%']|replace({ '%ITEM%' : value.name }) }}" class="btn btn-outline-light">{{ LangVars['vedi il profilo di %ITEM%']|replace({ '%ITEM%' : value.name }) }}</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            {% endif %}
+
+        </div>
+
+
+        <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a href="{{ App.pageDataUrl }}/page/{{ App.pagination.itemPrevious }}"
+                        title="{{ LangVars['precedente'] }}" aria-label="Previous" class="page-link"><span
+                            aria-hidden="true">«</span><span class="sr-only">{{
+                            LangVars['precedente'] }}</span></a>
+                </li>
+                {% if App.pagination.pagePrevious is iterable %}
+                {% for key,value in App.pagination.pagePrevious %}
+                <li class="page-item">
+                    <a class="page-link"
+                        title="{{ Lang['vai alla pagina %ITEM%']|replace({'%ITEM%':value })|capitalize }}"
+                        href="{{ App.pageDataUrl }}/page/{{ value }}">{{ value }}</a>
+                </li>
+                {% endfor %}
+                {% endif %}
+                <li class="page-item active">
+                    <a href="javascript::void(0)" title="{{ Langvars['pagina']}} {{ App.pagination.page }}"
+                        class="page-link">{{ App.pagination.page }}</a>
+                </li>
+                {% if App.pagination.pageNext is iterable %}
+                {% for key,value in App.pagination.pageNext %}
+                <li class="page-item">
+                    <a class="page-link"
+                        title="{{ Lang['vai alla pagina %ITEM%']|replace({'%ITEM%':value })|capitalize }}"
+                        href="{{ App.pageDataUrl }}/page/{{ value }}">{{ value }}</a>
+                </li>
+                {% endfor %}
+                {% endif %}
+                <li class="page-item">
+                    <a href="{{ App.pageDataUrl }}/page/{{ App.pagination.itemNext }}"
+                        title="{{ LangVars['successivo'] }}" aria-label="Next" class="page-link"><span
+                            aria-hidden="true">»</span><span class="sr-only">{{
+                            LangVars['successivo'] }}</span></a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+</section>

@@ -1,0 +1,118 @@
+/*
+* ==========================================================
+*     STAFF 
+* ==========================================================
+*/
+
+.staff-member {
+    position: relative;
+    margin-bottom: 30px;
+    &:hover {
+        h3,
+        p,
+        span {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+        h3 {
+            transition-delay: 0.1s;
+        }
+        .social {
+            transition-delay: 0.3s;
+        }
+        .teacher-see-profile {
+            transition-delay: 0.5s;
+        }
+        .overlay {
+            opacity: 1;
+            h3,
+            p,
+            span,
+            ul.social {
+                transform: none;
+                opacity: 1;
+            }
+        }
+    }
+    img {
+        width: 100%;
+    }
+    .info {
+        background: #fff;
+        color: #333;
+        padding: 30px 20px;
+        text-align: center;
+        span {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #777;
+            display: inline-block;
+        }
+        h3,
+        p,
+        span {
+            transition: all 0.3s;
+            opacity: 1;
+        }
+    }
+    .overlay {
+        background: $brand-primary;
+        color: #fff;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 40px 30px;
+        text-align: center;
+        opacity: 0;
+        transition: all 0.4s;
+        .teacher-name {
+            color: #fff;
+            text-decoration: none !important;
+            display: block;
+            margin-top: 15px;
+        }
+        .teacher-quote {
+            font-size: 0.9rem;
+            font-weight: 300;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            opacity: 0;
+        }
+        .teacher-see-profile {
+            transform: translateY(20px);
+            transition: all 0.3s;
+            opacity: 0;
+        }
+        h3 {
+            transform: translateY(20px);
+            transition: all 0.3s;
+            transition-delay: 0.1s;
+            opacity: 0;
+        }
+        .teacher-field {
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            display: inline-block;
+            transform: translateY(20px);
+            transition-delay: 0.2s;
+            opacity: 0;
+        }
+        ul.social {
+            transform: translateY(10px);
+            transition: all 0.4s;
+            opacity: 0;
+            li {
+                margin: 0;
+            }
+            a {
+                margin: 0 2px;
+                margin-top: 7px;
+                font-size: 0.7rem;
+                @include square(25px, #fff, $brand-primary, center);
+                border-radius: 50%;
+            }
+        }
+    }
+}

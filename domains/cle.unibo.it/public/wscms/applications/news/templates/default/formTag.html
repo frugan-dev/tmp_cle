@@ -1,0 +1,76 @@
+<!-- wscms/ecommerce/formTags.html v.3.5.4. 05/08/2019 -->
+<div class="row">
+	<div class="col-md-3 new">
+ 	</div>
+	<div class="col-md-7 help-small-form">
+		{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}
+	</div>
+	<div class="col-md-2 help">
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#datibase-tab" data-toggle="tab">{{ Lang['dati base']|capitalize }} <i class="fa"></i></a></li>	
+  		</ul>
+		<form id="applicationForm" method="post" class="form-horizontal" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.methodForm }}"  enctype="multipart/form-data" method="post">
+			<div class="tab-content">		
+				<div class="tab-pane active" id="datibase-tab">
+					<fieldset class="form-group">
+<!-- sezione dati base dinamica lingue -->
+					{% for lang in GlobalSettings['languages'] %} 
+						{% set titleField = "title_#{lang}" %}	
+						<div class="form-group">
+								<label for="title_{{ lang }}ID" class="col-md-2 control-label">{{ App.params.fields['tags'][titleField]['label']|capitalize }}</label>
+								<div class="col-md-7">
+									<input{% if  App.params.fields['tags'][titleField]['required'] == true %} required="required"{% endif %} type="text" name="title_{{ lang }}" id="title_{{ lang }}ID" value="{{ attribute(App.item, titleField) }}" class="form-control" placeholder="{{ Lang['inserisci un %ITEM%']|replace({'%ITEM%': Lang['titolo']})|capitalize }} {{ lang }}" oninvalid="this.setCustomValidity('{{ Lang['Devi inserire un %ITEM%!']|replace({'%ITEM%':Lang['titolo'] }) }}')" oninput="setCustomValidity('')">
+								</div>
+							</div>
+					{% endfor %}
+<!-- /sezione dati base dinamica lingue -->
+						<hr>
+					<!-- se e un utente root visualizza l'input altrimenti lo genera o mantiene automaticamente -->	
+					{% if App.userLoggedData.is_root == 1 %}
+						<div class="form-group">
+							<label for="orderingID" class="col-md-2 control-label">{{ Lang['ordine']|capitalize }}</label>
+							<div class="col-md-1">
+								<input type="text" name="ordering" placeholder="{{ Lang['inserisci un ordine']|capitalize }}" class="form-control" id="orderingID" value="{{ App.item.ordering }}">
+					    	</div>
+						</div>
+						<hr>
+					{% else %}
+						<input type="hidden" name="ordering" value="{{ App.item.ordering }}">		
+					{% endif %}
+
+						<div class="form-group">
+							<label for="activeID" class="col-md-2 control-label">{{ Lang['attiva']|capitalize }}</label>
+							<div class="col-md-7">
+								<div class="form-check">
+									<label class="form-check-label">
+										<input type="checkbox" name="active" id="activeID"{% if App.item.active == 1 %} checked="checked"{% endif %} value="1">
+									</label>
+	     						</div>
+	   					</div>
+	   				</div>
+					</fieldset>							
+				</div>
+			</div>
+<!--/Tab panes -->			
+			<hr>
+			<div class="form-group">
+				<div class="col-md-offset-2 col-md-7 col-xs-offset-0 col-xs-6">
+					<input type="hidden" name="created" id="createdID" value="{{ App.item.created }}">
+					<input type="hidden" name="id" id="idID" value="{{ App.id }}">
+					<input type="hidden" name="method" value="{{ App.methodForm }}">					
+					<button type="submit" name="submitForm" value="submit" class="btn btn-primary submittheform">{{ Lang['invia']|capitalize }}</button>
+					{% if App.id > 0 %}
+						<button type="submit" name="applyForm" value="apply" class="btn btn-primary submittheform">{{ Lang['applica']|capitalize }}</button>
+					{% endif %}				
+				</div>
+				<div class="col-md-2 col-xs-6">
+					<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listTags" title="{{ Lang['torna alla lista']|capitalize }}" class="btn btn-success">{{ Lang['indietro']|capitalize }}</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

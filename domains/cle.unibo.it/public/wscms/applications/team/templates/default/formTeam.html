@@ -1,0 +1,331 @@
+<!-- wscms/homeinfobox/form.html v.4.0.0. 15/12/2021 -->
+<div class="row">
+	<div class="col-md-3 new"></div>
+	<div class="col-md-7 help-small-form">{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}</div>
+	<div class="col-md-2 help text-right">
+		{% if (App.params.help is defined) and (App.params.help != '') %}
+			<button class="btn btn-warning btn-sm" type="button" data-target="#helpModal" data-toggle="modal">Come funziona?</button>
+		{% endif %}
+	</div>
+</div>
+
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">
+		<!-- Nav tabs -->
+		<ul class="nav nav-tabs" id="formTab" role="tablist">
+			
+			<li class="nav-item">
+				<a class="nav-link active" href="#datibase" id="datibase-tab" aria-controls="datibase" aria-selected="true" data-toggle="tab">{{ Lang['dati base']|capitalize }}</a>
+			</li>
+
+			{% for lang in GlobalSettings['languages'] %}		
+				<li class="nav-item">
+					<a class="nav-link" href="#datibase{{ lang }}" id="datibase{{ lang }}-tab" aria-controls="datibase{{ lang }}" aria-selected="true" data-toggle="tab">{{ Lang['contenuto']|capitalize }} {{ lang }}</a>
+				</li>
+			{% endfor %}
+			
+			<li class="nav-item">
+				<a class="nav-link" href="#image" id="image-tab" data-toggle="tab" role="tab" aria-controls="image" aria-selected="true">{{ Lang['immagini']|capitalize }}</a>
+			</li>
+
+			<li class="nav-item">
+				<a class="nav-link" href="#options" id="options-tab" data-toggle="tab" role="tab" aria-controls="options" aria-selected="false">{{ Lang['opzioni']|capitalize }}</a>
+			</li>
+		</ul>		
+		<form id="applicationForm" class="form-horizontal" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.methodForm }}"  enctype="multipart/form-data" method="post">
+			<!-- Tab panes -->
+			<div class="tab-content" id="formTabContent">
+
+				<!-- sezione dati base -->
+				<div class="tab-pane fade show active" id="datibase{{ lang }}" role="tabpanel" aria-labelledby="datibase{{ lang }}">	
+					
+					<div class="form-group row">
+						<label for="nameID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">
+							{{ App.params.fields['team']['name']['label']|capitalize }}
+							{% if App.params.fields['team']['name']['required'] == true %}
+							<span class="required-sign">*</span>
+							{% endif %}
+							
+						</label>
+						<div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
+							<input 
+							type="text" 
+							name="name" 
+							id="nameID" 
+							value="{{ App.item.name|e('html') }}" 
+							class="form-control"  
+							placeholder="{{ Lang['inserisci un %ITEM%']|replace({'%ITEM%': App.params.fields['team']['name']['label'] })|capitalize }}"
+							{% if App.params.fields['team']['name']['required'] == true %} required="required"{% endif %}
+							{% set label = Lang['Devi inserire un %ITEM%!']|replace({ '%ITEM%' : App.params.fields['team']['name']['label'] }) %}
+							oninvalid="this.setCustomValidity('{{ label }}')" 
+							oninput="setCustomValidity('')">
+						</div>
+					</div>	
+					
+					<hr>
+					
+					<div class="form-group row">
+						<label for="emailID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">
+							{{ App.params.fields['team']['email']['label']|capitalize }}
+							{% if App.params.fields['team']['email']['required'] == true %}
+							<span class="required-sign">*</span>
+							{% endif %}
+							
+						</label>
+						<div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
+							<input 
+							type="text" 
+							name="email" 
+							id="emailID" 
+							value="{{ App.item.email|e('html') }}" 
+							class="form-control"  
+							placeholder="{{ Lang['inserisci un %ITEM%']|replace({'%ITEM%': App.params.fields['team']['email']['label'] })|capitalize }}"
+							{% if App.params.fields['team']['email']['required'] == true %} required="required"{% endif %}
+							{% set label = Lang['Devi inserire un %ITEM%!']|replace({ '%ITEM%' : App.params.fields['team']['email']['label'] }) %}
+							oninvalid="this.setCustomValidity('{{ label }}')" 
+							oninput="setCustomValidity('')">
+						</div>
+					</div>	
+
+					<hr>
+					<div class="form-group row">
+						<label for="urlID" class="col-md-2 control-label">{{ App.params.fields['team']['url']['label']|capitalize }}<br>
+						<small>%URLSITE% per url dinamico</small></label>
+						<div class="col-md-6">
+							<input 
+							type="text" 
+							class="form-control" 
+							name="url" 
+							placeholder="Inserisci un URL" 
+							id="urlID" 
+							rows="3" 
+							value="{{ App.item.url|e('html') }}"
+							>
+						</div>								
+				
+						<label for="targetID" class="col-md-1 control-label">{{ App.params.fields['team']['target']['label']|capitalize }}</label>
+						<div class="col-md-2">							
+							<select class="form-control input-sm" name="target" id="targetID">	
+							<option></option>			
+								{% if GlobalSettings['url-targets'] is iterable and GlobalSettings['url-targets']|length > 0 %}			
+									{% for value in GlobalSettings['url-targets'] %}												
+										<option 
+										 value="{{ value }}"
+										 {% if App.item.target == value %} selected="selected"{% endif %}
+										>{{ value }}</option>														
+									{% endfor %}
+								{% endif %}
+							</select>							
+						</div>
+					</div>
+					
+				</div>
+				<!-- sezione dati base -->
+					
+				<!-- sezione dati base dinamica lingue -->
+				{% for lang in GlobalSettings['languages'] %} 
+					{% set universitaField = "universita_#{lang}" %}				
+					{% set roleField = "role_#{lang}" %}				
+					{% set summaryField = "summary_#{lang}" %}				
+					{% set contentField = "content_#{lang}" %}				
+					<div class="tab-pane fade show" id="datibase{{ lang }}" role="tabpanel" aria-labelledby="datibase{{ lang }}">	
+						
+						<div class="form-group row">
+							<label for="universita_{{ lang }}ID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">
+								{{ App.params.fields['team'][universitaField]['label']|capitalize }}
+								{% if App.params.fields['team'][universitaField]['required'] == true %}
+								<span class="required-sign">*</span>
+								{% endif %}
+								
+							</label>
+							<div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
+								<input 
+								type="text" 
+								name="universita_{{ lang }}" 
+								id="universita_{{ lang }}ID" 
+								value="{{ attribute(App.item, universitaField)|e('html') }}" 
+								class="form-control"  
+								placeholder="{{ Lang['inserisci un %ITEM%']|replace({ '%ITEM%' :  App.params.fields['team'][universitaField]['label'] })|capitalize }}"
+								{% if App.params.fields['team'][universitaField]['required'] == true %} required="required"{% endif %}
+								{% set label = Lang['Devi inserire un %ITEM%!']|replace({ '%ITEM%':  App.params.fields['team'][universitaField]['label'] }) %}
+								oninvalid="this.setCustomValidity('{{ label }}')" 
+								oninput="setCustomValidity('')">
+							</div>
+						</div>			
+
+						<hr>
+
+						<div class="form-group row">
+							<label for="role_{{ lang }}ID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">
+								{{ App.params.fields['team'][roleField]['label']|capitalize }}
+								{% if App.params.fields['team'][roleField]['required'] == true %}
+								<span class="required-sign">*</span>
+								{% endif %}
+								
+							</label>
+							<div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
+								<input 
+								type="text" 
+								name="role_{{ lang }}" 
+								id="role_{{ lang }}ID" 
+								value="{{ attribute(App.item, roleField)|e('html') }}" 
+								class="form-control"  
+								placeholder="{{ Lang['inserisci un %ITEM%']|replace({ '%ITEM%' :  App.params.fields['team'][roleField]['label'] })|capitalize }}"
+								{% if App.params.fields['team'][roleField]['required'] == true %} required="required"{% endif %}
+								{% set label = Lang['Devi inserire un %ITEM%!']|replace({ '%ITEM%':  App.params.fields['team'][roleField]['label'] }) %}
+								oninvalid="this.setCustomValidity('{{ label }}')" 
+								oninput="setCustomValidity('')">
+							</div>
+						</div>			
+
+						<hr>
+					
+						<div class="form-group row">
+							<label for="summary_{{ lang }}ID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">
+								{{ App.params.fields['team'][summaryField]['label']|capitalize }}
+							</label>
+							<div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
+								<textarea 
+								name="summary_{{ lang }}" 
+								id="summary_{{ lang }}ID" 
+								class="form-control editorHTML" 
+								rows="5"
+								>{{ attribute(App.item, summaryField) }}</textarea>
+							</div>
+						</div>				
+						<hr>
+					
+						<div class="form-group row">
+							<label for="content_{{ lang }}ID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">
+								{{ App.params.fields['team'][contentField]['label']|capitalize }}
+							</label>
+							<div class="col-sm-12 col-md-12 col-lg-9 col-xl-9">
+								<textarea 
+								name="content_{{ lang }}" 
+								id="content_{{ lang }}ID" 
+								class="form-control editorHTML" 
+								rows="5"
+								>{{ attribute(App.item, contentField) }}</textarea>
+							</div>
+						</div>				
+					
+					</div>
+				{% endfor %}
+				<!-- /sezione dati base dinamica lingue -->  
+				
+				<!-- sezione image -->	
+				<div class="tab-pane fade" id="image" role="tabpanel" aria-labelledby="image">		
+					<fieldset>
+						<div class="form-group row">
+							<label for="filenameID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">{{ Lang['immagine']|capitalize }}</label>	
+							<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">	
+								<div class="custom-file">
+									<input{% if App.item.filenameRequired == true %} required{% endif %} 
+									type="file" 
+									name="filename" 
+									id="filenameID" 
+									class="custom-file-input"{% if App.item.filenameRequired == true %} required{% endif %}
+									>
+									<label class="custom-file-label" for="filenameID">{{ Lang['indica un file da caricare']|capitalize }}</label>    							
+								</div>
+							</div>
+						</div>
+							
+						<div class="form-group row">
+							<label class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">{{ Lang['anteprima']|capitalize }}</label>
+							<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+								{% if App.item.filename is defined and App.item.filename != '' %}
+								<a class="" href="{{ App.params.uploadDirs['team'] }}{{ App.item.filename }}" data-lightbox="image-1" data-title="{{ value.org_filename }}" title="{{ App.item.org_filename }}">
+									<img  class="img-miniature"  src="{{ App.params.uploadDirs['team'] }}{{ App.item.filename }}" alt="{{ App.item.org_filename }}">
+								</a>							
+								{% else %}
+									<img class="img-miniature"  src="{{ UPLOADDIR }}default/image.png" alt="{{ LocalStrings['immagine di default']|capitalize }}">	
+								{% endif %}
+							</div>			
+						</div>
+						{% if App.item.filename is defined and App.item.filename != '' %}
+						
+						<div class="form-group row">
+							<label class="col-sm-2 col-md-2 col-lg-2 col-xl-2 col-form-label col-form-label-custom-checkbox">
+								{{ Lang['cancella file']|capitalize }}
+							</label>	
+							<div class="col-sm-6 col-md-6 col-lg-6 col-xl-6">		
+								<div class="custom-control custom-checkbox">
+									<input 
+									name="deleteFilename" 
+									id="deleteFilenameID" 
+									value="1" 
+									type="checkbox" 
+									class="custom-control-input"
+									>
+									<label class="custom-control-label" for="deleteFilenameID"></label>
+								</div>
+							</div>
+						</div>
+						
+						{% endif %}
+
+					</fieldset>
+				</div>
+				<!-- /sezione image -->
+
+				<!-- sezione opzioni -->
+				<div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="options">	
+					<fieldset>
+
+						<!-- se e un utente root visualizza l'input altrimenti lo genera o mantiene automaticamente -->	
+						{% if App.userLoggedData.is_root == 1 %}					
+							<div class="form-group row">
+								<label for="orderingID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">{{ Lang['ordine']|capitalize }}</label>
+								<div class="col-sm-2 col-md-2 col-lg-2 col-xl-2">
+									<input type="text" name="ordering" placeholder="{{ Lang['inserisci un ordine']| capitalize }}" class="form-control" id="orderingID" value="{{ App.item.ordering }}">
+								</div>
+							</div>
+							<hr>
+						{% else %}
+							<input type="hidden" name="ordering" value="{{ App.item.ordering }}">		
+						{% endif %}
+						<!-- fine se root -->	
+
+						<div class="form-group row">
+							<label class="col-sm-2 col-md-2 col-lg-2 col-xl-2 col-form-label col-form-label-custom-checkbox">
+								{{ App.params.fields['team']['active']['label']|capitalize }}
+							</label>	
+							<div class="col-sm-6 col-md-6 col-lg-6 col-xl-6">		
+								<div class="custom-control custom-checkbox">
+									<input 
+									name="active" 
+									id="activeID"{% if App.item.active == 1 %} checked="checked"{% endif %} 
+									value="1" 
+									type="checkbox" 
+									class="custom-control-input"
+									>
+									<label class="custom-control-label" for="activeID"></label>
+								</div>
+							</div>
+						</div>
+					
+
+					</fieldset>
+				</div>
+				<!--/sezione opzioni -->
+							
+			</div>
+			<!--/Tab panes -->	
+			<hr>			
+			<div class="form-group row">
+				<div class="col-md-6 col-xs-12 text-center">
+					<input type="hidden" name="id" id="idID" value="{{ App.id }}">
+					<input type="hidden" name="method" value="{{ App.methodForm }}">
+					<button type="submit" name="submitForm" value="submit" class="btn btn-primary submittheform">{{ Lang['invia']|capitalize }}</button>
+					{% if App.id > 0 %}
+						<button type="submit" name="applyForm" value="apply" class="btn btn-primary submittheform ml-5">{{ Lang['applica']|capitalize }}</button>
+					{% endif %}
+				</div>
+				<div class="col-md-6 col-xs-12 text-right">				
+					<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listTeam" title="{{ Lang['torna alla %ITEM%']|replace({'%ITEM%': Lang['lista']})|capitalize }}" class="btn btn-success">{{ Lang['indietro']|capitalize }}</a>
+				</div>
+			</div>	
+		</form>
+	</div>
+</div>

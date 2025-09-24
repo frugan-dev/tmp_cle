@@ -1,0 +1,200 @@
+<style>
+
+
+    #modalCookiesPref {
+        z-index: 2147483647;
+        display: block;
+        position: fixed;
+        left: 10px;
+        bottom: 10px;
+        padding: 5px;
+        background-color: rgb(255, 255, 255);
+        border: 1px solid rgb(34, 34, 34);
+        line-height: 12px;
+        text-align: center;
+    }
+
+    #modalCookies {
+        z-index: 2147483647;
+        position: fixed;
+        display: none;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        max-width: 600px;
+        margin: 0;
+        padding: 10px;
+        background-color: rgb(255, 255, 255);
+        border: 1px solid rgb(34, 34, 34);
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 700;
+        color: #444 !important;
+        text-transform: uppercase;
+        letter-spacing: 0 !important;
+        line-height: 0 !important;
+    }
+
+    #modalCookies a, #modalCookiesPref a {
+        text-shadow: none;
+        line-height: 0 !important;
+        color: #444 !important;
+        text-decoration: underline;
+        letter-spacing: normal;
+        letter-spacing: 0 !important;
+        vertical-align: initial !important;
+        display:inline;
+    }
+
+    #modalCookiesPref a {
+        line-height:12px !important;
+        font-size:11px;
+        margin:2px 0 2px 0;
+    }
+    
+    #modalCookiesDesc b, #modalCookiesDesc strong
+    {
+    color:rgb(12, 12, 12) !important;
+    }
+
+    #modalCookies #modalCookiesTitolo, #modalCookies #modalCookiesDesc {
+        line-height: 0 !important;
+        margin: 3px 0;
+        letter-spacing: normal;
+        text-shadow: inherit;
+        padding: 0 !important
+    }
+
+    #modalCookies #modalCookiesTitolo {
+        margin: 0;
+        line-height: 15px !important;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        color: #444 !important;
+        text-transform: uppercase
+    }
+
+    #modalCookies #modalCookiesDesc {
+        line-height: 1.5 !important;
+        margin: 10px 0;
+        letter-spacing: normal;
+        text-shadow: inherit;
+        padding: 0 !important;
+        text-transform: none !important;
+    }
+
+    #modalCookies .modalCookiesInputsGroups {
+        float: left;
+        margin-right:10px;
+        line-height: 20px !important;
+    }
+
+    #modalCookies .modalCookiesButtonsGroups {
+        text-align: right;
+    }
+
+    #modalCookies input {
+        cursor: pointer;
+        padding: 1px 6px;
+        padding: 1px 6px;
+        line-height: 0 !important
+    }
+
+    #modalCookiesOk {
+        height: 26px; 
+        width: 50px; 
+        font-size: 12px; 
+        line-height: 18px; 
+        margin:3px; 
+        background-color: #888 !important;
+        color: #fff !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        min-width: auto;
+        min-height: auto
+    }
+</style>
+
+<div id="modalCookiesPref"><a href="javascript:consentApri();">{{ LangVars['cookie']|capitalize }}</a></div>
+    
+<div id="modalCookies">
+    <div class="modalCookiesContent">
+
+        <p id="modalCookiesTitolo">{{ LangVars['questo sito web utilizza cookie di terze parti']|capitalize }}</p>
+
+        <p id="modalCookiesDesc">
+            {{ LangVars['modal privacy policy content'] }}  
+         </p>
+    </div>
+    <div class="modalCookiesInputs">
+        <div class="modalCookiesInputsRows">
+
+            <div class="modalCookiesInputsGroups">
+                <input type="checkbox" checked="checked" disabled="disabled" />
+                <span class="label">{{ LangVars['cookie tecnici'] }}</span>
+            </div>
+            <div class="modalCookiesInputsGroups">
+                <input type="checkbox" id="modalCookiesCheckboxTerzeParti" />
+                <span class="label">{{ LangVars['cookie di terze parti'] }}</span>
+            </div>
+            <div class="modalCookiesButtonsGroups">
+                <input id="modalCookiesOk" type="button" value="{{ LangVars['ok']|upper }}" onclick="consentChiudi()" class="button" />
+            </div>
+
+        </div>
+
+    </div>                  
+</div>
+
+<script>
+    function NascondiLogo() {
+        var e = document.getElementById("modalCookiesLogo");
+        null != e && (e.style.display = "none"), displayLogo = !1
+    }
+
+    function setCookie(n, t) {
+        var i = new Date;
+        i.setTime(i.getTime() + 2592e6);
+        document.cookie = n + "=" + t + "; expires=" + i.toUTCString() + "; path=/"
+    }
+
+    function getCookie(n) {
+    for (var t, r = n + "=", u = document.cookie.split(";"), i = 0; i < u.length; i++) {
+        for (t = u[i];
+            " " == t.charAt(0);) t = t.substring(1, t.length);
+        if (0 == t.indexOf(r)) return t.substring(r.length, t.length)
+    }
+    return ""
+}
+
+    function consentApri() {
+    var n = document.getElementById("modalCookies"),
+        t = document.getElementById("modalCookiesPref");
+    setCookie(cookiestecnici, "0");
+    n.style.display = "block";
+    t.style.display = "none"
+}
+
+    function consentChiudi() {
+    var i = document.getElementById("modalCookies"),
+        r = document.getElementById("modalCookiesPref"),
+        n, t;
+    setCookie(cookiestecnici, "1");
+    i.style.display = "none";
+    r.style.display = "block";
+    n = getCookie(cookiesterzeparti);
+    t = document.getElementById("modalCookiesCheckboxTerzeParti").checked;
+    t && n == "" && (setCookie(cookiesterzeparti, "1"), window.location.reload());
+    t || n != "1" || (setCookie(cookiesterzeparti, ""), window.location.reload())
+}
+    
+    var x = getCookie(cookiestecnici),
+        tp;
+    (x == "0" || x == "") && (document.getElementById("modalCookies").style.display = "block", document.getElementById("modalCookiesPref").style.display = "none");
+    tp = getCookie(cookiesterzeparti);
+    document.getElementById("modalCookiesCheckboxTerzeParti").checked = tp == "1" || x == "";
+    typeof SetCookieBanner == "function" && SetCookieBanner();
+
+</script>

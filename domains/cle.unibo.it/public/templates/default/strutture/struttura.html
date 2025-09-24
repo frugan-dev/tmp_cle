@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="{{ Lang['user'] }}">
+
+<head>
+	<meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{ App.metaTitlePage }}</title>
+    <meta name="description" content="{{ App.metaDescriptionPage }}">
+
+    {% if App.metaKeywordsPage is defined and App.metaKeywordsPage != '' %}
+    <meta name="keyword" content="{{ App.metaKeywordsPage }}">
+    {% endif %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- You can use Open Graph tags to customize link previews.
+    Learn more: https://developers.facebook.com/docs/sharing/webmasters -->
+    <meta property="og:url" content="{{ App.meta_og_url }}">
+    <meta property="og:type" content="{{ App.meta_og_type }}">
+    <meta property="og:title" content="{{ App.meta_og_title }}">
+
+    {% if App.meta_og_image is defined and App.meta_og_image != '' %}
+    <meta property="og:image" content="{{ App.meta_og_image }}">
+    {% endif %}
+
+    <meta property="og:description" content="{{ App.meta_og_description }}">
+
+    <meta name="twitter:site" content="{{ App.meta_og_url }}">
+    <meta name="twitter:title" content="{{ App.meta_og_title }}">
+    <meta name="twitter:description" content="{{ App.meta_og_description }}">
+
+    {% if App.meta_og_image is defined and App.meta_og_image != '' %}
+    <meta name="twitter:image" content="{{ App.meta_og_image }}">
+    {% endif %}
+
+    <!-- Bootstrap CSS-->
+    <link rel="stylesheet" href="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome CSS-->
+    <link rel="stylesheet"
+        href="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/font-awesome/css/font-awesome.min.css">
+    <!-- Fontastic CSS-->
+    <link rel="stylesheet" href="{{ URLSITE }}templates/{{ App.templateUser }}/css/font.css">
+    <!-- Google fonts - Open Sans-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+    <!-- Swiper carousel-->
+    <link rel="stylesheet" href="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/swiper/css/swiper.css">
+    <!-- Lity-->
+    <link rel="stylesheet" href="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/lity/lity.css">
+    <!-- Bootstrap Select-->
+    <link rel="stylesheet"
+        href="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/bootstrap-select/css/bootstrap-select.css">
+    <!-- Theme stylesheet-->
+    <link rel="stylesheet" href="{{ URLSITE }}templates/{{ App.templateUser }}/css/style.default.css" id="theme-stylesheet">
+
+    <!-- CSS for Template -->
+    {% if App.addPluginCss is iterable %}
+    {% for key,value in App.addPluginCss %}
+    {{ value|raw }}
+    {% endfor %}
+    {% endif %}
+
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="{{ URLSITE }}templates/{{ App.templateUser }}/css/custom20230728.css">
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="{{ URLSITE }}templates/{{ App.templateUser }}/img/favicon.ico">
+    <!-- Tweaks for older IEs-->
+    <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+
+    <!-- CSS for Page -->
+    {% if App.css is iterable %}
+    {% for key,value in App.css %}
+    {{ value|raw }}
+    {% endfor %}
+    {% endif %}
+
+    <script>
+        var siteUrl = '{{ URLSITE }}';
+        var siteUrlAdmin = '{{ URLSITEADMIN }}';
+        var sitePath = '{{ PATHSITE }}';
+        var siteTemplateUrl = '{{ URLSITEADMIN }}templates/{{ App.templateUser }}/';
+        var siteTemplatePath = '{{ PATHSITE }}templates/{{ App.templateUser }}/';
+        var siteDocumentPath = '{{ PATHDOCUMENT }}';
+        var CoreRequestAction = '{{ CoreRequest.action }}';
+        var cur_lang = "{{ Lang['user'] }}";
+        var messages = new Array();
+
+        var cookiestecnicidatabase = '{{ GlobalSettings.cookiestecnicidatabase }}';
+        var cookiestecnici = '{{ GlobalSettings.cookiestecnici }}';
+        var cookiesterzeparti = '{{ GlobalSettings.cookiesterzeparti }}';
+
+        messages['privacy policy'] = '{{ LocalStrings["cookie advise panel text"]|e }}';
+        messages['Sei sicuro?'] = '{{ LocalStrings["Sei sicuro?"]|e }}';
+    </script>
+
+    {% if App.jscriptCodeTop is defined and App.jscriptCodeTop != '' %}
+    <script>
+        {{ App.jscriptCodeTop|raw }}
+    </script>
+    {% endif %}
+
+	
+	 {% if App.cookiesThirdyParts == true %}
+	
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-3B72NZG53S"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'G-3B72NZG53S');
+	</script> 	
+	{% endif %}
+    
+</head>
+
+<body>
+    <!-- header-->
+    <header class="header">
+        {{ include('strutture/struttura-topbar-inc.html') }}
+        {{ include('strutture/struttura-navbar-inc.html') }}
+    </header>
+
+    {{ include(App.templateApp) }}
+
+    {{ include('strutture/struttura-footer-inc.html') }}
+
+    <!-- JavaScript files-->
+    <script src="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/jquery/jquery.min.js"></script>
+    <script src="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/popper.js/umd/popper.min.js"> </script>
+    <script src="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/jquery.cookie/jquery.cookie.js"> </script>
+    <script src="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/swiper/js/swiper.js"></script>
+    <script src="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/lity/lity.js"></script>
+    <script src="{{ URLSITE }}templates/{{ App.templateUser }}/vendor/bootstrap-select/js/bootstrap-select.js"></script>
+    
+    <!-- JS for Plugin -->
+    {% if App.pluginJscript is iterable %}
+    {% for key,value in App.pluginJscript %}
+    {{ value|raw }}
+    {% endfor %}
+    {% endif %}
+
+    <script src="{{ URLSITE }}templates/{{ App.templateUser }}/js/front.js"></script>
+    <script src="{{ URLSITE }}templates/{{ App.templateUser }}/js/functions.js"></script>
+
+
+    <!-- JS for Page -->
+    {% if App.jscript is iterable %}
+    {% for key,value in App.jscript %}
+    {{ value|raw }}
+    {% endfor %}
+    {% endif %}
+
+    {% if App.codeJavascriptEndBody is defined and App.codeJavascriptEndBody != '' %}
+    <script>
+        { { App.codeJavascriptEndBody | raw } }
+    </script>
+    {% endif %}
+
+    <!-- cookie bar -->
+    {{ include('strutture/struttura-footer-cookiesbar.inc.html') }}
+    <!-- End cookie bar -->
+
+    <!-- JS for Page -->
+    {% if App.jscriptEnd is iterable %}
+    {% for key,value in App.jscriptEnd %}
+    {{ value|raw }}
+    {% endfor %}
+    {% endif %}
+
+
+
+    {% if App.includeJscriptPHPBottom is defined and App.includeJscriptPHPBottom != '' %}
+    <script>
+        { { include(App.includeJscriptPHPBottom | raw) } }
+    </script>
+    {% endif %}
+
+
+</body>
+
+</html>

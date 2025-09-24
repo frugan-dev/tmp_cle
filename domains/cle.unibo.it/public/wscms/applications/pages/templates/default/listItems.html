@@ -1,0 +1,102 @@
+<!-- wscms/pages/list.tpl.php v.3.5.4. 08/01/2020 -->
+<div class="row">
+	<div class="col-md-3 new">
+ 		<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/newItem" title="{{ Lang['inserisci una nouva %ITEM%']|replace({'%ITEM%':Lang['voce'] })|capitalize }}" class="btn btn-sm btn-primary">{{ Lang['nuova %ITEM%']|replace({'%ITEM%':Lang['voce'] })|capitalize }}</a>
+	</div>
+	<div class="col-md-7 help-small-list">{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}</div>
+	<div class="col-md-2"></div>
+</div>
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">	
+		<div class="table-responsive">									
+			<table class="table table-striped table-bordered table-hover table-sm listData tree">
+				<thead>
+					<tr>
+						<th></th>
+						{% if App.userLoggedData.is_root == 1 %}
+							<th class="id"></th>						
+						{% endif %}		
+						<th class="ordering">{{ Lang['ordine abb']|capitalize }}</th>		
+						<th>{{ Lang['titolo']|capitalize }}</th>														
+						<th>{{ Lang['template']|capitalize }}</th>
+						<th>{{ Lang['alias']|capitalize }}</th>
+						<th>{{ Lang['menu']|capitalize }}</th>
+						<th><small><b>{{ Lang['contenuti']|capitalize }}</b></small></th>
+						<th><small><b>{{ Lang['immagini']|capitalize }}</b></small></th>
+						<th><small><b>{{ Lang['associati']|capitalize }}</b></small></th>
+						<th><small><b>{{ Lang['SEO'] }}</b></small></th>																
+						<th><small><b>{{ Lang['anteprima']|capitalize }}</b></small></th>						
+						<th></th>						
+					</tr>
+				</thead>
+				<tbody>
+					{% if App.items is iterable and App.items|length > 0 %}
+						{% for key,value in App.items %}
+							<tr class="treegrid-{{ value.id }}{% if value.parent > 0 %} treegrid-parent-{{ value.parent }}{% endif %}" valign="top">
+								<td class="tree-simbol"></td>
+								{% if App.userLoggedData.is_root == 1 %}
+									<td class="id"><small>{{ value.id }}-{{ value.parent }}</small></td>
+								{% endif %}													
+								<td class="ordering">
+									{% if App.userLoggedData.is_root is defined and App.userLoggedData.is_root == 1 %}
+										<small>{{ value.ordering }}&nbsp;</small>
+									{% endif %}							
+									<a class="" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.params.orderTypes['page'] == 'ASC' ? 'less' : 'more' }}OrderingPage/{{ value.id }}" title="{{ Lang['sposta']|capitalize }} {{ App.params.orderTypes['page'] == 'DESC' ? Lang['giu'] : Lang['su'] }}"><i class="fa fas fa-long-arrow-alt-up"> </i></a>
+									<a class="" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.params.orderTypes['page'] == 'ASC' ? 'more' : 'less' }}OrderingPage/{{ value.id }}" title="{{ Lang['sposta']|capitalize }} {{ App.params.orderTypes['page'] == 'DESC' ? Lang['su'] : Lang['giu'] }}"><i class="fa fas fa-long-arrow-alt-down"> </i></a>
+								</td>																																					
+								<td class="page-title" style="white-space: nowrap;">
+									<a style="color:#000;" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/modifyItem/{{ value.id }}" title="{{ Lang['modifica']|capitalize }} {{ Lang['pagina'] }}">{{ value.levelString }}{{ value.title }}</a>								
+								</td>
+								<td><small>{{ value.template_name }}</small></td>	
+								<td><small>{{ value.alias }}</small></td>
+								<td>
+									<a title="{{ value.menu == 1 ? Lang['visibile nel menu']|capitalize : Lang['nascosta nel menu']|capitalize }}" class="btn btn-sm btn-default" href="javascript:void(0);"><i class="far {{ value.menu == 1 ? 'fa-eye' : 'fa-eye-slash' }}"> </i></a>
+								</td>
+								<td>
+									<a class="btn btn-sm btn-default" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listIblo/{{ value.id }}" title="{{ Lang['contenuti associati']|capitalize }} ({{ value.blocks }})"><i class="far fa-sticky-note"> </i></a>															
+								</td>
+								<td>	
+									{% if value.filename != '' %}
+									<a class="" href="{{ App.params.uploadDirs['item'] }}{{ value.filename }}" data-lightbox="image-1" data-title="{{ value.org_filename }}" title="{{ value.org_filename }}">
+										<img  class="img-miniature"  src="{{ App.params.uploadDirs['item'] }}{{ value.filename }}" alt="{{ value.org_filename }}">
+									</a>
+									{% else %}
+									<img  class="img-miniature"  src="{{ App.params.uploadDirs['item'] }}default/image.png" alt="{{ Lang['immagine di default']|capitalize }}">										
+									{% endif %}
+									
+									
+								</td>
+								<td>		
+									
+									<a class="btn btn-sm btn-default" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listIfil/{{ value.id }}" title="{{ Lang['%ITEM% associati']|replace({'%ITEM%':Lang['file'] })|capitalize }} ({{ value.files }})"><i class="fas fa-file"></i></a><small>({{ value.files }})</small>																
+									<a class="btn btn-sm btn-default" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listIimg/{{ value.id }}" title="{{ Lang['%ITEM% associati']|replace({'%ITEM%':Lang['immagini'] })|capitalize }} ({{ value.images }})"><i class="fas fa-images"></i></a><small>({{ value.images }})</small>																
+ 								
+ 								</td>
+ 								<td>
+ 								
+										<a style="padding:0.05rem 0.20rem;" class="btn btn-sm btn-primary" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/modifySeoItem/{{ value.id }}" title="{{ Lang['modifica']|capitalize }} {{ Lang['tag seo'] }}"><i class="far fa-edit"></i></a>
+															
+								</td>									
+								<td>						
+									<a title="{{ LangVars['anteprima']|capitalize }}" class="btn btn-sm btn-default" href="{{ URLSITE }}pages/{{ value.id }}/{{ GlobalSettings['site code key'] }}/aprew" target="_blank"><i class="far fa-eye"> </i></a>							
+								</td>										
+								<td class="actions">
+									<a class="btn btn-sm btn-default" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ value.active == 1 ? 'disactive' : 'active' }}Page/{{ value.id }}" title="{{ value.active == 1 ? LangVars['disattiva %ITEM%']|replace({'%ITEM%':LangVars['voce'] })|capitalize : LangVars['attiva %ITEM%']|replace({'%ITEM%':LangVars['voce'] })|capitalize }}"><i class="fas fa-{{ value.active == 1 ? 'unlock' : 'lock' }}"></i></a>			 
+									<a class="btn btn-sm btn-default" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/modifyItem/{{ value.id }}" title="{{ Lang['modifica la %ITEM%']|replace({'%ITEM%':Lang['voce'] })|capitalize }}"><i class="far fa-edit"></i> </a>
+									<a class="btn btn-sm btn-default confirm" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/deleteItem/{{ value.id }}" title="{{ Lang['cancella la %ITEM%']|replace({'%ITEM%':Lang['voce'] })|capitalize }}"><i class="fas fa-trash-alt"></i></a>										
+								</td>
+     						</tr> 
+						{% endfor %}
+					{% else %}
+						<tr>
+							{% if App.userLoggedData.is_root == 1 %}<td></td>{% endif %}
+							<td colspan="12">{{ Lang['Nessuna voce trovata!']|capitalize }}</td>
+						</tr>
+					{% endif %}
+				</tbody>       
+			</table>
+				
+		</div>
+		<!-- /.table-responsive -->
+	</div>
+</div>

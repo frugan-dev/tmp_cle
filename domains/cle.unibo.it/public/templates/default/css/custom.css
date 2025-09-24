@@ -1,0 +1,47 @@
+/* your styles go here */
+
+ul.dropdown-lingue>li>a {
+    color: black !important;
+}
+
+ul.dropdown-lingue>li>a.active {
+    color: #6a4e77 !important;
+}
+
+ul.dropdown-lingue>li>a:hover {
+    color: white !important;
+}
+
+#top-bar-placeholder {
+    display: none;
+}
+
+
+ .top-bar .social a {
+     margin-left:5px !important;
+ }
+
+@media (min-width: 768px) {
+
+    #top-bar-placeholder {
+        display: flex;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    
+    #top-bar-contacts {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+ }
+
+ .info-boxes-alt {
+    margin-top: 0px !important;
+    padding: 0;
+ }
+
+ .grecaptcha-badge { 
+    bottom:110px !important; 
+}

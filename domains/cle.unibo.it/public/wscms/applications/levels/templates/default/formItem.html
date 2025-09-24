@@ -1,0 +1,137 @@
+<!-- wscms/levels/form.tpl.php v.3.5.4. 22/01/2020 -->
+<div class="row">
+	<div class="col-md-3 new"></div>
+	<div class="col-md-7 help-small-form">{% if App.params.help_small is defined and App.params.help_small != '' %}{{
+		App.params.help_small }}{% endif %}</div>
+	<div class="col-md-2 help text-right">
+		{% if (App.params.help is defined) and (App.params.help != '') %}
+		<button class="btn btn-warning btn-sm" type="button" data-target="#helpModal" data-toggle="modal">Come
+			funziona?</button>
+		{% endif %}
+	</div>
+</div>
+
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">
+		<ul class="nav nav-tabs" id="formTab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active" href="#datibase" id="datibase-tab" data-toggle="tab" role="tab"
+					aria-controls="datibase" aria-selected="true">{{ Lang['dati base']|capitalize }}</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="#modules" id="modules-tab" data-toggle="tab" role="tab"
+					aria-controls="modules" aria-selected="true">{{ Lang['avanzate']|capitalize }}</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="#options" id="options-tab" data-toggle="tab" role="tab"
+					aria-controls="options" aria-selected="true">{{ Lang['opzioni']|capitalize }}</a>
+			</li>
+		</ul>
+		<form id="applicationForm" class="form-horizontal" role="form"
+			action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.methodForm }}" enctype="multipart/form-data"
+			method="post">
+			<!-- Tab panes -->
+			<div class="tab-content" id="formTabContent">
+				<div class="tab-pane fade show active" id="datibase" role="tabpanel" aria-labelledby="datibase-tab">
+					<fieldset>
+						<div class="form-group row">
+							<label for="titleID" class="col-md-2 control-label">{{ Lang['titolo']|capitalize }}</label>
+							<div class="col-md-7">
+								<input required type="text" name="title" class="form-control" id="title"
+									placeholder="{{ Lang['inserisci un titolo']|capitalize }}"
+									value="{{ App.item.title|e('html') }}"
+									oninvalid="this.setCustomValidity('{{ Lang['Devi inserire un %ITEM%!']|replace({'%ITEM%': Lang['titolo']}) }}')"
+									oninput="setCustomValidity('')">
+							</div>
+						</div>
+					</fieldset>
+				</div>
+				<!-- sezione moduli -->
+				<div class="tab-pane fade show" id="modules" role="tabpanel" aria-labelledby="modules-tab">
+					<fieldset class="p-3">
+
+						<div class="row mb-3">
+							<div class="col-md-3">
+								<strong>{{ Lang['moduli attivi']|capitalize }}</strong>
+							</div>
+
+							<div class="col-md-4">
+								<strong>{{ Lang['accessi']|capitalize }}</strong>
+							</div>
+							<div class="col-md-5">
+
+							</div>
+						</div>
+
+						{% for sectionKey,sectionModules in App.userModules %}
+						{% for module in sectionModules %}
+
+						<div class="row py-3">
+							<div class="col-md-3">
+								<label class="control-label">{{ module.label }}</label>
+							</div>
+
+							<div class="col-md-4">
+								<label style="padding-right:2px;"
+									class="{% if App.level_modules[module.name].read_access == 1 %} text-success{% endif %}">{{
+									Lang['lettura']|capitalize }}</label>
+								<input type="checkbox" name="modules_read[{{ module.id }}]" id="" class="" {% if
+									App.level_modules[module.name].read_access is defined and
+									App.level_modules[module.name].read_access==1 %} checked="checked" {% endif %}
+									value="1">
+								<label style="padding-left:20px; padding-right:2px;"
+									class="{% if App.level_modules[module.name].write_access == 1 %} text-success{% endif %}">{{
+									Lang['scrittura']|capitalize }}</label>
+								<input type="checkbox" name="modules_write[{{ module.id }}]" id="" class="" {% if
+									App.level_modules[module.name].read_access is defined and
+									App.level_modules[module.name].write_access==1 %} checked="checked" {% endif %}
+									value="1">
+							</div>
+							<div class="col-md-5">
+								{{ module.content }}
+							</div>
+						</div>
+
+						{% endfor %}
+						{% endfor %}
+
+					</fieldset>
+
+				</div>
+				<!-- sezione moduli -->
+				<!-- sezione opzioni -->
+				<div class="tab-pane" id="options" role="tabpanel" aria-labelledby="options-tab">
+					<fieldset>
+						<div class="form-group row">
+							<label for="activeID" class="col-md-2 control-label">{{ Lang['attiva']|capitalize }}</label>
+							<div class="col-md-7">
+								<input type="checkbox" name="active" id="activeID" class="form-check-input" {% if
+									App.item.active==1 %} checked="checked" {% endif %} value="1">
+							</div>
+						</div>
+					</fieldset>
+				</div>
+				<!-- sezione opzioni -->
+			</div>
+			<!--/Tab panes -->
+			<hr>
+			<div class="form-group row">
+				<div class="col-md-6 col-xs-12 text-center">
+					<input type="hidden" name="id" id="idID" value="{{ App.id }}">
+					<input type="hidden" name="method" value="{{ App.methodForm }}">
+					<button type="submit" name="submitForm" value="submit" class="btn btn-primary submittheform">{{
+						Lang['invia']|capitalize }}</button>
+					{% if App.id > 0 %}
+					<button type="submit" name="applyForm" value="apply" class="btn btn-primary submittheform">{{
+						Lang['applica']|capitalize }}</button>
+					{% endif %}
+				</div>
+				<div class="col-md-6 col-xs-12 text-right">
+					<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/list"
+						title="{{ Lang['torna alla %ITEM%']|replace({'%ITEM%': Lang['lista']})|capitalize }}"
+						class="btn btn-success">{{ Lang['indietro']|capitalize }}</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

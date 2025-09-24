@@ -1,0 +1,46 @@
+<!-- top bar-->
+<div class="top-bar foo-d-none d-md-block">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-sm-6 col-md-9" id="top-bar-placeholder">
+        <p class="mb-0">
+          Erasmus Mundus Joint Master Degree <i>Cultures Littéraires Européennes</i>
+        </p>
+      </div>
+
+      <div class="col-3 col-sm-2 col-md-2 foo-text-right" id="top-bar-contacts">
+        <ul class="social list-inline">
+          <li class="list-inline-item">
+            {% if GlobalSettings['facebook link'] is defined and GlobalSettings['facebook link'] != '' %}
+            <a title="{{ GlobalSettings['facebook link'] }}" href="{{ GlobalSettings['facebook link'] }}"
+              target="_blank"><i class="fa fa-facebook"></i></a>
+            {% endif %}
+            {% if GlobalSettings['twitter link'] is defined and GlobalSettings['twitter link'] != '' %}
+            <a title="{{ GlobalSettings['twitter link'] }}" href="{{ GlobalSettings['twitter link'] }}"
+              target="_blank"><i class="fa fa-twitter"></i></a>
+            {% endif %}
+            {% if GlobalSettings['instagram link'] is defined and GlobalSettings['instagram link'] != '' %}
+            <a title="{{ GlobalSettings['instagram link'] }}" href="{{ GlobalSettings['instagram link'] }}"
+              target="_blank"><i class="fa fa-instagram"></i></a>
+            {% endif %}
+            {% if GlobalSettings['youtube link'] is defined and GlobalSettings['youtube link'] != '' %}
+            <a title="{{ GlobalSettings['youtube link'] }}" href="{{ GlobalSettings['youtube link'] }}"
+              target="_blank"><i class="fa fa-youtube-play"></i></a>
+            {% endif %}
+            {% if GlobalSettings['vimeo link'] is defined and GlobalSettings['vimeo link'] != '' %}
+            <a title="{{ GlobalSettings['vimeo link'] }}" href="{{ GlobalSettings['facebook link'] }}" target="_blank"><i class="fa fa-vimeo"></i></a>
+            {% endif %}
+          </li>
+      </div>
+
+
+      <div class="col-3 col-sm-3 col-md-1 text-right">
+        <a class="dropdown-toggle" data-toggle="dropdown"><i class="icon-flags"></i> {{ LangVars['lingue']|capitalize }}
+        </a>
+        {{ App.languagesBar }}
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,271 @@
+<!-- wscms/news/formItem.tpl.php v.3.5.4. 03/04/2019 -->
+<div class="row">
+	<div class="col-md-3 new">
+ 	</div>
+	<div class="col-md-7 help-small-form">
+		{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}
+	</div>
+	<div class="col-md-2 help">
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
+
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#data-tab" data-toggle="tab">{{ Lang['data']|capitalize }} <i class="fa"></i></a></li>
+			{% for lang in GlobalSettings['languages'] %}		
+				<li><a href="#datibase{{ lang }}-tab" data-toggle="tab">{{ Lang['dati base']|capitalize }} {{ lang }} <i class="fa"></i></a></li>
+			{% endfor %}
+			<li><a href="#image-tab" data-toggle="tab">{{ Lang['immagine']|capitalize }} <i class="fa"></i></a></li>
+			<!-- <li><a href="#video-tab" data-toggle="tab">{{ Lang['video']|capitalize }} <i class="fa"></i></a></li> -->
+			<li><a href="#seo-tab" data-toggle="tab">{{ Lang['SEO']|capitalize }} <i class="fa"></i></a></li>
+			<li><a href="#options-tab" data-toggle="tab">{{ Lang['opzioni']|capitalize }} <i class="fa"></i></a></li>
+  		</ul>
+		<form id="applicationForm" method="post" class="form-horizontal" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.methodForm }}"  enctype="multipart/form-data" method="post">
+			<div class="tab-content">
+<!-- sezione data --> 	
+			<div class="tab-pane active" id="data-tab">		
+				<fieldset>
+
+					<div class="row">
+						<div class="col-md-12 datatimepicker">
+							<div class="form-group">
+							<label for="datatimeinsID" class="col-md-2 control-label">{{ Lang['data']|capitalize }}</label>
+							<div class="input-group date col-md-3" id='datatimeinsDPID'>
+								<input required type="text" class="form-control" placeholder="{{ Lang['inserisci una data']|capitalize }}" name="datatimeins" id="datatimeinsID" value="" oninvalid="this.setCustomValidity('{{ Lang['Devi inserire una %ITEM%!']|replace({'%ITEM%': Lang['data']}) }}')" oninput="setCustomValidity('')">		
+								<span class="input-group-addon">
+									<span class="glyphicon glyphicon-calendar"></span>
+								</span>
+							</div>
+							</div>
+						</div>        
+					</div>
+
+
+					
+				
+					<div class="form-group">
+						<label for="scadenzaID" class="col-md-2 control-label">{{ Lang['scadenza']|capitalize }}</label>						
+						<div class="col-md-4">							
+							<input{% if App.item.scadenza > 0 %} checked="checked"{% endif %} type="checkbox" name="scadenza" id="scadenzaID" value="1">						
+						</div>					
+					</div>
+				
+					<div id="datescadenzeID">
+						<div class="row">
+							<div class="col-md-12 datatimepicker">
+								<div class="form-group">
+								<label for="datatimescainiID" class="col-md-2 control-label">{{ Lang['inizio scadenza']|capitalize }}</label>
+								<div class="input-group date col-md-3" id='datatimescainiDPID'>
+									<input required type="text" class="form-control" placeholder="{{ Lang['inserisci una data di inizio scadenza']|capitalize }}" name="datatimescaini" id="datatimescainiID" value="" oninvalid="this.setCustomValidity('{{ Lang['Devi inserire una %ITEM%!']|replace({'%ITEM%': Lang['data di inizio scadenza']}) }}')" oninput="setCustomValidity('')">		
+									<span class="input-group-addon">
+										<span class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div>
+								</div>
+							</div>        
+						</div>					
+											
+						<div class="row">
+							<div class="col-md-12 datatimepicker">
+								<div class="form-group">
+								<label for="datatimescaendID" class="col-md-2 control-label">{{ Lang['fine scadenza']|capitalize }}</label>
+								<div class="input-group date col-md-3" id='datatimescaendDPID'>
+									<input required type="text" class="form-control" placeholder="{{ Lang['inserisci una data di fine scadenza']|capitalize }}" name="datatimescaend" id="datatimescaendID" value="" oninvalid="this.setCustomValidity('{{ Lang['Devi inserire una %ITEM%!']|replace({'%ITEM%': Lang['data di fine scadenza']}) }}')" oninput="setCustomValidity('')">		
+									<span class="input-group-addon">
+										<span class="glyphicon glyphicon-calendar"></span>
+									</span>
+								</div>
+								</div>
+							</div>        
+						</div>					
+					</div>
+				</fieldset>
+
+			</div>
+<!-- /sezione data -->
+
+<!-- sezione dati base dinamica lingue -->
+			{% for lang in GlobalSettings['languages'] %}				
+				{% set titleField = "title_#{lang}" %}
+				{% set summaryField = "summary_#{lang}" %}
+				{% set contentField = "content_#{lang}" %}
+				<div class="tab-pane" id="datibase{{ lang }}-tab">
+					<fieldset>
+						<div class="form-group">
+							<label for="title_{{ lang }}ID" class="col-md-2 control-label">{{ Lang['titolo']|capitalize }} {{ lang }} </label>
+							<div class="col-md-7">
+<input type="text"{% if lang == 'it' %} required{% endif %} class="form-control" name="title_{{ lang }}" placeholder="{{ Lang['inserisci un titolo']|capitalize }} {{ lang }}" id="title_{{ lang }}ID" value="{{ attribute(App.item, titleField)|e('html') }}" 
+oninvalid="this.setCustomValidity('{{ Lang['Devi inserire un %ITEM%!']|replace({'%ITEM%': Lang['titolo']}) }}')" oninput="setCustomValidity('')">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="summary_{{ lang }}ID" class="col-md-2 control-label">{{ Lang['sommario']|capitalize }} {{ lang }} </label>
+							<div class="col-md-7">
+								<textarea name="summary_{{ lang }}" class="form-control" id="summary_{{ lang }}ID" rows="5">{{ attribute(App.item, summaryField)|e('html') }}</textarea>
+							</div>
+						</div>
+						<hr>
+						<div class="form-group">
+							<label for="content_{{ lang }}ID" class="col-md-2 control-label">{{ Lang['contenuto']|capitalize }} {{ lang }}</label>
+							<div class="col-md-8">
+								<textarea name="content_{{ lang }}" class="form-control editorHTML" id="content_{{ lang }}ID" rows="5">{{ attribute(App.item, contentField) }}</textarea>
+							</div>
+						</div>
+					</fieldset>						
+				</div>
+			{% endfor %}
+<!-- /sezione dati base dinamica lingue -->
+
+<!-- sezione image -->	
+			<div class="tab-pane" id="image-tab">		
+					<fieldset>
+						<div class="form-group">
+							<label for="filenameID" class="col-md-2 control-label">{{ Lang['immagine top']|capitalize }}</label>
+							<div class="col-md-4">
+								<input{% if App.item.filenameRequired == true %} required{% endif %} type="file" name="filename" id="filenameID"  placeholder="{{ Lang['indica un file da caricare']|capitalize }}">							
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-2 control-label">{{ Lang['anteprima']|capitalize }}</label>
+							<div class="col-md-7">
+								{% if App.item.filename is defined and App.item.filename != '' %}
+								<a class="" href="{{ App.params.uploadDirs['item'] }}{{ App.item.filename }}" data-lightbox="image-1" data-title="{{ value.org_filename }}" title="{{ App.item.org_filename }}">
+									<img  class="img-thumbnail"  src="{{ App.params.uploadDirs['item'] }}{{ App.item.filename }}" alt="{{ App.item.org_filename }}">
+								</a>							
+								{% else %}
+								<a class="" href="{{ App.params.uploadDirs['item'] }}default/image.png" data-lightbox="image-1" data-title="{{ Lang['immagine di default']|capitalize }}" title="{{ Lang['immagine di default']|capitalize }}">
+									<img class="img-thumbnail"  src="{{ App.params.uploadDirs['item'] }}default/image.png" alt="{{ Lang['immagine di default']|capitalize }}">
+								</a>											
+								{% endif %}
+							</div>			
+						</div>
+						{% if App.item.filename is defined and App.item.filename != '' %}
+						<div class="form-group">
+							<label for="deleteFilenameID" class="col-md-2 control-label">{{ Lang['cancella immagine']|capitalize }}</label>						
+							<div class="col-md-5">							
+								<input type="checkbox" name="deleteFilename" id="deleteFilenameID" value="1">						
+							</div>					
+						</div>
+						{% endif %}
+					</fieldset>
+				</div>
+<!-- /sezione image --> 
+<!-- sezione embedded -->	
+				<!-- <div class="tab-pane" id="video-tab">		
+					<fieldset class="form-group">
+						<div class="form-group">
+							<label for="embeddedID" class="col-md-2 control-label">{{ Lang['codice embedded']|capitalize }}</label>
+							<div class="col-md-7" id="embeddedID">
+								<textarea name="embedded" class="form-control" id="embeddedID" rows="5">{{ App.item.embedded }}</textarea>	
+					    	</div>
+						</div>
+					</fieldset>	
+				</div> -->
+<!-- /sezione embedded -->		
+
+<!-- sezione seo -->
+			<div class="tab-pane" id="seo-tab">
+				<fieldset>
+					{% for lang in GlobalSettings['languages'] %}				
+						{% set metaTitleField = "meta_title_#{lang}" %}
+						{% set metaDescriptionField = "meta_description_#{lang}" %}
+						{% set metaKeywordField = "meta_keyword_#{lang}" %}
+						{% set titleSeoField = "title_seo_#{lang}" %}
+				
+					
+						<div class="form-group">
+							<label for="meta_title_{{ lang }}ID" class="col-md-2 control-label">{{ Lang['titolo']|capitalize }} {{ Lang['META'] }} {{ lang }} </label>
+							<div class="col-md-7">
+								<input type="text" class="form-control" name="meta_title_{{ lang }}" placeholder="{{ Lang['inserisci un titolo']|capitalize }} {{ Lang['META'] }} {{ lang }}" id="meta_title_{{ lang }}ID" value="{{ attribute(App.item, metaTitleField)|e('html') }}">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="description_{{ lang }}ID" class="col-md-2 control-label">{{ Lang['descrizione']|capitalize }} {{ Lang['META'] }} {{ lang }}
+							<br>
+							<small>
+								Disponibili: <span id="metaDescriptionLength{{ lang|upper }}ID">300</span>
+							</small>								
+							
+							</label>
+							<div class="col-md-8">
+								<textarea data-bv-stringlength="true" data-bv-stringlength-min="0" data-bv-stringlength-max="300" data-bv-stringlength-message="Massimo 300 caratteri" data-messagecontainer="metaDescriptionLength{{ lang|upper }}ID" name="meta_description_{{ lang }}" class="form-control checknumchars" id="meta_description_{{ lang }}ID" rows="4">{{ attribute(App.item, metaDescriptionField) }}</textarea>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="meta_keyword_{{ lang }}ID" class="col-md-2 control-label">{{ Lang['keyword']|capitalize }} {{ Lang['META'] }} {{ lang }}</label>
+							<div class="col-md-8">
+								<textarea name="meta_keyword_{{ lang }}" class="form-control" id="meta_keyword_{{ lang }}ID" rows="2">{{ attribute(App.item, metaKeywordField) }}</textarea>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="title_seo_{{ lang }}ID" class="col-md-2 control-label">{{ Lang['titolo']|capitalize }} {{ Lang['SEO'] }} {{ lang }} </label>
+							<div class="col-md-7">
+								<input type="text" class="form-control" name="title_seo_{{ lang }}" placeholder="{{ Lang['inserisci un titolo']|capitalize }} {{ Lang['SEO'] }} {{ lang }}" id="title_seo_{{ lang }}ID" value="{{ attribute(App.item, titleSeoField)|e('html') }}">
+							</div>
+						</div>
+
+						{% if loop.last == false %}<hr>{% endif %}		
+
+					{% endfor %}
+				</fieldset>	
+			</div>
+<!-- /sezione seo -->
+
+	
+<!-- sezione opzioni --> 
+				<div class="tab-pane" id="options-tab">
+					<fieldset>		
+						<div class="form-group">
+							<label for="id_catID" class="col-md-2 control-label">{{ Lang['categoria']|capitalize }}</label>
+							<div class="col-md-7">
+								<select name="id_cat" class="form-control input-md">
+								{% if App.categories is iterable and App.categories|length > 0 %}
+									{% for key,value in App.categories %}
+										<option value="{{ value.id }}"{% if App.id_cat == value.id %} selected="selected"{% endif %}>{{ value.title|e('html') }}</option>														
+									{% endfor %}
+								{% endif %}	
+								</select>										
+							</div>
+						</div>
+						<hr>
+						<div class="form-group">
+							<label for="activeID" class="col-md-2 control-label">{{ Lang['attiva']|capitalize }}</label>
+							<div class="col-md-7">
+								<div class="form-check">
+									<label class="form-check-label">
+										<input type="checkbox" name="active" id="activeID"{% if App.item.active == 1 %} checked="checked"{% endif %} value="1">
+									</label>
+	     						</div>
+	   					</div>
+	   				</div>
+					</fieldset>				
+				</div>
+<!-- sezione opzioni -->					
+			</div>
+<!--/Tab panes -->			
+			<hr>
+			<div class="row">
+				<div class="col-md-offset-2 col-md-7 col-xs-offset-0 col-xs-12"> 				
+					<input type="hidden" name="created" id="createdID" value="{{ App.item.created }}">
+			    	<input type="hidden" name="id" value="{{ App.id }}">
+			
+			    	<input type="hidden" name="method" value="{{ App.methodForm }}">		    	
+			    	<input type="hidden" name="bk_parent" value="{{ App.item.parent }}">
+			      <button type="submit" name="submitForm" value="submit" class="btn btn-primary submittheform">{{ Lang['invia']|capitalize }}</button>
+			      {% if App.id > 0 %}
+			      	<button type="submit" name="applyForm" value="apply" class="btn btn-primary submittheform">{{ Lang['applica']|capitalize }}</button>
+			      {% endif %}
+				</div>
+	 			<div class="col-md-2 col-xs-12">				
+					<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listItem" title="{{ Lang['torna alla lista']|capitalize }}" class="btn btn-success">{{ Lang['indietro']|capitalize }}</a>
+				</div>
+			</div>
+
+		</form>
+	</div>
+</div>

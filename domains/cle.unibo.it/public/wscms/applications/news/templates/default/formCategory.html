@@ -1,0 +1,169 @@
+<!-- wscms/ecommerce/formCategory.html v.3.5.4. 25/07/2019 -->
+<div class="row">
+	<div class="col-md-3 new">
+ 	</div>
+	<div class="col-md-7 help-small-form">
+		{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}
+	</div>
+	<div class="col-md-2 help text-right">
+		{% if (App.params.help is defined) and (App.params.help != '') %}
+			<button class="btn btn-warning btn-sm" type="button" data-target="#helpModal" data-toggle="modal">Come funziona?</button>
+		{% endif %}
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<ul class="nav nav-tabs">		
+			{% for lang in GlobalSettings['languages'] %}		
+				<li class="{% if lang == Lang['user'] %}active{% endif %}"><a href="#datibase{{ lang }}-tab" data-toggle="tab">{{ Lang['dati base']|capitalize }} {{ lang }}</a></li>
+			{% endfor %}
+			<li><a href="#image-tab" data-toggle="tab">{{ Lang['immagine']|capitalize }}</a></li>
+			<li><a href="#tags-tab" data-toggle="tab">{{ Lang['tags']|capitalize }}</a></li>
+			<li><a href="#options-tab" data-toggle="tab">{{ Lang['opzioni']|capitalize }}</a></li>
+  		</ul>
+
+		<form id="applicationForm" method="post" class="form-horizontal" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.methodForm }}"  enctype="multipart/form-data" method="post">
+
+			<div class="tab-content">
+<!-- sezione dati base dinamica lingue -->
+			{% for lang in GlobalSettings['languages'] %} 
+				{% set titleMETAField = "title_meta_#{lang}" %}
+				{% set titleSEOField = "title_seo_#{lang}" %}
+				{% set titleField = "title_#{lang}" %}	
+				<div class="tab-pane{% if lang == Lang['user'] %} active{% endif %}" id="datibase{{ lang }}-tab">
+					<fieldset>
+						<div class="form-group">
+							<label for="title_meta_{{ lang }}ID" class="col-md-2 control-label">{{ Lang['titolo']|capitalize }} META {{ lang }} </label>
+							<div class="col-md-7">
+								<input type="text" class="form-control" name="title_meta_{{ lang }}" placeholder="{{ Lang['inserisci un titolo']|capitalize }} META {{ lang }}" id="title_meta_{{ lang }}ID" value="{{ attribute(App.item, titleMETAField) }}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="title_seo_{{ lang }}ID" class="col-md-2 control-label">{{ Lang['titolo']|capitalize }} SEO {{ lang }} </label>
+							<div class="col-md-7">
+								<input type="text" class="form-control" name="title_seo_{{ lang }}" placeholder="{{ Lang['inserisci un titolo']|capitalize }} SEO {{ lang }}" id="title_seo_{{ lang }}ID" value="{{ attribute(App.item, titleSEOField) }}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="title_{{ lang }}ID" class="col-md-2 control-label">{{ Lang['titolo']|capitalize }} {{ lang }} </label>
+							<div class="col-md-7">
+								<input type="text"{% if lang == 'it' %} required{% endif %} class="form-control" name="title_{{ lang }}" placeholder="{{ Lang['inserisci un titolo']|capitalize }} {{ lang }}" id="title_{{ lang }}ID" value="{{ attribute(App.item, titleField) }}">
+							</div>
+						</div>			
+					</fieldset>				
+				</div>
+			{% endfor %}
+<!-- /sezione dati base dinamica lingue -->
+<!-- sezione image -->	
+				<div class="tab-pane" id="image-tab">
+					<fieldset>
+						<div class="form-group">
+							<label for="filenameID" class="col-md-2 control-label">{{ Lang['immagine']|capitalize }}</label>
+							<div class="col-md-4">
+								<input{% if App.item.filenameRequired == true %} required{% endif %} type="file" name="filename" id="filenameID"  placeholder="{{ Lang['indica un file da caricare']|capitalize }}">							
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="filenameID" class="col-md-2 control-label">{{ Lang['anteprima']|capitalize }}</label>
+							<div class="col-md-5">
+								{% if App.item.filename is defined and App.item.filename != '' %}
+								<a class="" href="{{ App.params.uploadDirs['cate'] }}{{ App.item.filename }}" rel="prettyPhoto[]" title="{{ App.item.org_filename }}">
+									<img  class="img-thumbnail"  src="{{ App.params.uploadDirs['cate'] }}{{ App.item.filename }}" alt="{{ App.item.org_filename }}">
+								</a>
+								{% else %}
+									<img class="img-thumbnail" src="{{ UPLOADDIR }}default/image.png" alt="{{ Lang['immagine di default']|capitalize }}">										
+								{% endif %}
+							</div>	
+						</div>
+						{% if App.item.filename is defined and App.item.filename != '' %}
+						<div class="form-group">
+							<label for="deleteImageID" class="col-md-2 control-label">{{ Lang['cancella immagine']|capitalize }}</label>						
+							<div class="col-md-5">							
+								<input type="checkbox" name="deleteImage" id="deleteImageID" value="1">						
+							</div>					
+						</div>
+						{% endif %}
+					</fieldset>
+				</div>
+<!-- /sezione image --> 
+
+<!-- sezione tags -->
+				<div class="tab-pane" id="tags-tab">
+					<fieldset class="form-group">
+						<div class="form-group">
+							<label for="id_tagsID" class="col-md-3 control-label">{{ Lang['tags']|capitalize }}</label>
+							<div class="col-md-7">		
+								{% if App.tags is iterable and App.tags|length > 0 %}
+									<select name="id_tags[]" size="15" multiple id="id_tagsID" class="form-control input-md">								
+									{% for key,value in App.tags %}
+										<option value="{{ value.id }}"{% if value.id in App.itemTags %} selected="selected"{% endif %}>{{ value.title }}</option>														
+									{% endfor %}
+									</select>
+								{% endif %}															
+					    	</div>
+						</div>	
+						
+						<div class="form-group">
+							<div class="col-md-7 col-md-offset-2">
+								<button class="btn btn-xs" type='button' id='selectTagsAll'>{{ Lang['seleziona tutto']|capitalize }}</button>
+								<button class="btn btn-xs" type='button' id='deselectTagsAll'>{{ Lang['deseleziona tutto']|capitalize }}</button>	
+							</div>	
+						</div>			
+					</fieldset>	
+				</div>			
+<!-- /sezione tags -->
+
+<!-- sezione opzioni --> 
+				<div class="tab-pane" id="options-tab">
+					<fieldset>
+					{% if App.userLoggedData.is_root == 1 %}
+						<div class="form-group">
+							<label for="orderingID" class="col-md-2 control-label">{{ Lang['ordine']|capitalize }}</label>
+							<div class="col-md-1">
+								<input type="text" name="ordering" placeholder="{{ Lang['inserisci un ordine']|capitalize }}" class="form-control" id="orderingID" value="{{ App.item.ordering }}">
+					    	</div>
+						</div>
+						<hr>
+					{% else %}
+						<input type="hidden" name="ordering" value="{{ App.item.ordering }}">		
+					{% endif %}
+						<div class="form-group">
+							<label for="aliasID" class="col-md-2 control-label">{{ Lang['alias']|capitalize }}</label>
+							<div class="col-md-7">
+								<input type="text" class="form-control" name="alias" id="aliasID" placeholder="{{ Lang['inserisci un alias']|capitalize }}" value="{{ App.item.alias }}">
+							</div>
+						</div>	
+						<hr>
+						<div class="form-group">
+							<label for="activeID" class="col-md-2 control-label">{{ Lang['attiva']|capitalize }}</label>
+							<div class="col-md-7">
+								<div class="form-check">
+									<label class="form-check-label">
+										<input type="checkbox" name="active" id="activeID"{% if App.item.active == 1 %} checked="checked"{% endif %} value="1">
+									</label>
+	     						</div>
+	   					</div>
+	   				</div>
+					</fieldset>				
+				</div>
+<!-- sezione opzioni -->					
+			</div>
+<!--/Tab panes -->			
+			<hr>
+			<div class="form-group">
+				<div class="col-md-offset-2 col-md-7 col-xs-offset-0 col-xs-6">	
+					<input type="hidden" name="created" id="createdID" value="{{ App.item.created }}">
+					<input type="hidden" name="id" id="idID" value="{{ App.id }}">
+					<input type="hidden" name="method" value="{{ App.methodForm }}">
+					<button type="submit" name="submitForm" value="submit" class="btn btn-primary submittheform">{{ Lang['invia']|capitalize }}</button>
+					{% if App.id > 0 %}
+						<button type="submit" name="applyForm" value="apply" class="btn btn-primary submittheform">{{ Lang['applica']|capitalize }}</button>
+					{% endif %}				
+				</div>
+				<div class="col-md-2 col-xs-6">
+					<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listCate" title="{{ Lang['torna alla lista']|capitalize }}" class="btn btn-success">{{ Lang['indietro']|capitalize }}</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

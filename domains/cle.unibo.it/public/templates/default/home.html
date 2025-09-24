@@ -1,0 +1,231 @@
+{% if App.homeSliders is iterable and App.homeSliders|length > 0 %}	
+<section class="hero hero-home">
+  <div class="swiper-container hero-slider">
+    <div class="swiper-wrapper">
+      {% for key,value in App.homeSliders %}
+
+        <div class="swiper-slide">
+
+          <div{% if value.hihe_image == 0 %} style="background: url('{{ UPLOADDIR }}slides-home-rev/{{ value.filename }}')"{% endif %} class="hero-content has-overlay-dark">
+    
+            {% if value.layers is iterable and value.layers|length > 0 %}
+                {% for keyL,valueL in value.layers %}
+                    <!-- LAYERS -->
+                    {{ valueL.template|raw }}        
+                    <!-- END LAYERS -->
+                {% endfor %}
+            {% endif %}
+
+          </div>
+        </div>
+  
+      {% endfor %}
+      
+    </div>
+    <!-- Add Pagination-->
+    <div class="swiper-pagination"></div>
+  </div>
+</section>
+{% endif %}	
+
+<!-- Info Boxes Section-->
+<section class="info-boxes{% if App.homeinfobox|length == 0 %}-alt{% endif %}">
+  <div class="container">
+    <div class="row d-flex justify-content-center">
+      
+      {% if App.homeinfobox.0.active == 1 %}
+      <a href="{{ App.homeinfobox.0.url }}" target="{{ App.homeinfobox.0.target }}" title="{{ App.homeinfobox.0.title }}" style="background: url(img/boxes-img-1.jpeg);" class="info-box cyan col-lg-4">
+        <div class="info-box-content">
+          <h3 class="text-uppercase text-center">{{ App.homeinfobox.0.title }}</h3>
+          <p>{{ App.homeinfobox.0.content|raw }}</p>
+        </div>
+      </a>
+      {% endif %}
+      
+      {% if App.homeinfobox.1.active == 1 %}
+      <a href="{{ App.homeinfobox.1.url }}" target="{{ App.homeinfobox.1.target }}" title="{{ App.homeinfobox.1.title }}" style="background: url(img/boxes-img-2.jpg);" class="info-box orange col-lg-4">
+        <div class="info-box-content">
+          <h3 class="text-uppercase">{{ App.homeinfobox.1.title }}</h3>
+          <p>{{ App.homeinfobox.1.content|raw }}</p>
+        </div>
+      </a>
+      {% endif %}
+      
+      {% if App.homeinfobox.2.active == 1 %}
+      <a href="{{ App.homeinfobox.2.url }}" target="{{ App.homeinfobox.2.target }}" title="{{ App.homeinfobox.2.title }}" style="background: url(img/boxes-img-3.jpeg);" class="info-box red col-lg-4">
+        <div class="info-box-content">
+          <h3 class="text-uppercase">{{ App.homeinfobox.2.title }}</h3>
+          <p>{{ App.homeinfobox.2.content|raw }}</p>
+        </div>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+
+<!-- Intro Section-->
+<section class="intro">
+  <div class="container text-center">
+    <header>
+      <h2>{{ LangVars['intro section title'] }}</h2>
+    </header>
+    <!-- <div class="row">
+      <p class="col-lg-8 mx-auto">{{ LangVars['intro section text'] }}</p>
+    </div>
+    <div class="signature mx-auto"><img src="{{ URLSITE }}templates/{{ App.templateUser }}/img/signature.png"
+        alt="{{ LangVars['intro section author']|striptags  }}" class="img-fluid"></div>
+    <div class="author">{{ LangVars['intro section author']|raw }}</div> -->
+  </div>
+</section>
+
+<!-- Partners Section-->
+<section class="testimonials partners">
+  <div class="container text-center">
+    <header>
+      <h2>{{ LangVars['Partners'] }}</h2>
+    </header>
+    <div class="swiper-container partners-slider">
+      <div class="swiper-wrapper">
+
+        {% if App.partners is iterable and App.partners|length > 0 %}
+        {% for value in App.partners %}
+        <div class="swiper-slide">
+          <div class="testimonial">
+            <div class="user d-flex align-items-center justify-content-center align-self-center">
+              <div class="avatar align-self-center">
+                <a title="{{ value.title }}" href="{{ value.url }}" target="{{ value.target }}"><img
+                    src="{{ UPLOADDIR }}/partners/{{ value.filename }}" alt="{{ value.title }}" class="img-fluid img-fluid-avatar"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+      </div>
+      <!-- Add Pagination-->
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Associated Partners Section-->
+<section class="testimonials sponsor">
+  <div class="container text-center">
+    <header>
+      <h2>{{ LangVars['Associated Partners'] }}</h2>
+    </header>
+    <div class="swiper-container sponsor-slider">
+      <div class="swiper-wrapper">
+
+        {% if App.sponsor is iterable and App.sponsor|length > 0 %}
+        {% for value in App.sponsor %}
+        <div class="swiper-slide">
+          <div class="testimonial">
+            <div class="user d-flex align-items-center justify-content-center">
+              <div class="avatar">
+                <a title="{{ value.title }}" href="{{ value.url }}" target="{{ value.target }}"><img
+                    src="{{ UPLOADDIR }}/sponsor/{{ value.filename }}" alt="{{ value.title }}" class="img-fluid img-fluid-avatar"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+      </div>
+      <!-- Add Pagination-->
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Tour Section-->
+<section class="tour bg-gray">
+  <div class="container">
+    <div class="row d-flex align-items-center">
+      <div class="col-lg-6">
+        <div class="video">
+          
+          {# <a title="{{ LangVars['Take a tour'] }}" href="https://youtu.be/9jf1DZ_U62g" data-lity><img src="{{ URLSITE }}templates/{{ App.templateUser }}/img/Cle_Video.jpg" alt="Cle video">
+            <div class="overlay d-flex align-items-center justify-content-center"><img
+                src="{{ URLSITE }}templates/{{ App.templateUser }}/img/play.svg" alt="Play Video">
+            </div>
+          </a> #}
+
+          <a href="{{ LangVars['tour section url'] }}" title="{{ LangVars['tour section title'] }}" target="_blank">
+            <img src="{{ URLSITE }}templates/{{ App.templateUser }}/img/Erasmus-YouTube.jpg" alt="Play Video">
+          </a>
+        
+        </div>
+      </div>
+      <div class="col-lg-6 text">
+        <header>
+          <h2>{{ LangVars['Take a tour'] }}</h2>
+        </header>
+        <p class="h4">{{ LangVars['tour section title'] }}</p>
+        <p>{{ LangVars['tour section text'] }}</p>
+        <!-- <a href="{{ LangVars['tour section url'] }}" title="{{ LangVars['tour section title'] }}"
+          target="_blank" class="btn btn-primary">{{ LangVars['tour section title button'] }}</a> -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Statistics Section-->
+<section class="statistics pt-0 pb-0 bg-primary has-pattern">
+  <div class="container text-center">
+    <div class="row">
+      <div class="item col-lg-2 col-md-6 offset-lg-1 off"><strong>{{ LangVars['statistics section 2 value'] }}</strong>
+        <p>{{ LangVars['statistics section 2 title'] }}</p>
+      </div>
+      <div class="item col-lg-2 col-md-6"><strong>{{ LangVars['statistics section 3 value'] }}</strong>
+        <p>{{ LangVars['statistics section 3 title'] }}</p>
+      </div>
+      <div class="item col-lg-2 col-md-6"><strong>{{ LangVars['statistics section 4 value'] }}</strong>
+        <p>{{ LangVars['statistics section 4 title'] }}</p>
+      </div>
+      <div class="item col-lg-2 col-md-6"><strong>{{ LangVars['statistics section 5 value'] }}</strong>
+        <p>{{ LangVars['statistics section 5 title'] }}</p>
+      </div>
+      <div class="item col-lg-2 col-md-6"><strong>{{ LangVars['statistics section 6 value'] }}</strong>
+        <p>{{ LangVars['statistics section 6 title'] }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- News Section-->
+<section class="courses-listing bg-gray pt-0">
+  <div class="courses-search">
+    <div class="container">
+
+    </div>
+  </div>
+  <div class="container">
+    <header class="text-center"><br clear="all">
+      <h2>{{ LangVars['Latest News'] }}</h2>
+      <!-- <div class="row text-center">
+      <p class="col-lg-8 mx-auto">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</p>
+    </div> -->
+    </header>
+    <nav class="nav nav-pills nav-justified d-flex justify-content-center">
+      <a href="javascript:void(0);" title="{{ LangVars['Latest News'] }}"
+        id="homeNewsCategory0ID" data-rif="0" class="setHomeNewsCategory nav-link{% if Session['home_news_categories_id'] == 0 %} active{% endif %}">{{
+        LangVars['tutte']|capitalize }}</a>
+      {% if App.news_categories is iterable and App.news_categories|length > 0 %}
+      {% for value in App.news_categories %}
+      <a href="javascript:void(0);" title="{{
+        value.title|capitalize }}"
+        id="homeNewsCategory{{ value.id }}ID" data-rif="{{ value.id }}" class="setHomeNewsCategory nav-link{% if Session['home_news_categories_id'] == value.id %} active{% endif %}">{{
+        value.title|capitalize }}</a>
+      {% endfor %}
+      {% endif %}
+    </nav>
+    <div id="imgWaitingID"></div>
+    <div id="newsHomeContainerID">
+    </div>  
+    
+  </div>
+</section>
+

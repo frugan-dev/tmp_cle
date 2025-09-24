@@ -1,0 +1,26 @@
+<!-- breadcrumb start -->
+<!-- ================ -->
+{{ App.breadcrumbsBar }}
+<!-- breadcrumb end -->
+
+<!-- main-container start -->
+<!-- ================ -->
+<section class="main-container light-gray-bg text-center margin-clear">
+  <div class="container">
+    <div class="row justify-content-lg-center">
+      <!-- main start -->
+      <!-- ================ -->
+      <div class="main col-lg-6 pv-40">
+        <h1 class="page-title extra-large"><span class="text-default">{{ App.error_title }}</span></h1>
+        <h2 class="mt-4">{{ App.error_subtitle }}</h2>
+        <p class="lead">{{ App.error_content }}</p>
+        {% if App.error_contentAlt is defined and App.error_contentAlt != '' %}<br>{{ App.error_contentAlt }}{% endif %}
+        <a href="{{ URLSITE }}" class="btn btn-default btn-animated btn-lg"
+          title="{{ Lang['torna alla %ITEM%']|replace({ '%ITEM%' : Lang['home'] })|capitalize }}">{{ Lang['torna alla
+          %ITEM%']|replace({ '%ITEM%' : Lang['home'] })|capitalize }} <i class="fa fa-home"></i></a>
+      </div>
+      <!-- main end -->
+    </div>
+  </div>
+</section>
+<!-- main-container end -->

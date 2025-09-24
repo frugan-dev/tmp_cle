@@ -1,0 +1,28 @@
+<!-- wscms/help/listItems.html v.3.5.4. 22/01/2020 -->
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">
+		<!-- .panel-heading -->
+		<div class="panel-body">
+			<div class="panel-group" id="accordion">
+				{% if App.items is iterable and App.items|length > 0 %}
+				{% for key,value in App.items %}
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ loop.index0 }}">{{
+								value.title }}</a>
+						</h4>
+					</div>
+					<div id="collapse_{{ loop.index0 }}" class="panel-collapse collapse out">
+						<div class="panel-body">
+							{{ value.content|raw }}
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+				{% endif %}
+			</div>
+		</div>
+		<!-- .panel-body -->
+	</div>
+</div>

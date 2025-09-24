@@ -1,0 +1,38 @@
+
+/*
+=========================================
+=========================================
+
+University: Bootstrap 4 education template
+
+=========================================
+========================================= */
+
+
+// functions.scss - Bootstrap functions
+@import "modules/functions";
+// variables-custom.scss - to change colour variant, rounded corners, etc.
+@import "modules/variables-custom";
+// bootstrap mixins
+@import "modules/mixins";
+// custom mixins
+@import "modules/mixins-custom";
+// general
+@import "modules/general";
+// contact page
+@import "modules/contact";
+// blog
+@import "modules/blog";
+// blogpost
+@import "modules/blogpost";
+// teachers
+@import "modules/staff";
+// courses
+@import "modules/courses";
+// course details
+@import "modules/course-details";
+// demo
+@import "modules/demo";
+
+// bootstrap base stylesheet overrides
+@import "theme";

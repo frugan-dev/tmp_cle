@@ -1,0 +1,36 @@
+{
+    "name": "websync/framework",
+    "description": "Il framework PHP di websync",
+    "type": "project",
+    "authors": [
+        {
+            "name": "WebSync",
+            "email": "info@websync.it"
+        }
+    ],
+    "license": "MIT",
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "google/recaptcha": "~1.1",
+        "kint-php/kint": "^6.0",
+        "kint-php/kint-helpers": "^6.0",
+        "monolog/monolog": "^3.5",
+        "mos/cimage": "^0.8.5",
+        "soundasleep/html2text": "^2.1",
+        "swiftmailer/swiftmailer": "^6.0",
+        "symfony/mailer": "^7.0",
+        "twig/twig": "^3.0",
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "require-dev": {
+        "marcocesarato/amwscan": "^0.14.0",
+        "rector/rector": "2.1.7"
+    },
+    "autoload": {
+        "classmap": [
+            "./wscms/classes/"
+        ]
+    }
+}

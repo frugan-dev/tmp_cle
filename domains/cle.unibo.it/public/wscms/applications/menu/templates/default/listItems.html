@@ -1,0 +1,69 @@
+<!-- wscms/menu/listItems.html v.3.5.4. 15/01/2020 -->
+<div class="row">
+	<div class="col-md-3 new">
+		<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/newItem" title="{{ Lang['inserisci un nuovo %ITEM%']|replace({'%ITEM%':Lang['menu'] })|capitalize }}" class="btn btn-sm btn-primary">{{ Lang['nuovo %ITEM%']|replace({'%ITEM%':Lang['voce'] })|capitalize }}</a>
+	</div>
+	<div class="col-md-7 help-small-list">{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}</div>
+	<div class="col-md-2 help text-right">
+		{% if (App.params.help is defined) and (App.params.help != '') %}
+			<button class="btn btn-warning btn-sm" type="button" data-target="#helpModal" data-toggle="modal">Come funziona?</button>
+		{% endif %}
+	</div>
+</div>
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">	
+		<div class="table-responsive">									
+			<table class="table table-striped table-bordered table-hover table-sm listData tree">
+				<thead>
+					<tr>
+						<th></th>
+						{% if App.userLoggedData.is_root == 1 %}
+							<th class="id"></th>						
+						{% endif %}		
+						<th class="ordering">{{ Lang['ordine abb']|capitalize }}</th>		
+						<th>{{ Lang['titolo']|capitalize }}</th>														
+						<th>{{ Lang['tipo']|capitalize }}</th>
+						<th>{{ Lang['alias']|capitalize }}</th>
+						<th></th>						
+					</tr>
+				</thead>
+				<tbody>
+					{% if App.items is iterable and App.items|length > 0 %}
+						{% for key,value in App.items %}
+							<tr class="treegrid-{{ value.id }}{% if value.parent > 0 %} treegrid-parent-{{ value.parent }}{% endif %}" valign="top">
+								<td class="tree-simbol"></td>
+								{% if App.userLoggedData.is_root == 1 %}
+									<td class="id">{{ value.id }}-{{ value.parent }}</td>
+								{% endif %}													
+								<td class="ordering">
+									{% if App.userLoggedData.is_root is defined and App.userLoggedData.is_root == 1 %}
+										<small>{{ value.ordering }}&nbsp;</small>
+									{% endif %}							
+									<a class="" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.params.orderTypes['menu'] == 'ASC' ? 'less' : 'more' }}OrderingMenu/{{ value.id }}" title="{{ Lang['sposta']|capitalize }} {{ App.params.orderTypes['menu'] == 'DESC' ? Lang['giu'] : Lang['su'] }}"><i class="fa fas fa-long-arrow-alt-up"> </i></a>
+									<a class="" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.params.orderTypes['menu'] == 'ASC' ? 'more' : 'less' }}OrderingMenu/{{ value.id }}" title="{{ Lang['sposta']|capitalize }} {{ App.params.orderTypes['menu'] == 'DESC' ? Lang['su'] : Lang['giu'] }}"><i class="fa fas fa-long-arrow-alt-down"> </i></a>
+								</td>																																			
+								<td class="page-title" style="white-space: nowrap;">
+									<a style="color:#000;" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/modifyItem/{{ value.id }}" title="{{ Lang['modifica']|capitalize }} {{ Lang['pagina'] }}">{{ value.levelString }}{{ value.title }}</a>								
+								</td>
+								<td><small>{{ Lang['menu-type'][value.type] }}</small></td>
+								<td><small>{{ value.alias }}</small></td>
+								<td class="actions">
+									<a class="btn btn-sm btn-default" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ value.active == 1 ? 'disactive' : 'active' }}Menu/{{ value.id }}" title="{{ value.active == 1 ? LangVars['disattiva %ITEM%']|replace({'%ITEM%':LangVars['voce'] })|capitalize : LangVars['attiva il %ITEM%']|replace({'%ITEM%':LangVars['voce'] })|capitalize }}"><i class="fas fa-{{ value.active == 1 ? 'unlock' : 'lock' }}"></i></a>			 
+									<a class="btn btn-sm btn-default" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/modifyItem/{{ value.id }}" title="{{ Lang['modifica il %ITEM%']|replace({'%ITEM%':Lang['voce'] })|capitalize }}"><i class="far fa-edit"></i></a>
+									<a class="btn btn-sm btn-default confirm" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/deleteMenu/{{ value.id }}" title="{{ LangVars['cancella %ITEM%']|replace({'%ITEM%':LangVars['voce'] })|capitalize }}"><i class="fas fa-trash-alt"></i></a>										
+								</td>
+     						</tr> 
+						{% endfor %}
+					{% else %}
+						<tr>
+							{% if App.userLoggedData.is_root == 1 %}<td></td>{% endif %}
+							<td colspan="12">{{ Lang['Nessuna voce trovata!']|capitalize }}</td>
+						</tr>
+					{% endif %}
+				</tbody>       
+			</table>
+				
+		</div>
+		<!-- /.table-responsive -->
+	</div>
+</div>

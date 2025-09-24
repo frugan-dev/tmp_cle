@@ -1,0 +1,36 @@
+<!-- wscms/core/moduleassocited.html v.3.5.4. 25/09/2019 -->
+<div class="row">
+	<div class="col-md-3 new">
+ 		<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/newItem" title="{{ Lang['inserisci un/una %ITEM%']|replace({'%ITEM%': App.associatedTypefile})|capitalize }}" class="btn btn-primary">{{ Lang['nuovo/a %ITEM%']|replace({'%ITEM%': App.associatedTypefile})|capitalize }}</a>
+	</div>
+	<div class="col-md-7 help-small-list">
+		{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}
+	</div>
+	<div class="col-md-2">
+		<a href="{{ URLSITEADMIN }}{{ SessionVars['associatedModule'] }}/{{ SessionVars['associatedReturnmethod'] }}" title="{{ Lang['torna alla lista %ITEM%']|replace({'%ITEM%': Lang['voci']})|capitalize }}" class="btn btn-primary">{{ Lang['lista %ITEM%']|replace({'%ITEM%': Lang['voci']})|capitalize }}</a>
+	</div>
+</div>
+<div class="row well well-sm">	
+	<div class="col-md-2"> 
+		{{ Lang['dettagli voce']|capitalize }}
+	</div>
+	<div class="col-md-2"> 
+		{% if App.ownerData.filename != '' %}
+		<a class="" href="{{ App.params.uploadDirs[SessionVars['associatedRifItem']] }}{{ App.ownerData.filename }}" data-lightbox="image-1" data-title="{{ App.ownerData.org_filename }}" title="{{ App.ownerData.org_filename }}">
+			<img class="img-thumbnail" style="max-height:90px;" src="{{ App.params.uploadDirs[SessionVars['associatedRifItem']] }}{{ App.ownerData.filename }}" alt="{{ App.ownerData.org_filename }}">
+		</a>
+		{% else %}
+		<img class="img-thumbnail" src="{{ App.params.uploadDirs[SessionVars['associatedRifItem']] }}default/image.png" alt="{{ Lang['immagine di default']|capitalize }}">									
+		{% endif %}
+	</div>
+	<div class="col-md-8"> 
+		<big>{{ App.ownerData.title }}</big>
+	</div>
+</div>
+{% if App.viewMethod == 'list' %}
+	{{ include('moduleassociated-list.html') }}
+{% endif %}
+{% if App.viewMethod == 'form' %}
+	{{ include('moduleassociated-form.html') }}
+{% endif %}
+

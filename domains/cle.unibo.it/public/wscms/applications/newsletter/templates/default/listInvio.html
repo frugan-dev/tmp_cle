@@ -1,0 +1,111 @@
+<!-- wscms/newsletter/listInvio.tpl.php v.3.1.0. 09/01/2017 -->
+
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">
+	
+		<div class="row">	
+			<div class="col-lg-12">
+
+				<form class="form-inline" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listInvio" method="post" enctype="multipart/form-data">
+
+
+					<label class="col-md-3" for="id_newsID">Scegli la Newsletter da inviare</label>
+					<select class="form-control input-sm col-md-5" name="id_news" id="id_newsID">
+						<option value="" selected="selected"></option>
+						{% if App.newsletterSelect is iterable and App.newsletterSelect|length > 0 %}
+							{% for key,value in App.newsletterSelect %}
+								<option value="{{ value.id }}"{% if App.newsletter.id == value.id %} selected="selected"{% endif %}>{{ value.id }} - {{ value.title_it }}</option>														
+							{% endfor %}
+						{% endif %}	
+					</select>	
+					<button  name="scegli" class="btn btn-sm btn-primary ml-2">Scegli</button>
+				  </form>
+				
+			</div>				
+		</div><!--/row-->
+		
+		{% if App.newsletter.id %}
+			<hr>
+			<div class="row">
+				<div class="col-lg-3">
+					Data: <b>{{ App.newsletter.datatimeins }}</b>
+				</div>
+						
+				<div class="col-lg-8">
+					Titolo: <b>{{ App.newsletter.title_it }}</b>
+				</div>
+				
+				<div class="col-lg-1">
+					<a target="_blank" class="btn btn-default btn-circle" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/previewInvio/{{ App.newsletter.id }}" title="Anteprima"><i class="fa fa-eye fa-2"> </i> </a>
+				</div>
+			</div>
+		{% endif %}	
+
+	</div>			
+</div>
+
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+					Invia la newsletter agli indirizzi indicati
+					</div>
+					
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-lg-12">
+
+								<form id="myForm" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/sendEmail" method="post" enctype="multipart/form-data">
+									<div class="row">
+										<div class="col-lg-6">
+											<label>Indirizzi</label>
+											<select multiple="multiple" size="20" class="form-control input-sm" name="listAddress" id="listAddressID">
+		
+												{% if App.listAddress is iterable and App.listAddress|length > 0 %}
+													{% for key,value in App.listAddress %}								
+														<option value="{{ value.id }}">{{ value.name }} - {{ value.email }}</option>														
+													{% endfor %}
+												{% endif %}	
+											</select>
+											<div style="margin-top: 5px;">
+												<a href="#" id="selAllAddressID" style="font-size:90%;" class="btn btn-outline btn-sm btn-primary">Seleziona Tutti</a>
+												<a href="#" id="deselAllAddressID" style="font-size:90%;" class="btn btn-outline btn-sm btn-primary pull-right">Seleziona Nessuno</a>
+											</div>
+										</div>
+										<div class="col-lg-1">
+											<a title="Sposta gli indirizzi selezionati nella lista invio" href="#" style="margin-top:20px;" class="btn btn-sm btn-outline btn-primary"  id="moveAddressToSendList"><i class="fa fa-arrow-right fa-2"> </i></a>
+											<div class="clearfix"></div>
+											<a title="Cancella gli indirizzi selezionati dalla lista invio" href="#" style="margin-top:100px;" class="btn btn-sm btn-outline btn-primary" id="removeFromSendList"><i class="fa fa-arrow-left fa-2"> </i></a>
+										</div>
+										<div class="col-lg-5">
+											<label>Lista Invio</label>
+											<select multiple="multiple" size="20" name="listAddressTemp" class="form-control input-sm" id="listAddressTempID">
+											</select>
+											<div style="margin-top: 5px;">
+												<a href="#" id="selAllAddressTempID" style="font-size:90%;" class="btn btn-sm btn-outline btn-primary">Seleziona Tutti</a>
+												<a href="#" id="deselAllAddressTempID" style="font-size:90%;" class="btn btn-sm btn-outline btn-primary pull-right">Seleziona Nessuno</a>
+											</div>
+										</div>
+									</div>
+									<hr>
+									<div class="row">
+										<div class="col-md-12 text-center">
+											{% if App.newsletterCheck == 0 %}
+												<input type="hidden" name="id_newsletter" value="{{ App.newsletter.id }}">
+												<button class="btn btn-sm btn-primary confirm">Invia Newsletter</button>									
+											{% endif %}								
+										</div>			
+									</div>	
+								</form>
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>					
+		</div>
+	</div>			
+</div>
+

@@ -1,0 +1,224 @@
+<!-- wscms/contacts/formConf.tpl.php v.3.5.4. 07/05/2019 -->
+<div class="row">
+	<div class="col-md-3 new"></div>
+	<div class="col-md-7 help-small-form">{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}</div>
+	<div class="col-md-2 help text-right">
+		{% if (App.params.help is defined) and (App.params.help != '') %}
+			<button class="btn btn-warning btn-sm" type="button" data-target="#helpModal" data-toggle="modal">Come funziona?</button>
+		{% endif %}
+	</div>
+</div>
+
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">
+
+		<ul class="nav nav-tabs" id="formTab" role="tablist">		
+
+			<li class="nav-item">
+				<a class="nav-link active" href="#datibase" data-toggle="tab" role="tab" aria-controls="datibase" aria-selected="false">{{ Lang['dati base']|capitalize }}</a>
+			</li>
+			
+			
+			{% for lang in GlobalSettings['languages'] %}		
+			<li class="nav-item">
+				<a class="nav-link" href="#contents{{ lang }}" data-toggle="tab" role="tab" aria-controls="comtents{{ lang }}" aria-selected="false">{{ Lang['contenuti']|capitalize }} {{ lang }}</a>
+			</li>
+			{% endfor %}
+
+			{% for lang in GlobalSettings['languages'] %}		
+			<li class="nav-item">
+				<a class="nav-link" href="#metatags{{ lang }}" data-toggle="tab" role="tab" aria-controls="metatags{{ lang }}" aria-selected="false">Meta Tags {{ lang }}</a>
+			</li>
+			{% endfor %}
+			
+
+  		</ul>
+
+		<form id="applicationForm" method="post" class="form-horizontal" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.methodForm }}"  enctype="multipart/form-data" method="post">
+			
+			<!-- Tab panes -->	
+			<div class="tab-content" id="formTabContent">
+
+				<div class="tab-pane fade show active" id="datibase" role="tabpanel" aria-labelledby="datibase">
+					<fieldset>					
+					
+						<div class="form-group row">
+							<label for="image_headerID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">{{ Lang['immagine']|capitalize }} Header</label>	
+							<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">	
+								<div class="custom-file">
+									<input
+									type="file" 
+									name="image_header" 
+									id="image_headerID" 
+									class="custom-file-input"
+									>
+									<label class="custom-file-label" for="image_headerID">{{ Lang['indica un file da caricare']|capitalize }}</label>    							
+								</div>
+							</div>
+						</div>
+							
+						<div class="form-group row">
+							<label class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">{{ Lang['anteprima']|capitalize }}</label>
+							<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+								{% if App.item.image_header is defined and App.item.image_header != '' %}
+								<a class="" href="{{ App.params.uploadDirs['conf'] }}{{ App.item.image_header }}" data-lightbox="image-1" data-title="{{ value.org_image_header }}" title="{{ App.item.org_image_header }}">
+									<img  class="img-miniature"  src="{{ App.params.uploadDirs['conf'] }}{{ App.item.image_header }}" alt="{{ App.item.org_image_header }}">
+								</a>							
+								{% else %}
+									<img class="img-miniature"  src="{{ UPLOADDIR }}default/image.png" alt="{{ LocalStrings['immagine di default']|capitalize }}">	
+								{% endif %}
+							</div>			
+						</div>
+						{% if App.item.image_header is defined and App.item.image_header != '' %}
+						
+						<div class="form-group row">
+							<label class="col-sm-2 col-md-2 col-lg-2 col-xl-2 col-form-label col-form-label-custom-checkbox">
+								{{ Lang['cancella file']|capitalize }}
+							</label>	
+							<div class="col-sm-6 col-md-6 col-lg-6 col-xl-6">		
+								<div class="custom-control custom-checkbox">
+									<input 
+									name="deleteFilenameHeader" 
+									id="deleteFilenameHeaderID" 
+									value="1" 
+									type="checkbox" 
+									class="custom-control-input"
+									>
+									<label class="custom-control-label" for="deleteFilenameHeaderID"></label>
+								</div>
+							</div>
+						</div>
+						
+						{% endif %}
+
+
+						
+					</fieldset>
+				</div>
+						
+				{% for lang in GlobalSettings['languages'] %}	
+					{% set title = "title_#{lang}" %}
+					{% set textIntro = "text_intro_#{lang}" %}
+					{% set pageContent = "page_content_#{lang}" %}
+					<div class="tab-pane fade show" id="contents{{ lang }}" role="tabpanel" aria-labelledby="contents{{ lang }}">
+						<fieldset>					
+
+	
+						<div class="form-group row">
+							<label for="title_{{ lang }}ID" class="col-md-4 control-label">
+								{{ LangVars['configurazione modulo testo titolo'] }} {{ lang }}
+								<br><span class="font-italic">{{ LangVars['configurazione modulo testo titolo - testo'] }}</span>
+							</label>
+							<div class="col-md-7">
+								<input 
+								class="form-control" 
+								name="title_{{ lang }}" 
+								id="title_{{ lang }}ID"
+								value="{{attribute(App.item,title)|e('html') }}"
+								>
+							</div> 
+						</div>
+
+						<div class="form-group row">
+							<label for="text_intro_{{ lang }}ID" class="col-md-4 control-label">
+								{{ LangVars['configurazione modulo testo intro'] }} {{ lang }}
+								<br><span class="font-italic">{{ LangVars['configurazione modulo testo intro - testo'] }}</span>
+							</label>
+							<div class="col-md-7">
+								<textarea rows="4" class="form-control editorHTML" name="text_intro_{{ lang }}" id="text_intro_{{ lang }}ID">{{attribute(App.item,textIntro)|e('html') }}</textarea>
+							</div> 
+						</div>	
+
+						<div class="form-group row">
+							<label for="text_intro_{{ lang }}ID" class="col-md-4 control-label">
+								{{ LangVars['configurazione modulo contenuto pagina'] }} {{ lang }}
+								<br><span class="font-italic">{{ LangVars['configurazione modulo contenuto pagina - testo'] }}</span>
+							</label>
+							<div class="col-md-7">
+								<textarea rows="8" class="form-control editorHTML" name="page_content_{{ lang }}" id="page_content_{{ lang }}ID">{{attribute(App.item,pageContent)|e('html') }}</textarea>
+							</div> 
+						</div>	
+						
+						
+						</fieldset>
+					</div>
+				{% endfor %}	
+
+				<!-- sezione meta tags -->
+				{% for lang in GlobalSettings['languages'] %}	
+				{% set metaTitle = "meta_title_#{lang}" %}
+				{% set metaDescription = "meta_description_#{lang}" %}
+				{% set metaKeywords = "meta_keywords_#{lang}" %}
+				<div class="tab-pane fade show" id="metatags{{ lang }}" role="tabpanel" aria-labelledby="metatags{{ lang }}">
+					<fieldset>				
+						
+						<div class="form-group row">
+							<label for="meta_title_{{ lang }}ID" class="col-md-4 control-label">
+								{{ LangVars['configurazione modulo meta title'] }} {{ lang }}
+								<br><span class="font-italic">{{ LangVars['configurazione modulo meta title - testo'] }}</span>
+							</label>				
+							<div class="col-md-6">
+								<input 
+									type="text" 
+									class="form-control" 
+									name="meta_title_{{ lang }}" 
+									placeholder="" 
+									id="meta_title_{{ lang }}ID" 
+									value="{{ attribute(App.item,metaTitle)|e('html') }}"
+								>
+							</div>
+						</div>
+
+						<div class="form-group row">
+							<label for="meta_description_{{ lang }}ID" class="col-md-4 control-label">
+								{{ LangVars['configurazione modulo meta description'] }} {{ lang }}
+								<br><span class="font-italic">{{ LangVars['configurazione modulo meta description - testo'] }}</span>
+							</label>
+							<div class="col-md-7">
+								<textarea rows="4" 
+									class="form-control" 
+									name="meta_description_{{ lang }}" 
+									id="meta_description_{{ lang }}ID"
+								>{{attribute(App.item,metaDescription)|e('html') }}</textarea>
+							</div> 
+						</div>
+
+						<div class="form-group row">
+							<label for="meta_keywords_{{ lang }}ID" class="col-md-4 control-label">
+								{{ LangVars['configurazione modulo meta keywords'] }} {{ lang }}
+								<br><span class="font-italic">{{ LangVars['configurazione modulo meta keywords - testo'] }}</span>
+							</label>
+							<div class="col-md-7">
+								<textarea rows="4" 
+									class="form-control" 
+									name="meta_keywords_{{ lang }}" 
+									id="meta_keywords_{{ lang }}ID"
+								>{{attribute(App.item,metaKeywords)|e('html') }}</textarea>
+							</div> 
+						</div>	
+						
+						
+						
+						
+					</fieldset>
+				</div>
+				{% endfor %}	
+				<!-- sezione meta tags -->
+				
+			</div>
+			<!--/Tab panes -->			
+			<hr>
+			
+			<div class="form-group row">
+				<div class="col-md-6 col-xs-12 text-center">
+					<input type="hidden" name="id" id="idID" value="1">
+					<input type="hidden" name="method" value="{{ App.methodForm }}">
+					<button type="submit" name="applyForm" value="apply" class="btn btn-primary submittheform ml-5">{{ Lang['applica']|capitalize }}</button>
+				</div>
+				<div class="col-md-6 col-xs-12 text-right">				
+					<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/listItem" title="{{ Lang['torna alla %ITEM%']|replace({'%ITEM%': Lang['lista']})|capitalize }}" class="btn btn-success">{{ Lang['indietro']|capitalize }}</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

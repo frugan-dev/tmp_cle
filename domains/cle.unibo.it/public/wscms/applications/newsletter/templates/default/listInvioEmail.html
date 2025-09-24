@@ -1,0 +1,60 @@
+<!-- newsletter-ic/listInvioEmail.tpl.php v.3.1.0. 09/01/2016 -->
+
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">
+	
+		<div class="row">	
+			<div class="col-lg-12">
+				<form class="form-inline" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/sendEmail" method="post" enctype="multipart/form-data">
+					<label class="col-md-3" for="id_newsID">Scegli la Newsletter da inviare</label>
+					<select class="form-control input-sm col-md-5" name="id_news" id="id_newsID">
+						<option value="" selected="selected"></option>
+						{% if App.newsletterSelect is iterable and App.newsletterSelect|length > 0 %}
+							{% for key,value in App.newsletterSelect %}
+								<option value="{{ value.id }}"{% if App.newsletter.id == value.id %} selected="selected"{% endif %}>{{ value.id }} - {{ value.title_it }}</option>														
+							{% endfor %}
+						{% endif %}	
+					</select>	
+					<button  name="scegli" class="btn btn-sm btn-primary ml-2">Scegli</button>
+				  </form>			
+			</div>				
+		</div><!--/row-->
+		
+		{% if App.newsletter.id %}
+			<hr>
+			<div class="row">
+				<div class="col-lg-3">
+					Data: <b>{{ App.newsletter.datatimeins }}</b>
+				</div>
+						
+				<div class="col-lg-8">
+					Titolo: <b>{{ App.newsletter.title_it }}</b>
+				</div>
+				
+				<div class="col-lg-1">
+					<a target="_blank" class="btn btn-default btn-circle" href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/previewInvio/{{ App.newsletter.id }}" title="Anteprima"><i class="fa fa-eye fa-2"> </i> </a>
+				</div>
+			</div>
+		{% endif %}	
+
+	</div>			
+</div>
+
+<div class="card shadow mt-3 mb-4">
+
+	<div class="card-header">Invio newletter</div>
+	
+	<div class="card-body" id="panelInvioEmailID">
+
+		<p><big>Avvio invio newsletter alle email indicate!</big></p>
+		<p>Siete pregati di attendere fino al messaggio di fine invio.</p>
+
+	</div>
+	<div class="card-footer text-center">
+
+		<a href="javascript:void(0)" class="btn btn-primary" id="sendnewsletterID">Invia Newsletter</a>
+
+
+
+	</div>
+</div>

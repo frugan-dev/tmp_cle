@@ -1,0 +1,225 @@
+<!-- Hero Section-->
+<section class="hero hero-page">
+    <div {% if App.moduleData.imageheader !=''
+        %}style="background: url({{ UPLOADDIR }}/contacts/{{ App.moduleData.imageheader }})" {% endif %}
+        class="hero-banner"> </div>
+</section>
+<!-- Contact page-->
+<section class="contact">
+    <div class="container">
+        <nav aria-label="breadcrumb" role="navigation">
+            <ol class="breadcrumb">
+                {% if App.breadcrumbs.items is iterable and App.breadcrumbs.items|length > 0 %}
+                {% for key,value in App.breadcrumbs.items %}
+                <li aria-current="page" class="{{ value.class }}">
+                    {% if value.url != '' %}
+                    <a href="{{ value.url }}" title=" {{ value.title }}">{{ value.title }}</a>
+                    {% else %}
+                    {{ value.title }}
+                    {% endif %}
+                </li>
+                {% endfor %}
+                {% endif %}
+            </ol>
+        </nav>
+        <h1 class="mb-4">{{ App.moduleData.title }}</h1>
+        {% if App.moduleConfig.text_intro != '' %}
+        <div class="lead mb-5">
+            {{ App.moduleConfig.text_intro|raw }}
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="contact-icon">
+                    <div class="icon icon-map-1"></div>
+                </div>
+                <h3>{{ LangVars['indirizzo']|capitalize }}</h3>
+                <p> 
+                    {{ GlobalSettings['azienda indirizzo'] }}<br>
+                    {{ GlobalSettings['azienda cap'] }} {{ GlobalSettings['azienda comune'] }},<br> 
+                    <strong> {{ GlobalSettings['azienda nazione'] }} </strong></p>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-icon">
+                    <div class="icon icon-support"></div>
+                </div>
+                <h3>{{ LangVars['call center']|capitalize }}</h3>
+                <p>{{ LangVars['call center text'] }}</p>
+                <li><strong><a href="tel:+390512097105" title="Call this number" target="_blank">+39 051 2097105</a></strong> </li>
+                <li><strong><a href="tel:+390512097230" title="Call this number" target="_blank">+39 051 2097230</a></strong> </li>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-icon">
+                    <div class="icon icon-envelope"></div>
+                </div>
+                <h3>{{ LangVars['supporto elettronico']|capitalize }}</h3>
+                <p>{{ LangVars['supporto elettronico text'] }}</p>
+                <ul class="list-style-none">
+                    <li><strong><a href="mailto:bruna.conconi@unibo.it">bruna.conconi@unibo.it</a></strong></li>
+                    <li><strong><a href="mailto:lucia.manservisi@unibo.it">lucia.manservisi@unibo.it</a></strong></li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if App.cookiesThirdyParts == true %}
+    <div id="map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1955.3052919337822!2d11.348336974508799!3d44.48961633660539!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x477fd4c7662a8833%3A0xb20e61deeb904ece!2sDipartimento%20di%20Lingue%2C%20Letterature%20e%20Culture%20Moderne%20-%20LILEC%20%7C%20Universit%C3%A0%20di%20Bologna!5e0!3m2!1sit!2sit!4v1640704579482!5m2!1sit!2sit" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+{% endif %}
+
+<section class="contact">
+
+    <div class="container">
+        <h2 class="mb-5">{{ LangVars['modulo contatti']|capitalize }}</h2>
+        <div class="row">
+            <div class="col-md-7">
+                <form id="contact-form" name="contactForm" id="contactFormID" method="post" action="{{ URLSITE }}{{ CoreRequest.action }}/send" class="custom-form form">
+                    <div class="controls">
+
+                        {{ App.systemMessages }}
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="nameID" class="form-label">{{ Lang['nome']|capitalize }} *</label>
+                                    <input 
+                                        type="text" 
+                                        name="name" 
+                                        id="nameID" 
+                                        required="required" 
+                                        class="form-control"
+                                        placeholder="{{ LangVars['inserisci un %ITEM%']|replace({ '%ITEM%': LangVars['nome'] })|capitalize }}"
+                                        {% set label = LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['nome'] }) %}
+                                        oninvalid="this.setCustomValidity('{{ label }}')" 
+                                        oninput="setCustomValidity('')"
+                                        value=""
+                                        >
+                                        <small for="nameID" class="form-control-feedback"
+                                            data-mess="{{ LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['nome'] }) }}">
+                                        </small>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="emailID" class="form-label">{{ Lang['indirizzo email']|capitalize }} *</label>
+                                    <input 
+                                    type="email" 
+                                    name="email" 
+                                    id="emailID"
+                                    required="required" 
+                                    class="form-control"
+                                    placeholder="{{ LangVars['inserisci un %ITEM%']|replace({ '%ITEM%': LangVars['indirizzo email valido'] })|capitalize }}"
+                                    {% set label = LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['indirizzo email valido'] }) %}
+                                    oninvalid="this.setCustomValidity('{{ label }}')" 
+                                    oninput="setCustomValidity('')"
+                                    value=""
+                                    >
+                                    <small for="nameID" class="form-control-feedback"
+                                    data-mess="{{ LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['indirizzo email valido'] }) }}">
+                                    </small>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                       
+                        <div class="form-group">
+                            <label for="objectID" class="form-label">{{ LangVars['oggetto']|capitalize }} *</label>
+                            <input 
+                            type="object" 
+                            name="object" 
+                            id="objectID" 
+                            required="required" 
+                            class="form-control"
+                            placeholder="{{ LangVars['inserisci un %ITEM%']|replace({ '%ITEM%': LangVars['oggetto'] })|capitalize }}"
+                            {% set label = LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['oggetto'] }) %}
+                            oninvalid="this.setCustomValidity('{{ label }}')" 
+                            oninput="setCustomValidity('')"
+
+                            value=""
+                            >
+                            <small for="nameID" class="form-control-feedback"
+                                    data-mess="{{ LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['oggetto'] }) }}">
+                            </small>
+                        </div>
+                       
+                       
+                        <div class="form-group">
+                            <label for="message" class="form-label">{{ LangVars['messaggio']|capitalize }} *</label>
+                            <textarea 
+                            rows="4" 
+                            name="message" 
+                            id="messageID"
+                            required="required" 
+                            class="form-control"    
+                            placeholder="{{ LangVars['inserisci un %ITEM%']|replace({ '%ITEM%': LangVars['messaggio'] })|capitalize }}"
+                            {% set label = LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['messaggio'] }) %}
+                            oninvalid="this.setCustomValidity('{{ label }}')" 
+                            oninput="setCustomValidity('')"></textarea>
+                            <small for="nameID" class="form-control-feedback"
+                                        data-mess="{{ LangVars['Devi inserire un %ITEM%!']|replace({ '%ITEM%': LangVars['messaggio'] }) }}">
+                            </small>
+                        </div>
+
+
+                        <div class="form-group">
+                            <input 
+                            required 
+                            name="privacy" 
+                            type="checkbox" 
+                            id="privacyID" 
+                            class="" 
+                            value="1" 
+                            {% set label = LangVars['Devi accettare i termini e le condizioni relativi alla Privacy Policy!'] %}
+                            oninvalid="this.setCustomValidity('{{ label }}')" 
+                            oninput="setCustomValidity('')"                            
+                            >
+
+
+                            {{ LangVars['autorizzo il trattamento della']|capitalize }}
+                             (<a href="{{ App.moduleConfig.url_privacy_page }}" title="{{ LangVars['autorizzo il trattamento della']|capitalize }} {{ LangVars['privacy policy'] }}" target="_blank">{{ LangVars['privacy policy'] }}</a>)
+                            <br>
+                        </div>
+
+                        <input type="hidden" name="csrftoken" id="csrftokenID" value="{{ Session['csrftoken'] }}">
+                        <input type="hidden" name="recaptcha_response" id="recaptchaResponse">
+                        <button type="submit" class="btn btn-primary">Send message</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-5">
+
+                {% if App.moduleConfig.page_content != '' %}
+                    <p class="text-muted text-small">{{ App.moduleConfig.page_content|raw }}</p>
+                {% endif %}
+                
+                <!-- <div class="social">
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><a href="javascript:fbshareCurrentPage()" title="Share on facebook"><i class="fa fa-facebook"></i></a>
+                        </li>
+                        <li class="list-inline-item"><a href="javascript:twitshareCurrentPage()" title="Share on twitter"><i class="fa fa-twitter"></i></a>
+                        </li>
+                    </ul>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type=text/javascript>
+  function fbshareCurrentPage(){
+    window.open("https://www.facebook.com/sharer/sharer.php?u={{ App.meta_og_url }}&t={{ App.meta_og_title }}","","menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600")
+  }
+
+  function twitshareCurrentPage(){
+    var n = escape('{{ App.meta_og_url }}');
+    window.open("http://twitter.com/share?url={{ App.meta_og_url }}&text={{ App.meta_og_title }}","twitterwindow","height=450, width=550, top=100,left=100,toolbar=0,location=0,menubar=0, directories=0, scrollbars=0")
+  }
+  
+  function linkedinShareCurrentPage(){
+    window.open("https://www.linkedin.com/sharing/share-offsite/?url={{ App.meta_og_url }}","linkedinwindow","height=450, width=550, top=100, left=100, toolbar=0, location=0, menubar=0, directories=0, scrollbars=0")
+  }
+</script>

@@ -1,0 +1,14 @@
+#imgWaitingID {
+    z-index: 1000;
+    position:absolute;
+    /*visibility: hidden;*/
+    width: 50px;
+    height: 50px; 
+    left: 50%;
+    transform: translate(-50%, 0);
+    background-color: red;
+    background-image: url('../img/progress-icon.gif');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+ }

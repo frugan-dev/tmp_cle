@@ -1,0 +1,115 @@
+<!-- Hero Section-->
+<section class="hero hero-page">
+    <div {% if App.moduleData.imageheader !=''
+        %}style="background: url({{ UPLOADDIR }}/faq/{{ App.moduleData.imageheader }})" {% endif %}
+        class="hero-banner"> </div>
+    <div class="container">
+
+        <nav aria-label="breadcrumb" role="navigation">
+            <ol class="breadcrumb">
+
+                {% if App.breadcrumbs.items is iterable and App.breadcrumbs.items|length > 0 %}
+                {% for key,value in App.breadcrumbs.items %}
+                <li aria-current="page" class="{{ value.class }}">
+                    {% if value.url != '' %}
+                    <a href="{{ value.url }}" title=" {{ value.title }}">{{ value.title }}</a>
+                    {% else %}
+                    {{ value.title }}
+                    {% endif %}
+                </li>
+                {% endfor %}
+                {% endif %}
+
+            </ol>
+        </nav>
+
+        <h1>{{ App.moduleData.title }}</h1>
+<hr>
+        {% if App.moduleConfig.text_intro != '' %}
+        <div class="row">
+            <div class="col-lg-8">{{  App.moduleConfig.text_intro|raw }}</div>
+        </div>
+        {% endif %}
+
+        {% if App.moduleConfig.page_content != '' %}
+        <div class="row">
+            <div class="col-lg-8">{{  App.moduleConfig.page_content|raw }}</div>
+        </div>
+        {% endif %}
+        
+
+        <div class="accordion" id="accordionFaq">
+
+            {% if App.items is iterable and App.items|length > 0 %}
+                {% for key,value in App.items %}
+                <div class="card faq">
+                    <div class="card-header" id="heading{{ loop.index }}">
+                        <h2 class="mb-0">
+                            <button class="btn btn-block text-left button-faq" type="button" data-toggle="collapse"
+                                data-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapseOne">
+                                {{ value.title }}
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="collapse{{ loop.index }}" class="collapse" aria-labelledby="headingOne"
+                        data-parent="#accordionFaq">
+                        <div class="card-body">
+                            {{ value.content }}
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            {% endif %}
+
+        </div>
+
+
+
+
+
+
+        <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a href="{{ App.pageDataUrl }}/page/{{ App.pagination.itemNext }}"
+                        title="{{ LangVars['precedente'] }}" aria-label="Previous" class="page-link"><span
+                            aria-hidden="true">«</span><span class="sr-only">{{
+                            LangVars['precedente'] }}</span></a>
+                </li>
+                {% if App.pagination.pagePrevious is iterable %}
+                {% for key,value in App.pagination.pagePrevious %}
+                <li class="page-item">
+                    <a class="page-link"
+                        title="{{ Lang['vai alla pagina %ITEM%']|replace({'%ITEM%':value })|capitalize }}"
+                        href="{{ App.pageDataUrl }}/page/{{ value }}">{{ value }}</a>
+                </li>
+                {% endfor %}
+                {% endif %}
+                <li class="page-item active">
+                    <a href="{{ App.pageDataUrl }}/page/{{ App.news_pagination.page }}"
+                        title="{{ Lang['vai alla pagina %ITEM%']|replace({'%ITEM%':App.pagination.page })|capitalize }}"
+                        class="page-link">{{ App.pagination.page }}</a>
+                </li>
+                {% if App.pagination.pageNext is iterable %}
+                {% for key,value in App.pagination.pageNext %}
+                <li class="page-item">
+                    <a class="page-link"
+                        title="{{ Lang['vai alla pagina %ITEM%']|replace({'%ITEM%':value })|capitalize }}"
+                        href="{{ App.pageDataUrl }}home/page/{{ value }}">{{ value }}</a>
+                </li>
+                {% endfor %}
+                {% endif %}
+                <li class="page-item">
+                    <a href="{{ App.pageDataUrl }}/page/{{ App.pagination.itemNext }}"
+                        title="{{ LangVars['successivo'] }}" aria-label="Next" class="page-link"><span
+                            aria-hidden="true">»</span><span class="sr-only">{{
+                            LangVars['successivo'] }}</span></a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+
+</section>

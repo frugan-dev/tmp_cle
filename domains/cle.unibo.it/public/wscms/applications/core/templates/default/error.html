@@ -1,0 +1,19 @@
+<!-- Begin Page Content -->
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="jumbotron" class="text-center">
+				<h1>{{ App.error_title }}</h1>
+				<h2>{{ App.error_subtitle }}</h2>
+				{% if App.error_content is defined and App.error_content != '' %}
+					<p class="">{{ App.error_content }}</p>
+					{% if App.error_contentAlt is defined and App.error_contentAlt != '' %}<p>{{ App.error_contentAlt }}</p>{% endif %}	
+				{% endif %}	
+				<a class="btn btn-primary btn-lg" href="{{ URLSITEADMIN }}" title="{{ Lang['torna alla pagina %ITEM%']|replace({'%ITEM%': Lang['home']})|capitalize }}">{{ Lang['torna alla pagina %ITEM%']|replace({'%ITEM%': Lang['home']})|capitalize }}</a>
+
+			</div>
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+</div>
+<!-- /.container-fluid -->

@@ -1,0 +1,171 @@
+<!-- wscms/slides-home-rev/formItem.html v.3.5.4. 05/06/2020 -->
+<div class="row">
+	<div class="col-md-3 new"></div>
+	<div class="col-md-7 help-small-form">{% if App.params.help_small is defined and App.params.help_small != '' %}{{ App.params.help_small }}{% endif %}</div>
+	<div class="col-md-2 help text-right">
+		{% if (App.params.help is defined) and (App.params.help != '') %}
+			<button class="btn btn-warning btn-sm" type="button" data-target="#helpModal" data-toggle="modal">Come funziona?</button>
+		{% endif %}
+	</div>
+</div>
+
+<div class="card shadow mt-3 mb-4">
+	<div class="card-body">
+		<!-- Nav tabs -->
+		<ul class="nav nav-tabs" id="formTab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active" href="#datibase" id="datibase-tab" aria-controls="datibase" aria-selected="true" data-toggle="tab">{{ Lang['dati base']|capitalize }}</a>
+			</li>	
+  		</ul>
+
+		<form id="applicationForm" method="post" class="form-horizontal" role="form" action="{{ URLSITEADMIN }}{{ CoreRequest.action }}/{{ App.methodForm }}"  enctype="multipart/form-data" method="post">
+
+			<!-- Tab panes -->
+			<div class="tab-content">
+
+				<div class="tab-pane fade show active" id="datibase" role="tabpanel" aria-labelledby="datibase">	
+
+					<fieldset>
+						<div class="form-group row">
+								<label for="title_ID" class="col-md-2 control-label">{{ App.params.fields['item']['title']['label'] }}</label>
+								<div class="col-md-7">
+									<input{% if App.params.fields['item']['title']['required'] == true %} required="required"{% endif %} type="text" name="title" id="titleID" class="form-control" value="{{ App.item.title|e('html') }}" placeholder="{{ Lang['inserisci un %ITEM%!']|replace({'%ITEM%': Lang['titolo']}) }}" oninvalid="this.setCustomValidity('{{ Lang['Devi inserire un %ITEM%!']|replace({'%ITEM%': Lang['titolo']}) }}')" oninput="setCustomValidity('')">
+								</div>
+						</div>
+						
+						{% if App.userLoggedData.is_root == 1 %}
+						<hr>
+						<div class="form-group row">
+								<label for="li_data_ID" class="col-md-2 control-label">{{ App.params.fields['item']['li_data']['label'] }}</label>
+								<div class="col-md-7">
+									<textarea type="text" name="li_data" id="li_dataID" class="form-control">{{ App.item.li_data|e('html') }}</textarea>
+								</div>
+						</div>	
+						{% endif %}					
+						<hr>
+						
+						<div class="form-group row">
+							<label for="filenameID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">{{ Lang['immagine']|capitalize }}</label>	
+							<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">	
+								<div class="custom-file">
+									<input{% if App.item.filenameRequired == true %} required{% endif %} 
+									type="file" 
+									name="filename" 
+									id="filenameID" 
+									class="custom-file-input"{% if App.item.filenameRequired == true %} required{% endif %}
+									>
+									<label class="custom-file-label" for="filenameID">{{ Lang['indica un file da caricare']|capitalize }}</label>    							
+								</div>
+							</div>
+  						</div>
+  						
+						<div class="form-group row">
+							<label class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label">{{ Lang['anteprima']|capitalize }}</label>
+							<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+								{% if App.item.filename is defined and App.item.filename != '' %}
+								<a class="" href="{{ App.params.uploadDirs['item'] }}{{ App.item.filename }}" data-lightbox="image-1" data-title="{{ App.item.org_filename }}" title="{{ App.item.org_filename }}">
+									<img  class="img-miniature" src="{{ App.params.uploadDirs['item'] }}{{ App.item.filename }}" alt="{{ App.item.org_filename }}">
+								</a>						
+								{% else %}
+									<img class="img-miniature"  src="{{ UPLOADDIR }}default/image.png" alt="{{ LocalStrings['immagine di default']|capitalize }}">	
+								{% endif %}
+							</div>			
+						</div>
+						{% if App.item.filename is defined and App.item.filename != '' %}
+						<div class="form-group row">
+							<label for="deleteFilenameID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label col-form-label-custom-checkbox">{{ Lang['cancella file']|capitalize }}</label>						
+							<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">													
+								<div class="custom-control custom-checkbox">
+									<input 
+									name="deleteFilename" 
+									id="deleteFilenameID"
+									value="1" 
+									type="checkbox" 
+									class="custom-control-input"
+									>
+									<label class="custom-control-label" for="deleteFilenameID"></label>
+								</div>
+											
+							</div>					
+						</div>
+
+						<div class="form-group row">
+							<label for="hide_imageID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label col-form-label-custom-checkbox">{{ LangVars['nascondi immagine']|capitalize }}</label>						
+							<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">													
+								<div class="custom-control custom-checkbox">
+									<input 
+									name="hide_image" 
+									id="hide_imageID"
+									value="1" 
+									type="checkbox" 
+									class="custom-control-input" 
+									{% if App.item.hide_image == 1 %} checked="checked"{% endif %}
+									>
+									<label class="custom-control-label" for="hide_imageID"></label>
+								</div>
+											
+							</div>					
+						</div>
+
+						{% endif %}
+						<hr>
+						
+						
+						
+						<!-- se e un utente root visualizza l'input altrimenti lo genera o mantiene automaticamente -->	
+						{% if App.userLoggedData.is_root == 1 %}
+
+							<div class="form-group row">
+								<label for="orderingID" class="col-md-2 control-label">{{ Lang['ordine']|capitalize }}</label>
+								<div class="col-md-1">
+									<input type="text" name="ordering" placeholder="{{ Lang['inserisci un ordine']|capitalize }}" class="form-control" id="orderingID" value="{{ App.item.ordering }}">
+								</div>
+							</div>
+							<hr>
+
+						{% else %}
+							<input type="hidden" name="ordering" value="{{ App.item.ordering }}">		
+						{% endif %}
+						<!-- fine se root -->
+					
+
+						<div class="form-group row">
+							<label for="activeID" class="col-sm-12 col-md-12 col-lg-2 col-xl-2 col-form-label col-form-label-custom-checkbox">{{ LangVars['attiva']|capitalize }}</label>						
+							<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">													
+								<div class="custom-control custom-checkbox">
+									<input 
+									name="active" 
+									id="activeID"
+									value="1" 
+									type="checkbox" 
+									class="custom-control-input" 
+									{% if App.item.active == 1 %} checked="checked"{% endif %}
+									>
+									<label class="custom-control-label" for="activeID"></label>
+								</div>
+											
+							</div>					
+						</div>
+
+					</fieldset>					
+				</div>			
+				
+			</div>
+			<!--/Tab panes -->	
+			<hr>			
+			<div class="form-group row">
+				<div class="col-md-6 col-xs-12 text-center">
+					<input type="hidden" name="id" id="idID" value="{{ App.id }}">
+					<input type="hidden" name="method" value="{{ App.methodForm }}">
+					<button type="submit" name="submitForm" value="submit" class="btn btn-primary submittheform">{{ Lang['invia']|capitalize }}</button>
+					{% if App.id > 0 %}
+						<button type="submit" name="applyForm" value="apply" class="btn btn-primary submittheform ml-5">{{ Lang['applica']|capitalize }}</button>
+					{% endif %}
+				</div>
+				<div class="col-md-6 col-xs-12 text-right">				
+					<a href="{{ URLSITEADMIN }}{{ CoreRequest.action }}/list" title="{{ Lang['torna alla %ITEM%']|replace({'%ITEM%': Lang['lista']})|capitalize }}" class="btn btn-success">{{ Lang['indietro']|capitalize }}</a>
+				</div>
+			</div>	
+		</form>
+	</div>
+</div>

@@ -1,0 +1,144 @@
+<!-- Hero Section -->
+<section class="hero hero-page">
+    <div {% if App.moduleData.imageheader != '' %}style="background: url({{ UPLOADDIR }}/news/{{ App.moduleData.imageheader }})"{% endif %} class="hero-banner"> </div>
+</section>
+<!-- Blog Listings-->
+<section class="blog-listings">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb" role="navigation">
+                    <ol class="breadcrumb">
+                        {% if App.breadcrumbs.items is iterable and App.breadcrumbs.items|length > 0 %}
+                        {% for key,value in App.breadcrumbs.items %}
+                        <li aria-current="page" class="{{ value.class }}">
+                          {% if value.url != '' %}
+                          <a href="{{ value.url }}" title=" {{ value.title }}">{{ value.title }}</a>
+                          {% else %}
+                          {{ value.title }}
+                          {% endif %}
+                        </li>
+                        {% endfor %}
+                      {% endif %}
+                    </ol>
+                </nav>
+                <h1>{{ App.moduleData.title }}</h1>
+
+                {% if App.moduleConfig.text_intro != '' %}
+                <div class="row">
+                    <div class="col-lg-8">{{  App.moduleConfig.text_intro|raw }}</div>
+                </div>
+                {% endif %}
+
+                {% if App.moduleConfig.page_content != '' %}
+                <div class="row">
+                    <div class="col-lg-8">{{  App.moduleConfig.page_content|raw }}</div>
+                </div>
+                {% endif %}
+
+                <div class="row mt-5">
+                    {% if App.items is iterable and App.items|length > 0 %}
+                        {% for value in App.items %}
+
+                        <div class="col-md-6">
+                            <div class="blog-post">
+                                <div class="image text-center">
+                                    {% if value.filename != '' %}
+                                       <img src="{{ UPLOADDIR }}news/{{ value.filename }}" alt="{{ value.org_filename }}">
+
+                                    {% elseif value.video != '' %}
+                                        {{ value.video|raw }}
+
+                                    {% else %}
+                                        <img src="{{ UPLOADDIR }}default/image.png" alt="{{ value.title }}">
+                                    {% endif %}
+
+                                    {% if value.video == '' %}
+                                    <div class="overlay d-flex align-items-center justify-content-center">
+                                        <a href="{{ value.urlItem }}" title="{{ value.title }}" class="btn btn-outline-light">{{ LangVars['Read More'] }}</a>
+                                    </div>
+                                    {% endif %}
+
+                                </div>
+
+                                <div class="text bg-gray"><a href="{{ value.urlItem }}" title="{{ value.title }}">
+                                        <h4 class="text-this">{{ value.title }}</h4>
+                                    </a>
+                                    <ul class="post-meta list-inline">
+                                        <li class="list-inline-item"><i class="icon-clock-1"></i> {{ value.dataformatted }}</li>
+                                    </ul>
+                                    <p>{{ value.summary|striptags|slice(0, 200) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+                    <ul class="pagination">
+                      <li class="page-item">
+                        <a href="{{ App.pageDataUrl }}/page/{{ App.pagination.itemPrevious }}" title="{{ LangVars['precedente'] }}"
+                          aria-label="Previous" class="page-link"><span aria-hidden="true">«</span><span class="sr-only">{{
+                            LangVars['precedente'] }}</span></a>
+                      </li>
+                      {% if App.pagination.pagePrevious is iterable %}
+                      {% for key,value in App.pagination.pagePrevious %}
+                      <li class="page-item">
+                        <a class="page-link" title="{{ Lang['vai alla pagina %ITEM%']|replace({'%ITEM%':value })|capitalize }}"
+                          href="{{ App.pageDataUrl }}/page/{{ value }}">{{ value }}</a>
+                      </li>
+                      {% endfor %}
+                      {% endif %}
+                      <li class="page-item active">
+                        <a href="javascript::void(0)"
+                          title="{{ Langvars['pagina']}} {{ App.pagination.page }}"
+                          class="page-link">{{ App.pagination.page }}</a>
+                      </li>
+                      {% if App.pagination.pageNext is iterable %}
+                        {% for key,value in App.pagination.pageNext %}
+                        <li class="page-item">
+                            <a class="page-link" title="{{ Lang['vai alla pagina %ITEM%']|replace({'%ITEM%':value })|capitalize }}"
+                            href="{{ App.pageDataUrl }}/page/{{ value }}">{{ value }}</a>
+                        </li>
+                        {% endfor %}
+                      {% endif %}
+                      <li class="page-item">
+                        <a href="{{ App.pageDataUrl }}/page/{{ App.pagination.itemNext }}" title="{{ LangVars['successivo'] }}"
+                          aria-label="Next" class="page-link"><span aria-hidden="true">»</span><span class="sr-only">{{
+                            LangVars['successivo'] }}</span></a>
+                      </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-lg-4">
+                <!-- sidebar-->
+                <div class="blog-sidebar">
+
+                    <div class="widget categoris">
+                        <div class="widget-header"><strong>{{ LangVars['categorie']|capitalize }}</strong></div>
+                        <div class="widget-body">
+                            <ul class="categoris-list list-unstyled">
+                                <li class="active"><a href=""{{ URLSITE }}{{ CoreRequest.action }}/idcat/0" title="{{
+                                    LangVars['categorie'] }} {{
+                                    LangVars['tutte'] }}" class="d-flex align-items-end justify-content-between"><strong>{{
+                                            LangVars['tutte']|capitalize }}</strong><strong>{{ App.category_all_tot_news
+                                            }}</strong></a></li>
+                                {% if App.news_categories is iterable and App.news_categories|length > 0 %}
+                                {% for value in App.news_categories %}
+                                <li><a href="{{ URLSITE }}{{ CoreRequest.action }}/idcat/{{ value.id }}" title="{{
+                                    LangVars['categoria'] }} {{
+                                        value.title }}" class="d-flex align-items-end justify-content-between"><strong>{{
+                                            value.title }}</strong><strong>{{ value.category_news
+                                            }}</strong></a></li>
+                                {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

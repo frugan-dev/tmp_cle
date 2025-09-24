@@ -1,0 +1,28 @@
+Versione 3.5.4
+- aggiornamento classi php via composer
+- sd-admin 					3.3.7 + 1
+- tinymce 					5.0.3 (2019-04-32)
+- bootstrap-datetimepicker-master 		4.17.47
+- moment-develop 				2.10.0
+
+Versione 3.5.3
+- New encript pawwsord method (PHP7)
+
+Versione 3.5.1
+- twig/twig:				2.0
+- swiftmailer/swiftmailer: 		6.0
+- soundasleep/html2text: 		0.5.0
+- mos/cimage 				0.7.20
+
+Versione 3.5.0
+- Twig 2.4.3
+
+
+Versione 2.5.0:
+
+- tinymce 4.2.5 (2015-08-31)
+
+Versione 2.1.0:
+
+- Font Awesome 4.2.0
+- Savant3 3.0.1
