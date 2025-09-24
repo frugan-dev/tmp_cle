@@ -46,7 +46,6 @@ switch(Core::$request->method) {
 
 		$title = $App->newsletterDetails->title_it;
 	
-
 		$file = ADMIN_PATH_UPLOAD_DIR.$App->templatesFolder.$App->newsletterDetails->template;
 		$urldelete = URL_SITE.$App->settings['admin url delete address']->value_it;
 		$App->newsletterDetails->content_it = ToolsStrings::parseHtmlContent($App->newsletterDetails->content_it,['customtag'=>'{{PATHNEWSLETTER}}','customtagvalue'=>UPLOAD_DIR.$App->templatesFolder]);
@@ -82,26 +81,24 @@ switch(Core::$request->method) {
 						$mailbodySend = $mailbody;
 						$mailbodySend = preg_replace('/%URLDELETE%/',$urldelete.'/'.$value->hash,(string) $mailbodySend);
 
-						// imposto la email
-						$mail = new PHPMailer();			
-						$mail->SetFrom($App->settings['admin email address']->value_it,$App->settings['admin label email address']->value_it);
-						//$mail->addCustomHeader("Return-Receipt-To: robymant@tiscali.it");
-						//$mail->AddReplyTo('robymant@tiscali.it','Framework Newsletter');	
-						$mail->IsHTML(true);
-						$mail->CharSet = 'UTF-8';
-
-						// invio newsletter			
-						$mail->Subject = $title;
-						$mail->AltBody = strip_tags((string) $mailbodySend);
-						$mail->MsgHTML($mailbodySend);
-						$mail->AddAddress($value->email,$value->email);
+						// Use Mails class instead of PHPMailer directly
+						$opt = [];
+						$opt['fromEmail'] = $App->settings['admin email address']->value_it;
+						$opt['fromLabel'] = $App->settings['admin label email address']->value_it;
+						
 						if (isset($App->settings['send emails for debug']->value_it) && $App->settings['send emails for debug']->value_it == 1) {
 							if (isset($App->settings['email address for debug']->value_it) && $App->settings['email address for debug']->value_it != '') {
-								$mail->AddBcc($App->settings['email address for debug']->value_it);
+								$opt['sendDebug'] = 1;
+								$opt['sendDebugEmail'] = $App->settings['email address for debug']->value_it;
 							}
 						}
 
-						if (!$mail->Send()) {							
+						$textContent = strip_tags((string) $mailbodySend);
+						
+						// Send using Mails class
+						Mails::sendEmail($value->email, $title, $mailbodySend, $textContent, $opt);
+						
+						if (Core::$resultOp->error > 0) {							
 							$listEmail .= '<li class="text-danger">'.$value->email.' -> Attenzione: errore invio!</li>';
 				  			$mailSubmited = false;										  		
 						} else {
@@ -116,11 +113,9 @@ switch(Core::$request->method) {
 
 					}
 
-
 					// crea ciclo attesa php
 					$mul = 1;
 					while ($mul <= 30000000) $mul++;
-
 
 				}
 			}
@@ -138,9 +133,7 @@ switch(Core::$request->method) {
 					$('#panelInvioEmailID').load(url);
 					});";
 
-
 		} else {
-
 
 			// setta i paremetri inviata nella newsletter
 			Sql::initQuery($App->params->tables['new'],['datatimesent','sent'],[$now,'1',$newsletter_id],'id = ?');

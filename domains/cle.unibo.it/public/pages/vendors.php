@@ -51,7 +51,6 @@ if (Core::$resultOp->error == 0) {
 							//$App->item->email = 'robyfofo@gmail.com'; // per debug
 							
 							/* manda email alla sede */
-							include_once(PATH."wscms/classes/class.phpmailer.php");
 							$subject = 'Messaggio inviato dal modulo contatti Rete Vendita del sito MBF';
 							$content = Config::$moduleConfig['email content']->value_it;
 							$content = preg_replace('/{COMPANY}/',(string) $_POST['company'],(string) $content);
@@ -61,18 +60,22 @@ if (Core::$resultOp->error == 0) {
 							$content = preg_replace('/{TELEPHONE}/',(string) $_POST['telephone'],(string) $content);	
 							$content = preg_replace('/{OBJECT}/',(string) $_POST['object'],(string) $content);	
 							$content = preg_replace('/{MESSAGE}/',(string) $_POST['message'],(string) $content);				
-							$mail = new PHPMailer();
-							$mail->SetFrom($_POST['email'],$_POST['email']);
-							$mail->IsHTML(true);
-							$mail->CharSet = 'UTF-8';
-							$mail->Subject = $subject;
-							$mail->AltBody = strip_tags((string) $content);
-							$mail->MsgHTML($content);
-							$mail->AddAddress( Config::$moduleConfig['email address']->value_it);
-							if ( Config::$moduleConfig['send copy email for debug']->value_it == 1) {
-								if ( Config::$moduleConfig['email address for debug']->value_it != '') $mail->AddBCC( Config::$moduleConfig['email address for debug']->value_it);
-								}					
-							if ($mail->Send()) {					
+							
+							$opt = [];
+							$opt['fromEmail'] = $_POST['email'];
+							$opt['fromLabel'] = $_POST['email'];
+							
+							if (Config::$moduleConfig['send copy email for debug']->value_it == 1) {
+								if (Config::$moduleConfig['email address for debug']->value_it != '') {
+									$opt['sendDebug'] = 1;
+									$opt['sendDebugEmail'] = Config::$moduleConfig['email address for debug']->value_it;
+								}
+							}
+							
+							$textContent = strip_tags((string) $content);
+							Mails::sendEmail(Config::$moduleConfig['email address']->value_it, $subject, $content, $textContent, $opt);
+							
+							if (Core::$resultOp->error == 0) {					
 								/* manda la email alla rete vendita */
 								$subject = 'Messagge sent from contacts module Rete Vendita of MBF site';
 								$content = "Was sent a message from contacts module Rete Vendita of MBF site.<br><br><b>Company:</b> {COMPANY}<br><b>Name:</b> {NAME}<br><b>Surname:</b> {SURNAME}<br><b>Email:</b> {EMAIL}<br><b>Telephone:</b> {TELEPHONE}<br><br><b>Object:</b> {OBJECT}<br><br><b>Message:</b><br>{MESSAGE}";
@@ -84,39 +87,43 @@ if (Core::$resultOp->error == 0) {
 								$content = preg_replace('/{OBJECT}/',(string) $_POST['object'],(string) $content);	
 								$content = preg_replace('/{MESSAGE}/',(string) $_POST['message'],(string) $content);	
 								
-								$mail = new PHPMailer();
-								$mail->SetFrom($_POST['email'],$_POST['email']);						
-								$mail->IsHTML(true);
-								$mail->CharSet = 'UTF-8';
-								$mail->Subject = $subject;
-								$mail->AltBody = strip_tags((string) $content);
-								$mail->MsgHTML($content);
-								$mail->AddAddress($App->item->email);
-								if ( Config::$moduleConfig['send copy email for debug']->value_it == 1) {
-									if ( Config::$moduleConfig['email address for debug']->value_it != '') $mail->AddBCC( Config::$moduleConfig['email address for debug']->value_it);
-									}					
-								if ($mail->Send()) {
+								$opt = [];
+								$opt['fromEmail'] = $_POST['email'];
+								$opt['fromLabel'] = $_POST['email'];
+								
+								if (Config::$moduleConfig['send copy email for debug']->value_it == 1) {
+									if (Config::$moduleConfig['email address for debug']->value_it != '') {
+										$opt['sendDebug'] = 1;
+										$opt['sendDebugEmail'] = Config::$moduleConfig['email address for debug']->value_it;
+									}
+								}
+								
+								$textContent = strip_tags((string) $content);
+								Mails::sendEmail($App->item->email, $subject, $content, $textContent, $opt);
+								
+								if (Core::$resultOp->error == 0) {
 									/* manda la email di conferma all'utente */							
 									$subject = Config::$moduleConfig['user email subject']->value_it;
 									$content = Config::$moduleConfig['user email content']->value_it;					
-									$mail = new PHPMailer();
-									$mail->SetFrom($App->item->email,$App->item->email);		
-									$mail->IsHTML(true);
-									$mail->CharSet = 'UTF-8';
-									$mail->Subject = $subject;
-									$mail->AltBody = strip_tags((string) $content);
-									$mail->MsgHTML($content);	
-									$mail->AddAddress($_POST['email']);					
-									if ( Config::$moduleConfig['send copy email for debug']->value_it == 1) {
-										if ( Config::$moduleConfig['email address for debug']->value_it != '') $mail->AddBCC( Config::$moduleConfig['email address for debug']->value_it);
-										}					
-									if ($mail->Send()) {									
-										}						
+									
+									$opt = [];
+									$opt['fromEmail'] = $App->item->email;
+									$opt['fromLabel'] = $App->item->email;
+									
+									if (Config::$moduleConfig['send copy email for debug']->value_it == 1) {
+										if (Config::$moduleConfig['email address for debug']->value_it != '') {
+											$opt['sendDebug'] = 1;
+											$opt['sendDebugEmail'] = Config::$moduleConfig['email address for debug']->value_it;
+										}
 									}
+									
+									$textContent = strip_tags((string) $content);
+									Mails::sendEmail($_POST['email'], $subject, $content, $textContent, $opt);
 								}
+							}
 						} else {
 							echo 'email rete vendita non presente!';
-							}
+						}
 					}
 					
 				} else {

@@ -244,19 +244,9 @@ class SanitizeStrings extends Core {
 		
 	/* SEZIONE CONTROLLO STRINGHE */
 	
-	public static function validateEmail($email) {
-		//by Femi Hasani [www.vision.to]
-		if(!preg_match ("/^[\w\.-]{1,}\@([\da-zA-Z-]{1,}\.){1,}[\da-zA-Z-]+$/", (string) $email)) return false;
-		[$prefix, $domain] = preg_split("/@/",(string) $email);
-		if (function_exists("getmxrr") && getmxrr($domain, $mxhosts)) {
-			return true;
-			}
-			elseif (@fsockopen($domain, 25, $errno, $errstr, 5)) {
-	  			return true;
-	  			} else {
-	  				return false;
-	  				}
-		}	
+	public static function validateEmail($email, $strictMode = true) {
+    	return Form::validateEmail($email, $strictMode);
+	}	
 		
 	public static function sanitizeEmail($email) {
 		$email = filter_var($email, FILTER_SANITIZE_EMAIL);

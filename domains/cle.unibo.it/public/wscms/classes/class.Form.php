@@ -9,14 +9,16 @@
  *	classes/class.Form.php v.1.3.0. 11/09/2020
  */
 
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\MultipleValidationWithAnd;
+use Egulias\EmailValidator\Validation\RFCValidation;
+use Egulias\EmailValidator\Validation\NoRFCWarningsValidation;
+use Egulias\EmailValidator\Validation\DNSCheckValidation;
+use Egulias\EmailValidator\Validation\MessageIDValidation;
+use Egulias\EmailValidator\Validation\SpoofCheckValidation;
+
 class Form extends Core
 {
-
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
 	public static function getUpdateRecordFromPostResults($id, $resultOp, $opt)
 	{
 		$optDef = ['label done' => 'modifiche effettuate', 'modviewmethod' => 'formMod', 'label modified' => 'voce modificata', 'label modify' => 'modifica voce', 'label insert' => 'inserisci voce'];
@@ -383,33 +385,56 @@ class Form extends Core
 		return filter_var($value, FILTER_VALIDATE_FLOAT);
 	}
 
-	public static function validateEmail($email)
+	public static function validateEmail($email, $strictMode = true)
 	{
+	    if (empty($email)) {
+	        return false;
+	    }
 
-		 // Regular expression pattern for email validation
-    $pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
+	    $validator = new EmailValidator();
+	
+	    $validations = [
+            // Standard RFC-like email validation.
+            new RFCValidation(), 
 
-    // Check if the email matches the pattern
-    if (preg_match($pattern, (string) $email)) {
-        return true; // Email is valid
-    } else {
-        return false; // Email is invalid
-    }
+            // RFC-like validation that will fail when warnings* are found.
+            new NoRFCWarningsValidation()
+        ];
+	
+	    // Add heavy validations only in strict mode
+	    if ($strictMode) {
+			// Will check if there are DNS records that signal that the server accepts emails.
+            // This does not entails that the email exists.
+	        $validations[] = new DNSCheckValidation();
 
-    /*
-		//echo $email;
-		//by Femi Hasani [www.vision.to]
+			// Follows RFC2822 for message-id to validate that field, that has some differences in the domain part.
+	        $validations[] = new MessageIDValidation();
 
-		if (!preg_match("/^[\w\.-]{1,}\@([\da-zA-Z-]{1,}\.){1,}[\da-zA-Z-]+$/", $email)) return false;
-		list($prefix, $domain) = preg_split("/@/", $email);
-		if (function_exists("getmxrr") && getmxrr($domain, $mxhosts)) {
-			return true;
-		} elseif (@fsockopen($domain, 25, $errno, $errstr, 5)) {
-			return true;
-		} else {
-			return false;
-		}
-		*/
+			// Will check for multi-utf-8 chars that can signal an erroneous email name.
+	        $validations[] = new SpoofCheckValidation();
+	    }
+	
+	    $multipleValidations = new MultipleValidationWithAnd($validations);
+	    $isValid = $validator->isValid($email, $multipleValidations);
+
+	    // Log if email is invalid or has warnings
+	    if (!$isValid || $validator->hasWarnings()) {
+	        $warnings = [];
+	        if ($validator->hasWarnings()) {
+	            foreach ($validator->getWarnings() as $warning) {
+	                $warnings[] = $warning->__toString();
+	            }
+	        }
+
+	        Logger::warning('Email validation issue for address: {email}', [
+	            'email' => $email,
+	            'valid' => $isValid,
+	            'warnings' => $warnings,
+	            'strict_mode' => $strictMode
+	        ]);
+	    }
+
+	    return $isValid;
 	}
 
 	public static function validateMinMaxValues($valuesrif,$labelField,$minvalue,$maxvalue)

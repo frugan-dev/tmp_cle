@@ -438,7 +438,7 @@ class Orders extends Core
 
 			$opt['sendDebug'] = Core::$globalSettings['send email debug'];
 			$opt['sendDebugEmail'] = Core::$globalSettings['email debug'];
-			Mails::sendMail($user->email, $titolo, $textHtml, $textPlain, $opt);
+			Mails::sendEmail($user->email, $titolo, $textHtml, $textPlain, $opt);
 			//Core::$resultOp->error = 1;
 			if (Core::$resultOp->error > 0) {
 				ToolsStrings::redirect(URL_SITE . 'error/mail/Errore invio della email ordine al cliente!');
@@ -489,7 +489,7 @@ class Orders extends Core
 		}
 		$opt['addBCC'] = $address;
 		if ($email != '') {
-			Mails::sendMail($email, $titolo, $textHtml, $textPlain, $opt);
+			Mails::sendEmail($email, $titolo, $textHtml, $textPlain, $opt);
 			//Core::$resultOp->error = 1;
 			if (Core::$resultOp->error > 0) {
 				ToolsStrings::redirect(URL_SITE . 'error/mail/Errore invio della email ordine al fornitore!');
