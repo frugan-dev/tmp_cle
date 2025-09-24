@@ -67,7 +67,7 @@ switch(Core::$request->method) {
 			Sql::initQuery($App->params->tables['laye'],['id'],[$App->id],'slide_id = ?');
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 			if (Sql::countRecord() > 0) {
-				$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) $_lang['layers'],(string) $_lang['Ci sono ancora %ITEM% associati!']));
+				$_SESSION['message'] = '2|'.ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['layers'],(string) $_lang['Ci sono ancora %ITEM% associati!']));
 				ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');				
 			}	
 			
@@ -84,7 +84,7 @@ switch(Core::$request->method) {
 				@unlink($App->params->uploadPaths['item'].$App->itemOld->filename);			
 			}
 							
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% cancellato'])).'!';	
+			$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% cancellato'])).'!';	
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');		
 		} else {
 			ToolsStrings::redirect(URL_SITE.'error/404');
@@ -135,7 +135,7 @@ switch(Core::$request->method) {
 			move_uploaded_file(ToolsUpload::getTempFilename(),$App->params->uploadPaths['item'].$_POST['filename']) or die('Errore caricamento file');
 		}	
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% inserita']));
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% inserita']));
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 	break;
 
@@ -197,7 +197,7 @@ switch(Core::$request->method) {
 					}	   			
 			}
 
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% modificata']));
+			$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% modificata']));
 			if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 				ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyItem/'.$App->id);
 			} else {
@@ -298,8 +298,8 @@ switch((string)$App->viewMethod) {
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
 		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,(string) $App->paginationTitle);
 
 		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['voci'],(string) Config::$langVars['lista %ITEM%']);
 		$App->templateApp = 'listItem.html';	

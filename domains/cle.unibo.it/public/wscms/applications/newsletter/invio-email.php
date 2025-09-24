@@ -92,7 +92,7 @@ switch(Core::$request->method) {
 
 						// invio newsletter			
 						$mail->Subject = $title;
-						$mail->AltBody = strip_tags($mailbodySend);
+						$mail->AltBody = strip_tags((string) $mailbodySend);
 						$mail->MsgHTML($mailbodySend);
 						$mail->AddAddress($value->email,$value->email);
 						if (isset($App->settings['send emails for debug']->value_it) && $App->settings['send emails for debug']->value_it == 1) {

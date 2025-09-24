@@ -18,8 +18,8 @@ if (isset($_POST['id'])) $App->id = intval($_POST['id']);
 $App->templateBase = 'struttura-login.html';
 
 $section = preg_replace('/%ITEM%/',(string) $_lang['login'],(string) $_lang['torna al %ITEM%']);
-$section1 = '<a href="'.URL_SITE_ADMIN.'" title="'.ucfirst($section).'">'.ucfirst((string) $_lang['login']).'</a>';
-$App->returnlink = ucfirst(preg_replace('/%ITEM%/',$section1,(string) $_lang['torna al %ITEM%']));
+$section1 = '<a href="'.URL_SITE_ADMIN.'" title="'.ucfirst((string) $section).'">'.ucfirst((string) $_lang['login']).'</a>';
+$App->returnlink = ucfirst((string) preg_replace('/%ITEM%/',$section1,(string) $_lang['torna al %ITEM%']));
 
 if (isset($_POST['submit'])) {
 	if ($_POST['email'] == "") {
@@ -41,8 +41,8 @@ if (isset($_POST['submit'])) {
 				$titolo = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $titolo);
 				$testo = $_lang['testo email sezione richiesta username'];
 				$testo = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $testo);
-				$testo = preg_replace('/%EMAIL%/',(string) $email,$testo);
-				$testo = preg_replace('/%USERNAME%/',(string) $App->item->username,$testo);
+				$testo = preg_replace('/%EMAIL%/',(string) $email,(string) $testo);
+				$testo = preg_replace('/%USERNAME%/',(string) $App->item->username,(string) $testo);
 				$text_plain = Html2Text::convert($testo);
 				//echo $titolo;echo $testo;die();
 				$opt = [];

@@ -28,7 +28,7 @@ switch(Core::$request->method) {
 		Sql::initQuery($App->params->tables['tags'],['id'],[$App->id],'id = ?');
 		Sql::deleteRecord();
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['tag'],(string) Config::$langVars['%ITEM% cancellato'])).'!';	
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['tag'],(string) Config::$langVars['%ITEM% cancellato'])).'!';	
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTags');
 
 	break;
@@ -54,7 +54,7 @@ switch(Core::$request->method) {
 		Sql::insertRawlyPost($App->params->fields['tags'],$App->params->tables['tags']);
 		if (Core::$resultOp->error > 0) { die('error insert db'); ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['tag'],(string) Config::$langVars['%ITEM% inserito'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['tag'],(string) Config::$langVars['%ITEM% inserito'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTags');
 
 	break;
@@ -86,7 +86,7 @@ switch(Core::$request->method) {
 		Sql::updateRawlyPost($App->params->fields['tags'],$App->params->tables['tags'],'id',$App->id);
 		if (Core::$resultOp->error > 0) { die('error insert db'); ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['tag'],(string) Config::$langVars['%ITEM% modificato'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['tag'],(string) Config::$langVars['%ITEM% modificato'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTags');		
 	
 	break;
@@ -137,8 +137,8 @@ switch(Core::$request->method) {
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
 		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,(string) $App->paginationTitle);
 		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['categorie'],(string) Config::$langVars['lista delle %ITEM%']);
 		$App->viewMethod = 'list';	
 	break;	

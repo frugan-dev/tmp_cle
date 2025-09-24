@@ -2,7 +2,7 @@
 /*
 	framework siti html-PHP-Mysql
 	copyright 2011 Roberto Mantovani
-	http://www.robertomantovani.vr;it
+	http://www.robertomantovani.vr.it
 	email: me@robertomantovani.vr.it
 	admin/classes/class.Carts.php v.4.5.1. 23/07/2020
 */

@@ -51,7 +51,7 @@ switch(Core::$request->method) {
 			}	   			
 		}
 	
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['configurazione'],(string) Core::$langVars['%ITEM% modificata'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['configurazione'],(string) Core::$langVars['%ITEM% modificata'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/formConf');	
 		die();						
 	break;

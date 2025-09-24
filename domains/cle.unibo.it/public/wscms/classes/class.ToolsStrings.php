@@ -198,34 +198,34 @@ class ToolsStrings extends Core {
 		$opz = array_merge($opzDef,$opz);
 		if ($opz['parseuploads'] == true) {
 			$str = preg_replace('/..\/uploads\//',UPLOAD_DIR,(string) $str);
-			$str = preg_replace('/uploads\//',UPLOAD_DIR,$str);
+			$str = preg_replace('/uploads\//',UPLOAD_DIR,(string) $str);
 			}
 		$str = preg_replace('/%AZIENDAREFERENTE%/',(string) self::$globalSettings['azienda referente'],(string) $str);
-		$str = preg_replace('/%AZIENDAINDIRIZZO%/',(string) self::$globalSettings['azienda indirizzo'],$str);
-		$str = preg_replace('/%AZIENDAPROVINCIA%/',(string) self::$globalSettings['azienda provincia'],$str);
-		$str = preg_replace('/%AZIENDAPROVINCIAABBREVIATA%/',(string) self::$globalSettings['azienda targa'],$str);
-		$str = preg_replace('/%AZIENDATARGA%/',(string) self::$globalSettings['azienda targa'],$str);
-		$str = preg_replace('/%AZIENDACAP%/',(string) self::$globalSettings['azienda cap'],$str);
-		$str = preg_replace('/%AZIENDACOMUNE%/',(string) self::$globalSettings['azienda comune'],$str);
-		$str = preg_replace('/%AZIENDANAZIONE%/',(string) self::$globalSettings['azienda nazione'],$str);		
-		if (isset(Config::$globalSettings['azienda stato'])) $str = preg_replace('/%AZIENDASTATO%/',Config::$globalSettings['azienda stato'],$str);		
-		$str = preg_replace('/%AZIENDAEMAIL%/',(string) self::$globalSettings['azienda email'],$str);
-		$str = preg_replace('/%AZIENDATELEFONO%/',(string) self::$globalSettings['azienda telefono'],$str);
-		$str = preg_replace('/%AZIENDAFAX%/',(string) self::$globalSettings['azienda fax'],$str);
-		if (isset(Config::$globalSettings['azienda mobile'])) $str = preg_replace('/%AZIENDAMOBILE%/',Config::$globalSettings['azienda mobile'],$str);
-		$str = preg_replace('/%AZIENDACODICEFISCALE%/',(string) self::$globalSettings['azienda codice fiscale'],$str);
-		$str = preg_replace('/%AZIENDAPARTITAIVA%/',(string) self::$globalSettings['azienda partita iva'],$str);
-		$str = preg_replace('/%AZIENDALATITUDINE%/',(string) self::$globalSettings['azienda latitudine'],$str);
-		$str = preg_replace('/%AZIENDALONGITUDINA%/',(string) self::$globalSettings['azienda longitudine'],$str);
+		$str = preg_replace('/%AZIENDAINDIRIZZO%/',(string) self::$globalSettings['azienda indirizzo'],(string) $str);
+		$str = preg_replace('/%AZIENDAPROVINCIA%/',(string) self::$globalSettings['azienda provincia'],(string) $str);
+		$str = preg_replace('/%AZIENDAPROVINCIAABBREVIATA%/',(string) self::$globalSettings['azienda targa'],(string) $str);
+		$str = preg_replace('/%AZIENDATARGA%/',(string) self::$globalSettings['azienda targa'],(string) $str);
+		$str = preg_replace('/%AZIENDACAP%/',(string) self::$globalSettings['azienda cap'],(string) $str);
+		$str = preg_replace('/%AZIENDACOMUNE%/',(string) self::$globalSettings['azienda comune'],(string) $str);
+		$str = preg_replace('/%AZIENDANAZIONE%/',(string) self::$globalSettings['azienda nazione'],(string) $str);		
+		if (isset(Config::$globalSettings['azienda stato'])) $str = preg_replace('/%AZIENDASTATO%/',Config::$globalSettings['azienda stato'],(string) $str);		
+		$str = preg_replace('/%AZIENDAEMAIL%/',(string) self::$globalSettings['azienda email'],(string) $str);
+		$str = preg_replace('/%AZIENDATELEFONO%/',(string) self::$globalSettings['azienda telefono'],(string) $str);
+		$str = preg_replace('/%AZIENDAFAX%/',(string) self::$globalSettings['azienda fax'],(string) $str);
+		if (isset(Config::$globalSettings['azienda mobile'])) $str = preg_replace('/%AZIENDAMOBILE%/',Config::$globalSettings['azienda mobile'],(string) $str);
+		$str = preg_replace('/%AZIENDACODICEFISCALE%/',(string) self::$globalSettings['azienda codice fiscale'],(string) $str);
+		$str = preg_replace('/%AZIENDAPARTITAIVA%/',(string) self::$globalSettings['azienda partita iva'],(string) $str);
+		$str = preg_replace('/%AZIENDALATITUDINE%/',(string) self::$globalSettings['azienda latitudine'],(string) $str);
+		$str = preg_replace('/%AZIENDALONGITUDINA%/',(string) self::$globalSettings['azienda longitudine'],(string) $str);
 		
-		$str = preg_replace('/%SITESLOGAN%/',(string) self::$globalSettings['azienda slogan'],$str);
-		$str = preg_replace('/%SITENAME%/',(string) self::$globalSettings['azienda sito'],$str);
+		$str = preg_replace('/%SITESLOGAN%/',(string) self::$globalSettings['azienda slogan'],(string) $str);
+		$str = preg_replace('/%SITENAME%/',(string) self::$globalSettings['azienda sito'],(string) $str);
 
-		$str = preg_replace('/%URLSITE%/',URL_SITE,$str);
-		$str = preg_replace('/{{URLSITE}}/',URL_SITE,$str);
+		$str = preg_replace('/%URLSITE%/',URL_SITE,(string) $str);
+		$str = preg_replace('/{{URLSITE}}/',URL_SITE,(string) $str);
 		
 		if ($opz['customtag'] != '') {
-			if ($opz['customtagvalue'] != '') $str = preg_replace('/'.$opz['customtag'].'/',(string) $opz['customtagvalue'],$str);
+			if ($opz['customtagvalue'] != '') $str = preg_replace('/'.$opz['customtag'].'/',(string) $opz['customtagvalue'],(string) $str);
 		}	
 
 		return $str;	

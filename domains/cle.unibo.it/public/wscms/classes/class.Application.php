@@ -1,6 +1,11 @@
 <?php
-//-------------------------------------------// *** framework siti html-PHP-Mysql// copyright 2009 Roberto Mantovani// http://www.robertomantovani.vr;it// email: me@robertomantovani.vr.it// Application.class.php v.2.6.3.1 11/05/2016
-
+/*
+	framework siti html-PHP-Mysql
+	copyright 2009 Roberto Mantovani
+	http://www.robertomantovani.vr.it
+	email: me@robertomantovani.vr.it
+	Application.class.php v.2.6.3.1 11/05/2016
+*/
 class Application extends Core {
 
 	public function __construct() 	{

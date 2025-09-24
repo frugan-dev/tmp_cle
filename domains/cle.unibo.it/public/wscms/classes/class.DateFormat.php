@@ -138,7 +138,7 @@ class DateFormat extends Core  {
 		];
 		//$d = preg_replace('/\b\d{2}:\d{2}\b/', 'H:i',$d);
 		$d = preg_replace( array_keys( $patterns ), array_values( $patterns ), (string) $d );
-		return preg_match( '/\d/', $d ) ? $null : $d;
+		return preg_match( '/\d/', (string) $d ) ? $null : $d;
 	}
 	
 	static public function dateFormating( $date, $format = 'd/m/Y H:i', $in_format = false, $f = '' ) 
@@ -172,12 +172,12 @@ class DateFormat extends Core  {
 		$day = intval(self::$day);
 
 		$format = preg_replace('/%DAY%/',(string) self::$day,(string) $format);
-		$format = preg_replace('/%STRINGMONTH%/',ucfirst((string) Config::$langVars['lista mesi'][$month]),$format);
-		$format = preg_replace('/%STRINGDATADAY%/',(string) self::getDayOfDate(Config::$langVars['lista giorni'],[]),$format);
-		$format = preg_replace('/%MONTH%/',(string) self::$month,$format);
-		$format = preg_replace('/%YEAR%/',(string) self::$year,$format);
-		$format = preg_replace('/%HH%/',(string) self::$hours,$format);
-		$format = preg_replace('/%II%/',(string) self::$minutes,$format);
+		$format = preg_replace('/%STRINGMONTH%/',ucfirst((string) Config::$langVars['lista mesi'][$month]),(string) $format);
+		$format = preg_replace('/%STRINGDATADAY%/',(string) self::getDayOfDate(Config::$langVars['lista giorni'],[]),(string) $format);
+		$format = preg_replace('/%MONTH%/',(string) self::$month,(string) $format);
+		$format = preg_replace('/%YEAR%/',(string) self::$year,(string) $format);
+		$format = preg_replace('/%HH%/',(string) self::$hours,(string) $format);
+		$format = preg_replace('/%II%/',(string) self::$minutes,(string) $format);
 		$s = $format;
 
 		$s = match ($format) {

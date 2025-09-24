@@ -56,5 +56,5 @@ if ($show == true) {
 
 // cookie modal
 Config::$langVars['modal privacy policy content'] = preg_replace('/%URLPRIVACYPOLICYPAGE%/',(string) $App->urlprivacypolicypage, (string) Config::$langVars['modal privacy policy content']);
-Config::$langVars['modal privacy policy content'] = preg_replace('/%URLCOOKIEPOLICYPAGE%/',(string) $App->urlcookiepolicypage, Config::$langVars['modal privacy policy content']);
+Config::$langVars['modal privacy policy content'] = preg_replace('/%URLCOOKIEPOLICYPAGE%/',(string) $App->urlcookiepolicypage, (string) Config::$langVars['modal privacy policy content']);
 ?>

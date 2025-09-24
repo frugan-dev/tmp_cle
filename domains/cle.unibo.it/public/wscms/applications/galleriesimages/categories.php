@@ -25,7 +25,7 @@ switch(Core::$request->method) {
 		Sql::initQuery($App->params->tables['imag'],['id'],[$App->id],'categories_id = ?');
 		$count = Sql::countRecord();
 		if ($count > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['categorie'],(string) Config::$langVars['Ci sono ancora %ITEM% associate!']));
+			$_SESSION['message'] = '2|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['categorie'],(string) Config::$langVars['Ci sono ancora %ITEM% associate!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listCate');
 		}
 	
@@ -38,7 +38,7 @@ switch(Core::$request->method) {
 		Sql::initQuery($App->params->tables['cate'],['id'],[$App->id],'id = ?');
 		Sql::deleteRecord();
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['categoria'],(string) Config::$langVars['%ITEM% cancellata'])).'!';	
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['categoria'],(string) Config::$langVars['%ITEM% cancellata'])).'!';	
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listCate');
 
 	break;
@@ -64,7 +64,7 @@ switch(Core::$request->method) {
 		Sql::insertRawlyPost($App->params->fields['cate'],$App->params->tables['cate']);
 		if (Core::$resultOp->error > 0) { die('error insert db'); ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['categoria'],(string) Config::$langVars['%ITEM% inserita'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['categoria'],(string) Config::$langVars['%ITEM% inserita'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listCate');
 
 	break;
@@ -96,7 +96,7 @@ switch(Core::$request->method) {
 		Sql::updateRawlyPost($App->params->fields['cate'],$App->params->tables['cate'],'id',$App->id);
 		if (Core::$resultOp->error > 0) { die('error insert db'); ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['categoria'],(string) Config::$langVars['%ITEM% modificata'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['categoria'],(string) Config::$langVars['%ITEM% modificata'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listCate');		
 	
 	break;
@@ -148,8 +148,8 @@ switch(Core::$request->method) {
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
 		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,(string) $App->paginationTitle);
 		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['categorie'],(string) Config::$langVars['lista delle %ITEM%']);
 		$App->viewMethod = 'list';	
 	break;	

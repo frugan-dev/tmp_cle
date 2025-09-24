@@ -21,7 +21,7 @@ class SanitizeStrings extends Core {
 			$regex3 = '/^[-]+/'; //remove starting "-"
 			$regex4 = '/[-]+$/'; //remove ending "-"
 			/* return... */
-			$str = mb_strtolower(preg_replace(
+			$str = mb_strtolower((string) preg_replace(
 						[$regex1,$regex2,$regex3,$regex4],
 						['-','-','',''],
 						(string) $str
@@ -53,7 +53,7 @@ class SanitizeStrings extends Core {
 		$regex3 = '/^[-]+/'; //remove starting "-"
 		$regex4 = '/[-]+$/'; //remove ending "-"
 		/* return... */
-		$str = mb_strtolower(preg_replace(
+		$str = mb_strtolower((string) preg_replace(
 			[$regex1,$regex2,$regex3,$regex4],
 			['-','-','',''],
 			(string) $str

@@ -42,42 +42,42 @@ switch(Core::$request->method) {
 		/* controlla se ha blocchi associati */			
 		Sql::initQuery($App->params->tables['iblo'],['id'],[$App->id],'id_owner = ?');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['blocchi'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['blocchi'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}
 				
 		/* controlla se ha figli associati */			
 		Sql::initQuery($App->params->tables['item'],['id'],[$App->id],'parent = ?');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['voci'],(string) Core::$langVars['Ci sono ancora %ITEM% associate!']));
+			$_SESSION['message'] = '2|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['voci'],(string) Core::$langVars['Ci sono ancora %ITEM% associate!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}
 				
 		/* controlla se ha immagini associate */
 		Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 1');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['immagini'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['immagini'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}	
 
 		/* controlla se ha files associati */			
 		Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 2');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['files'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['files'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}	
 				
 		/* controlla se ha immagini gallerie associate */
 		Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 3');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['gallerie'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['gallerie'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}	
 
 		/* controlla se ha video associati */			
 		Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 4');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['video'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['video'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}	
 				
@@ -95,7 +95,7 @@ switch(Core::$request->method) {
 			@unlink($App->params->uploadPaths['item'].$App->itemOld->filename);			
 		}
 		
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['voce'],(string) Core::$langVars['%ITEM% cancellata'])).'!';	
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['voce'],(string) Core::$langVars['%ITEM% cancellata'])).'!';	
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 	break;
 	
@@ -196,7 +196,7 @@ switch(Core::$request->method) {
 			move_uploaded_file($tempFilename,$App->params->uploadPaths['item'].$_POST['filename']) or die('Errore caricamento file');
 		}	
 		
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['voce'],(string) Core::$langVars['%ITEM% inserita'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['voce'],(string) Core::$langVars['%ITEM% inserita'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');	
 
 	break;
@@ -317,7 +317,7 @@ switch(Core::$request->method) {
 			}	   			
 		}
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['pagina'],(string) Core::$langVars['%ITEM% modificata'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['pagina'],(string) Core::$langVars['%ITEM% modificata'])).'!';
 		if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyItem/'.$App->id);
 		} else {
@@ -397,7 +397,7 @@ switch(Core::$request->method) {
 		Sql::updateRecord();
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); }
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['Tag SEO'],(string) Core::$langVars['%ITEM% modificati'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['Tag SEO'],(string) Core::$langVars['%ITEM% modificati'])).'!';
 
 
 		if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {

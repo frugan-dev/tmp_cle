@@ -2,6 +2,8 @@
 /**
  * Abstract dump file: provides common interface for writing
  * data to dump files. 
+ * 
+ * https://github.com/2createStudio/shuttle-export
  */
 abstract class Shuttle_Dump_File {
 	/**

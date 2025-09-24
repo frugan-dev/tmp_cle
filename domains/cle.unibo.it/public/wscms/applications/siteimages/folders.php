@@ -45,7 +45,7 @@ switch(Core::$request->method) {
 			if ( file_exists($App->itemUploadPathDir.$App->itemOld->folder_name) ) {
 				rmdir($App->itemUploadPathDir.$App->itemOld->folder_name) or die('impossibile cancellare la cartella'.$App->itemUploadPathDir.$App->itemOld->folder_name);
 			}				
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) $_lang['categoria'],(string) $_lang['%ITEM% cancellata'])).'!';	
+			$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['categoria'],(string) $_lang['%ITEM% cancellata'])).'!';	
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listFold');		
 			
 		} else {

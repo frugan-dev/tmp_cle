@@ -128,8 +128,8 @@ class Pages extends Core {
 
 
 						$url = preg_replace('/%SEO%/',(string) $titlesVal['titleSeo'],(string) $url);
-						$url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($titlesVal['titleSeo'],['delimiter'=>'-']),$url);
-						$url = preg_replace('/%SEOENCODE%/', urlencode((string) $titlesVal['titleSeo']),$url);
+						$url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($titlesVal['titleSeo'],['delimiter'=>'-']),(string) $url);
+						$url = preg_replace('/%SEOENCODE%/', urlencode((string) $titlesVal['titleSeo']),(string) $url);
 
 						$title = $titlesVal['title'];
 
@@ -148,7 +148,7 @@ class Pages extends Core {
 							self::$output = preg_replace('/%TEXTACTIVE%/','',(string) self::$output);
 						}
 
-						self::$output = preg_replace('/%URL%/',$url,(string) self::$output);
+						self::$output = preg_replace('/%URL%/',(string) $url,(string) self::$output);
 						self::$output = preg_replace('/%URLTITLE%/',(string) $title,(string) self::$output);
 						self::$output = preg_replace('/%TITLE%/',(string) $title,(string) self::$output);
 						
@@ -226,15 +226,15 @@ class Pages extends Core {
 		       		if (isset($value->type)) {
 		       			$hrefUrl = self::getUrlFromPageType($value,$titlesVal,$opt);
 		       			}           
-	 					$li = preg_replace('/%URL%/',(string) $hrefUrl,$li);
-	 					$li = preg_replace('/%URLTITLE%/',(string) $titlesVal['titleSeo'],$li);
-	 					$li = preg_replace('/%TITLE%/',(string) $titlesVal['title'],$li);
+	 					$li = preg_replace('/%URL%/',(string) $hrefUrl,(string) $li);
+	 					$li = preg_replace('/%URLTITLE%/',(string) $titlesVal['titleSeo'],(string) $li);
+	 					$li = preg_replace('/%TITLE%/',(string) $titlesVal['title'],(string) $li);
 	 					$href = preg_replace('/%URL%/',(string) $hrefUrl,(string) $href);
-	 					$href = preg_replace('/%URLTITLE%/',(string) $titlesVal['titleSeo'],$href);
-	 					$href = preg_replace('/%TITLE%/',(string) $titlesVal['title'],$href);
+	 					$href = preg_replace('/%URLTITLE%/',(string) $titlesVal['titleSeo'],(string) $href);
+	 					$href = preg_replace('/%TITLE%/',(string) $titlesVal['title'],(string) $href);
 	 					
 	 					if (self::$level == 0 && $value->alias == $opt['activepage']) {
-	         			$href = preg_replace('/%CLASSACTIVE%/',' active',$href);
+	         			$href = preg_replace('/%CLASSACTIVE%/',' active',(string) $href);
 	         			}
 	 					
 	 					
@@ -289,14 +289,14 @@ class Pages extends Core {
 	  		}
 		
 		$url = preg_replace('/%URLSITE%/',URL_SITE,(string) $url);	
-		$url = preg_replace('/%ID%/',(string) $value->id,$url);
-		$url = preg_replace('/%ALIAS%/',(string) $value->alias,$url);
-		$url = preg_replace('/%SEO%/',(string) $titlesVal['titleSeo'],$url);
-		$url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($titlesVal['titleSeo'],['delimiter'=>'-']),$url);
-		$url = preg_replace('/%SEOENCODE%/', urlencode((string) $titlesVal['titleSeo']),$url);
-		$url = preg_replace('/%TITLE%/', urlencode((string) $titlesVal['titleSeo']),$url); 
-		$url = preg_replace('/%PARENTSTRING%/', urlencode($parentstring),$url);
-		$url = preg_replace('/%PARENTALIAS%/', $parentalias,$url);
+		$url = preg_replace('/%ID%/',(string) $value->id,(string) $url);
+		$url = preg_replace('/%ALIAS%/',(string) $value->alias,(string) $url);
+		$url = preg_replace('/%SEO%/',(string) $titlesVal['titleSeo'],(string) $url);
+		$url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($titlesVal['titleSeo'],['delimiter'=>'-']),(string) $url);
+		$url = preg_replace('/%SEOENCODE%/', urlencode((string) $titlesVal['titleSeo']),(string) $url);
+		$url = preg_replace('/%TITLE%/', urlencode((string) $titlesVal['titleSeo']),(string) $url); 
+		$url = preg_replace('/%PARENTSTRING%/', urlencode($parentstring),(string) $url);
+		$url = preg_replace('/%PARENTALIAS%/', $parentalias,(string) $url);
 				
 		return $url;
 	}

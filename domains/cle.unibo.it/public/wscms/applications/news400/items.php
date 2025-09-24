@@ -47,14 +47,14 @@ switch(Core::$request->method) {
 			Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 1');
 			if (Sql::countRecord() > 0) {
 				Core::$resultOp->type = 2;
-				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['immagini'],(string) $_lang['Ci sono ancora %ITEM% associate!']));
+				Core::$resultOp->message = ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['immagini'],(string) $_lang['Ci sono ancora %ITEM% associate!']));
 				$delete = false;	
 				}						
 			/* controlla se ha files associati */			
 			Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 2');
 			if (Sql::countRecord() > 0) {
 				Core::$resultOp->type = 2;
-				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['files'],(string) $_lang['Ci sono ancora %ITEM% associati!']));
+				Core::$resultOp->message = ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['files'],(string) $_lang['Ci sono ancora %ITEM% associati!']));
 				$delete = false;	
 				}		
 				
@@ -62,14 +62,14 @@ switch(Core::$request->method) {
 			Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 3');
 			if (Sql::countRecord() > 0) {
 				Core::$resultOp->type = 2;
-				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['immagini'],(string) $_lang['Ci sono ancora %ITEM% associate!']));	
+				Core::$resultOp->message = ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['immagini'],(string) $_lang['Ci sono ancora %ITEM% associate!']));	
 				$delete = false;	
 				}						
 			/* controlla se ha video associati */			
 			Sql::initQuery($App->params->tables['resources'],['id'],[$App->id],'id_owner = ? AND resource_type = 4');
 			if (Sql::countRecord() > 0) {
 				Core::$resultOp->type = 2;
-				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['video'],(string) $_lang['Ci sono ancora %ITEM% associati!']));	
+				Core::$resultOp->message = ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['video'],(string) $_lang['Ci sono ancora %ITEM% associati!']));	
 				$delete = false;
 				}	
 						
@@ -84,7 +84,7 @@ switch(Core::$request->method) {
 						if (isset($App->itemOld->filename) && file_exists($App->params->uploadPaths['item'].$App->itemOld->filename)) {
 							@unlink($App->params->uploadPaths['item'].$App->itemOld->filename);			
 							}
-						Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['voce'],(string) $_lang['%ITEM% cancellata'])).'!';
+						Core::$resultOp->message = ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['voce'],(string) $_lang['%ITEM% cancellata'])).'!';
 						}
 					}
 				}
@@ -318,8 +318,8 @@ switch((string)$App->viewMethod) {
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
 		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,(string) $App->paginationTitle);
 		
 		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['voci'],(string) $_lang['lista delle %ITEM%']);
 		$App->templateApp = 'listItem.html';	

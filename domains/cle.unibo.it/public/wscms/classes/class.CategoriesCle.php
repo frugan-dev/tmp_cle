@@ -142,10 +142,10 @@ class CategoriesCle extends Core {
 			 				 		
           		/* sostituisce l'id e altro */
 	      		$hrefValue = preg_replace('/{{ID}}/',(string) $value->id,(string) $hrefValue);
-	      		$hrefValue = preg_replace('/{{SEO}}/',(string) $valueTitleSeo,$hrefValue);
-	      		$hrefValue = preg_replace('/{{SEOCLEAN}}/', ToolsStrings::url_slug($valueTitleSeo,[]),$hrefValue);
-	      		$hrefValue = preg_replace('/{{SEOENCODE}}/', urlencode((string) $valueTitleSeo),$hrefValue);  
-	      		$hrefValue = preg_replace('/{{TITLE}}/', urlencode((string) $valueTitleSeo),$hrefValue);     
+	      		$hrefValue = preg_replace('/{{SEO}}/',(string) $valueTitleSeo,(string) $hrefValue);
+	      		$hrefValue = preg_replace('/{{SEOCLEAN}}/', ToolsStrings::url_slug($valueTitleSeo,[]),(string) $hrefValue);
+	      		$hrefValue = preg_replace('/{{SEOENCODE}}/', urlencode((string) $valueTitleSeo),(string) $hrefValue);  
+	      		$hrefValue = preg_replace('/{{TITLE}}/', urlencode((string) $valueTitleSeo),(string) $hrefValue);     
 	      		     		              
 					self::$treeResult .= '<li'.$strShowLiId.' class="'.$classLi.'">'."\n";					
 					self::$treeResult .= '<a'.$strShowHrefId.' class="'.$classAref.'" href="'.$hrefValue.'"';

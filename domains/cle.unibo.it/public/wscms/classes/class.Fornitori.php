@@ -2,7 +2,7 @@
 /*
 	framework siti html-PHP-Mysql
 	copyright 2011 Roberto Mantovani
-	http://www.robertomantovani.vr;it
+	http://www.robertomantovani.vr.it
 	email: me@robertomantovani.vr.it
 	admin/classes/class.Fornitore.php v.1.0.0. 28/05/2020
 */

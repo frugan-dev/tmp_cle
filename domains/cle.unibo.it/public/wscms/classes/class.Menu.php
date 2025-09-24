@@ -215,29 +215,29 @@ class Menu extends Core {
 							$li = preg_replace('/%CLASSACTIVE%/','',(string) $li);
 						}
 						
-						$li = preg_replace('/%CLASSACTIVE%/','',$li);	
+						$li = preg_replace('/%CLASSACTIVE%/','',(string) $li);	
 					
 						/* crea url */
 						$hrefUrl = $opt['urldefault'];
 						if (isset($value->type)) {
 							$hrefUrl = self::getUrlFromType($value,$value->title,$opt);
 						}           
-						$li = preg_replace('/%URL%/',(string) $hrefUrl,$li);
-						$li = preg_replace('/%URLTITLE%/',(string) $value->title,$li);
-						$li = preg_replace('/%TITLE%/',(string) $value->title,$li);
+						$li = preg_replace('/%URL%/',(string) $hrefUrl,(string) $li);
+						$li = preg_replace('/%URLTITLE%/',(string) $value->title,(string) $li);
+						$li = preg_replace('/%TITLE%/',(string) $value->title,(string) $li);
 						$href = preg_replace('/%URL%/',(string) $hrefUrl,(string) $href);
-						$href = preg_replace('/%URLTITLE%/',(string) $value->title,$href);
-						$href = preg_replace('/%TITLE%/',(string) $value->title,$href);
+						$href = preg_replace('/%URLTITLE%/',(string) $value->title,(string) $href);
+						$href = preg_replace('/%TITLE%/',(string) $value->title,(string) $href);
 							
 						if (self::$level == 0 && $value->alias == $opt['activepage']) {
-							$href = preg_replace('/%CLASSACTIVE%/',' active',$href);
+							$href = preg_replace('/%CLASSACTIVE%/',' active',(string) $href);
 						} else {
-							$href = preg_replace('/%CLASSACTIVE%/','',$href);
+							$href = preg_replace('/%CLASSACTIVE%/','',(string) $href);
 						}
 						
 						$target = $value->target;
 						if ($target == '') $target = '_self';
-						$href = preg_replace('/%TARGET%/',(string) $target,$href);
+						$href = preg_replace('/%TARGET%/',(string) $target,(string) $href);
 						
 						self::$output .= $li.PHP_EOL;
 						self::$output .= $href.PHP_EOL;
@@ -329,14 +329,14 @@ class Menu extends Core {
 	  	}
 		
 		$url = preg_replace('/%URLSITE%/',URL_SITE,(string) $url);	
-		$url = preg_replace('/%ID%/',(string) $value->id,$url);
+		$url = preg_replace('/%ID%/',(string) $value->id,(string) $url);
 		//$url = preg_replace('/%ALIAS%/',$value->alias,$url);
-		$url = preg_replace('/%SEO%/',(string) $title,$url);
-		$url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($title,['delimiter'=>'-']),$url);
-		$url = preg_replace('/%SEOENCODE%/', urlencode((string) $title),$url);
-		$url = preg_replace('/%TITLE%/', urlencode((string) $title),$url); 
-		$url = preg_replace('/%PARENTSTRING%/', urlencode($parentstring),$url);
-		$url = preg_replace('/%PARENTALIAS%/', $parentalias,$url);
+		$url = preg_replace('/%SEO%/',(string) $title,(string) $url);
+		$url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($title,['delimiter'=>'-']),(string) $url);
+		$url = preg_replace('/%SEOENCODE%/', urlencode((string) $title),(string) $url);
+		$url = preg_replace('/%TITLE%/', urlencode((string) $title),(string) $url); 
+		$url = preg_replace('/%PARENTSTRING%/', urlencode($parentstring),(string) $url);
+		$url = preg_replace('/%PARENTALIAS%/', $parentalias,(string) $url);
 				
 		return $url;
 	}

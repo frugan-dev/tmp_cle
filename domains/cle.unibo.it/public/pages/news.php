@@ -189,8 +189,8 @@ if (Core::$resultOp->error == 0) {
 				if (isset($row->embedded) && $row->embedded != '') {
 					$row->video = $row->embedded;
 					$row->video = preg_replace('/(width)="\d*"\s/',"",(string) $row->video);
-					$row->video = preg_replace('/(height)="\d*"\s/',"",$row->video);
-					$row->video = preg_replace('/iframe/','iframe width="100%" height="100%"',$row->video);
+					$row->video = preg_replace('/(height)="\d*"\s/',"",(string) $row->video);
+					$row->video = preg_replace('/iframe/','iframe width="100%" height="100%"',(string) $row->video);
 				}
 
 				$App->items[] = $row;		

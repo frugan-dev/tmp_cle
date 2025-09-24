@@ -52,7 +52,7 @@ switch(Core::$request->method) {
 			
 			if (Core::$resultOp->error == 0) {
 				$App->pageSubTitle = preg_replace('/%ITEM%/', (string) $_lang['configurazione'], (string) $_lang['%ITEM% modificata']).'!';		
-				$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['configurazione'],(string) Core::$langVars['%ITEM% modificata'])).'!';
+				$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['configurazione'],(string) Core::$langVars['%ITEM% modificata'])).'!';
 				ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');							
 				}	
 			}

@@ -55,18 +55,18 @@ if (Core::$resultOp->error == 0) {
 							$subject = 'Messaggio inviato dal modulo contatti Rete Vendita del sito MBF';
 							$content = Config::$moduleConfig['email content']->value_it;
 							$content = preg_replace('/{COMPANY}/',(string) $_POST['company'],(string) $content);
-							$content = preg_replace('/{NAME}/',(string) $_POST['name'],$content);
-							$content = preg_replace('/{SURNAME}/',(string) $_POST['surname'],$content);
-							$content = preg_replace('/{EMAIL}/',(string) $_POST['email'],$content);
-							$content = preg_replace('/{TELEPHONE}/',(string) $_POST['telephone'],$content);	
-							$content = preg_replace('/{OBJECT}/',(string) $_POST['object'],$content);	
-							$content = preg_replace('/{MESSAGE}/',(string) $_POST['message'],$content);				
+							$content = preg_replace('/{NAME}/',(string) $_POST['name'],(string) $content);
+							$content = preg_replace('/{SURNAME}/',(string) $_POST['surname'],(string) $content);
+							$content = preg_replace('/{EMAIL}/',(string) $_POST['email'],(string) $content);
+							$content = preg_replace('/{TELEPHONE}/',(string) $_POST['telephone'],(string) $content);	
+							$content = preg_replace('/{OBJECT}/',(string) $_POST['object'],(string) $content);	
+							$content = preg_replace('/{MESSAGE}/',(string) $_POST['message'],(string) $content);				
 							$mail = new PHPMailer();
 							$mail->SetFrom($_POST['email'],$_POST['email']);
 							$mail->IsHTML(true);
 							$mail->CharSet = 'UTF-8';
 							$mail->Subject = $subject;
-							$mail->AltBody = strip_tags($content);
+							$mail->AltBody = strip_tags((string) $content);
 							$mail->MsgHTML($content);
 							$mail->AddAddress( Config::$moduleConfig['email address']->value_it);
 							if ( Config::$moduleConfig['send copy email for debug']->value_it == 1) {

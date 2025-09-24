@@ -57,9 +57,9 @@ $globalSettings['send email debug'] = 1;
 $globalSettings['email debug'] = "programmazione@websync.it";
 
 /* send email */
-$globalSettings['use send mail class'] = 2; /* use chass for mails: 0 = no class; 1 = PHP7 Swiftmailer class; 2 = php5.x PHPMAILER class */
+$globalSettings['use send mail class'] = 1; /* use class for mails: 0 = no class; 1 = Symfony Mailer class; 2 = PHPMailer 6.x class */
 $globalSettings['mail server'] = 'SMTP'; /* SMTP, PHP or sendmail  */
-$globalSettings['sendmai server'] = '/usr/sbin/sendmail -bs';
+$globalSettings['sendmail server'] = '/usr/sbin/sendmail -bs';
 $globalSettings['SMTP server'] = 'localhost';
 $globalSettings['SMTP port'] = '25';
 $globalSettings['SMTP username'] = $_ENV['MAIL_SMTP_USERNAME'];

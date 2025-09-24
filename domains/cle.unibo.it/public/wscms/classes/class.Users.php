@@ -228,11 +228,11 @@ class Users extends Core {
 			&& (count($opt['customFields']) == count($opt['customFieldsValue']))
 			) {			
 			foreach ($opt['customFields'] AS $key=>$value) {
-				$text = preg_replace('/'.$opt['customFields'][$key].'/',(string) $opt['customFieldsValue'][$key],$text);
+				$text = preg_replace('/'.$opt['customFields'][$key].'/',(string) $opt['customFieldsValue'][$key],(string) $text);
 			}
 		}
-		if (isset(self::$details->username)) $text = preg_replace('/%USERNAME%/',self::$details->username,$text);
-		if (isset(self::$details->email)) $text = preg_replace('/%EMAIL%/',self::$details->email,$text);
+		if (isset(self::$details->username)) $text = preg_replace('/%USERNAME%/',self::$details->username,(string) $text);
+		if (isset(self::$details->email)) $text = preg_replace('/%EMAIL%/',self::$details->email,(string) $text);
 		return $text;
 	}
 		

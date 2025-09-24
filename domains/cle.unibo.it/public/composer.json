@@ -14,12 +14,13 @@
     },
     "require": {
         "google/recaptcha": "~1.1",
+        "htmlawed/htmlawed": "^1.2",
         "kint-php/kint": "^6.0",
         "kint-php/kint-helpers": "^6.0",
         "monolog/monolog": "^3.5",
         "mos/cimage": "^0.8.5",
+        "phpmailer/phpmailer": "^6.10",
         "soundasleep/html2text": "^2.1",
-        "swiftmailer/swiftmailer": "^6.0",
         "symfony/mailer": "^7.0",
         "twig/twig": "^3.0",
         "vlucas/phpdotenv": "^5.5"
@@ -34,7 +35,7 @@
         ]
     },
     "scripts": {
-        "amwscan": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/marcocesarato/amwscan/dist/scanner -- --report --ignore-paths=\"/vendor\" --path-logs=\"/tmp/scanner.log\" --path-report=\"../../../private/scanner-report.html\" .",
+        "amwscan": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/marcocesarato/amwscan/dist/scanner -- --report --ignore-paths=\"/vendor\" --path-logs=\"./wscms/tmp/log/scanner.log\" --path-report=\"./wscms/tmp/log/scanner-report.html\" .",
         "rector": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/bin/rector -- process --ansi --clear-cache"
     }
 }

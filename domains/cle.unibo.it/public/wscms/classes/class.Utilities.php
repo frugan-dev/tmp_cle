@@ -83,7 +83,7 @@ class Utilities extends Core
 			} else {
 				$lk = preg_replace('/%URL%/', (string) $url, (string) $template['links']);
 			}
-			$lk = preg_replace('/%TITLE%/', strtoupper((string) Config::$langVars['lista lingue'][$l]), $lk);
+			$lk = preg_replace('/%TITLE%/', strtoupper((string) Config::$langVars['lista lingue'][$l]), (string) $lk);
 			$links .= $lk;
 		}
 		$html = preg_replace('/%LINKS%/', $links, (string) $html);
@@ -124,7 +124,7 @@ class Utilities extends Core
 			}
 
 			$str = preg_replace('/%LINKS%/', (string) $links, (string) $str);
-			$str = preg_replace('/%TITLEPAGE%/', (string) $value['title'], $str);
+			$str = preg_replace('/%TITLEPAGE%/', (string) $value['title'], (string) $str);
 		}
 
 		//echo $str;die();
@@ -151,7 +151,7 @@ class Utilities extends Core
 			if ($error == 2) $alert = $opz['class warning'];
 
 			$html = preg_replace('/%CLASS%/', (string) $alert, (string) $html);
-			$html = preg_replace('/%CONTENT%/', (string) $content, $html);
+			$html = preg_replace('/%CONTENT%/', (string) $content, (string) $html);
 		}
 		return $html;
 	}

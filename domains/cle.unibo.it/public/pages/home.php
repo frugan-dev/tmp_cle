@@ -37,7 +37,7 @@ while ($row = $pdoObject->fetch()) {
     $layers = Sql::getRecords();
     $arrL = [];
 
-    $row->li_data = preg_replace('/%SLIDEIMAGE%/',UPLOAD_DIR.'slides-home-rev/'.$row->filename,$row->li_data);	
+    $row->li_data = preg_replace('/%SLIDEIMAGE%/',UPLOAD_DIR.'slides-home-rev/'.$row->filename,(string) $row->li_data);	
 
     // ipmosta l'immagine header come prima innagine delle slider
     if ($App->moduleData->imageheader == '') {
@@ -66,7 +66,7 @@ while ($row = $pdoObject->fetch()) {
             }
 
             $valueL->template = preg_replace('/%TITLE%/',(string) $valueL->title,$valueL->template);	
-            $valueL->template = preg_replace('/%CONTENT%/',$valueL->contentNoP,(string) $valueL->template);	
+            $valueL->template = preg_replace('/%CONTENT%/',(string) $valueL->contentNoP,(string) $valueL->template);	
             $valueL->template = preg_replace('/%URL%/',(string) $valueL->url,(string) $valueL->template);
             $valueL->template = preg_replace('/%TARGET%/',(string) $valueL->target,(string) $valueL->template);   
 

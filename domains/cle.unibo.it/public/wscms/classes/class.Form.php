@@ -418,8 +418,8 @@ class Form extends Core
 			self::$resultOp->error = 1;
 			$s = Config::$langVars['Il campo %FIELD% deve avere un valore superiore o uguale a %MIN% e inferiore o uguale a %MAX%!'];
 			$s = preg_replace('/%MIN%/', (string) $minvalue, (string) $s);
-			$s = preg_replace('/%MAX%/', (string) $maxvalue, $s);
-			$s = preg_replace('/%FIELD%/', (string) $labelField, $s);
+			$s = preg_replace('/%MAX%/', (string) $maxvalue, (string) $s);
+			$s = preg_replace('/%FIELD%/', (string) $labelField, (string) $s);
 			self::$resultOp->messages[] = $s;
 		}
 		return $valuesrif;

@@ -48,7 +48,7 @@ switch(Core::$request->method) {
 			@unlink($App->params->uploadPaths['team'].$App->itemOld->filename);			
 		}
 						
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% cancellato'])).'!';	
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% cancellato'])).'!';	
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listTeam');			
 	break;
 
@@ -174,7 +174,7 @@ switch(Core::$request->method) {
 			}	   			
 		}
 
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% modificato'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% modificato'])).'!';
 		if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyTeam/'.$App->id);
 		} else {
@@ -229,8 +229,8 @@ switch(Core::$request->method) {
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = Config::$langVars['Mostra da %START%  a %END% di %ITEM% elementi'];
 		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,(string) $App->paginationTitle);
 		
 		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) Config::$langVars['voci'],(string) $_lang['lista %ITEM%']);
 		$App->viewMethod = 'list';	

@@ -49,7 +49,7 @@ switch(Core::$request->method) {
 			$count = Sql::countRecord();
 			if ($count > 0) {
 				Core::$resultOp->error = 2;
-				Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['voci'],(string) $_lang['Ci sono ancora %ITEM% associate!']));	
+				Core::$resultOp->message = ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['voci'],(string) $_lang['Ci sono ancora %ITEM% associate!']));	
 				$delete = false;	
 				}
 		
@@ -64,7 +64,7 @@ switch(Core::$request->method) {
 						if (isset($App->itemOld->filename) && file_exists($App->params->uploadPaths['cate'].$App->itemOld->filename)) {
 							@unlink($App->params->uploadPaths['cate'].$App->itemOld->filename);			
 							}				
-						Core::$resultOp->message = ucfirst(preg_replace('/%ITEM%/',(string) $_lang['categoria'],(string) $_lang['%ITEM% cancellata'])).'!';	
+						Core::$resultOp->message = ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['categoria'],(string) $_lang['%ITEM% cancellata'])).'!';	
 						}
 					}
 				}
@@ -278,8 +278,8 @@ switch((string)$App->viewMethod) {
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
 		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,(string) $App->paginationTitle);
 
 		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['categorie'],(string) $_lang['lista delle %ITEM%']);
 		$App->templateApp = 'listCategories.html';	

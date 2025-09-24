@@ -1,171 +1,346 @@
 <?php
 /**
 * Framework App PHP-MySQL
-* PHP Version 7
-* @copyright 2020 Websync
-* classes/class.Mails.php v.1.0.0. 20/01/2021
+* PHP Version 8.4
+* @copyright 2025 Websync
+* classes/class.Mails.php v.2.0.0. 24/09/2025
 */
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 
 class Mails extends Core {
 
-	public function __construct() 	{
-		parent::__construct();					
-		}
-		
 	public static function sendEmail($address,$subject,$content,$text_content,$opt) 
 	{
 		$optDef = ['sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>''];	
 		$opt = array_merge($optDef,$opt);
-		if (self::$globalSettings['use send mail class'] == 1) {
-			self::sendMailClass($address,$subject,$content,$text_content,$opt);
-			} else if (self::$globalSettings['use send mail class'] == 2) {
-				self::sendMailPHPMAILER($address,$subject,$content,$text_content,$opt);
-				} else {
-					self::sendMailPHP($address,$subject,$content,$text_content,$opt);
-				}
 		
-	}		
+		match (self::$globalSettings['use send mail class']) {
+            // Symfony Mailer (new default)
+            1 => self::sendMailSymfony($address,$subject,$content,$text_content,$opt),
+            // PHPMailer 6.x via composer
+            2 => self::sendMailPHPMAILER($address,$subject,$content,$text_content,$opt),
+            // Native PHP mail()
+            default => self::sendMailPHP($address,$subject,$content,$text_content,$opt),
+        };
+	}
 	
-	public static function sendMailClass($address,$subject,$content,$text_content,$opt) 
+	/**
+	 * Send email using Symfony Mailer
+	 */
+	public static function sendMailSymfony($address,$subject,$content,$text_content,$opt) 
 	{
-		$optDef = ['sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>''];
-		$opt = array_merge($optDef,$opt);	
-		$transport = '';
-		switch (self::$globalSettings['mail server']) {
-			case 'SMTP':
-				$transport = new Swift_SmtpTransport(self::$globalSettings['SMTP server'], self::$globalSettings['SMTP port']);
-				if (isset(self::$globalSettings['SMTP username']) && self::$globalSettings['SMTP username'] != '') $transport->setUsername(self::$globalSettings['SMTP username']);
-				if (isset(self::$globalSettings['SMTP password']) && self::$globalSettings['SMTP password'] != '') $transport->setPassword(self::$globalSettings['SMTP password']);
-			break;
+		$optDef = ['replyTo'=>[],'addBCC'=>[],'sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>''];
+		$opt = array_merge($optDef,$opt);
+		
+		try {
+			// Build transports array from environment configuration
+			$transports = self::buildTransports();
 			
-			default:
-				$transport = new Swift_SendmailTransport(self::$globalSettings['sendmail path']);
-			break;
+			if (empty($transports)) {
+				// https://symfony.com/doc/current/mailer.html#disabling-delivery
+				$transports['null'] = 'null://null';
+			}
+			
+			$transport = Transport::fromDsn(
+				($_ENV['MAIL_TRANSPORTS_TECHNIQUE'] ?? 'failover') . '(' . implode(' ', $transports) . ')', 
+				null, 
+				null, 
+				Logger::getInstance()
+			);
+
+			$mailer = new Mailer($transport);
+
+			// https://github.com/symfony/symfony/issues/41322
+        	// https://stackoverflow.com/a/14253556/3929620
+        	// https://stackoverflow.com/a/25873119/3929620
+			$email = new Email()
+				->from(new Address($opt['fromEmail'], $opt['fromLabel']))
+				->to($address)
+				->subject($subject)
+				->text($text_content)
+				->html($content);
+
+			// Add reply-to addresses
+			if (is_array($opt['replyTo']) && count($opt['replyTo'])) {
+				foreach ($opt['replyTo'] as $key => $value) {
+					if (is_string($key)) {
+						$email->addReplyTo(new Address($key, $value));
+					} else {
+						$email->addReplyTo($value);
+					}
+				}
 			}
 
-		try {
-			$mailer = new Swift_Mailer($transport);
-			// Create a message
-			$message = new Swift_Message($subject)
-	  			->setFrom([$opt['fromEmail']=>$opt['fromLabel']])
-	  			->setTo([$address])
-	  			->setBody($content, 'text/html')
-				->addPart($text_content, 'text/plain');
-	  		;
-			// Send the message
-			try {
-				$mailer->send($message);
-				} catch (\Swift_TransportException) {
-					Core::$resultOp->error = 1;
-					//echo $e->getMessage();
-					}       
-	    	} catch (Swift_TransportException|Exception) {
-	      	//return $e->getMessage();
-	      	Core::$resultOp->error = 1;
-	    		}
+			// Add BCC addresses
+			if (is_array($opt['addBCC']) && count($opt['addBCC'])) {
+				foreach ($opt['addBCC'] as $key => $value) {
+					if (is_string($key)) {
+						$email->addBcc(new Address($key, $value));
+					} else {
+						$email->addBcc($value);
+					}
+				}
+			}
+
+			// Add debug BCC if enabled
+			if ($opt['sendDebug'] == 1 && !empty($opt['sendDebugEmail'])) {
+				$email->addBcc($opt['sendDebugEmail']);
+			}
+
+			// Add attachments
+			if (is_array($opt['attachments']) && count($opt['attachments'])) {
+				foreach ($opt['attachments'] as $attachment) {
+					$email->attachFromPath($attachment['filename'], $attachment['title'] ?? null);
+				}
+			}
+
+			$mailer->send($email);
+			Core::$resultOp->error = 0;
+			
+		} catch (\Exception $exception) {
+			Core::$resultOp->error = 1;
+			Logger::error($e->getMessage(), [
+				'exception' => $exception,
+			]);
+		}
+	}
+	
+	/**
+	 * Build transports configuration for Symfony Mailer
+	 * Public method so Logger class can use it too
+	 */
+	public static function buildTransports(): array 
+	{
+		$transports = [];
+		
+		if (empty($_ENV['MAIL_TRANSPORTS'])) {
+			return $transports;
+		}
+		
+		// https://github.com/symfony/mailer
+        // https://symfony.com/doc/current/mailer.html
+        // https://github.com/swiftmailer/swiftmailer/issues/866
+        // https://github.com/swiftmailer/swiftmailer/issues/633
+		foreach (array_map('trim', explode(',', (string) $_ENV['MAIL_TRANSPORTS'])) as $val) {
+			switch ($val) {
+				// it requires proc_*() functions
+				case 'smtp':
+				case 'smtps':
+					$transports[$val] = $val . '://';
+					if (!empty($_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_USERNAME']) && 
+						!empty($_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_PASSWORD'])) {
+						$transports[$val] .= rawurlencode((string) $_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_USERNAME']) . 
+											':' . rawurlencode((string) $_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_PASSWORD']) . '@';
+					}
+
+					$transports[$val] .= $_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_HOST'] . 
+										':' . $_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_PORT'] . '?';
+
+					foreach ([
+						'verify_peer',
+						'local_domain',
+						'restart_threshold',
+						'restart_threshold_sleep',
+						'ping_threshold',
+					] as $item) {
+						if (isset($_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_' . mb_strtoupper($item, 'UTF-8')])) {
+							$transports[$val] .= '&' . $item . '=' . 
+								rawurlencode($_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_' . mb_strtoupper($item, 'UTF-8')]);
+						}
+					}
+					break;
+
+				// if 'command' isn't specified, it will fallback to '/usr/sbin/sendmail -bs' (no ini_get() detection)
+				case 'sendmail':
+					$transports[$val] = $val . '://default?';
+					foreach (['command'] as $item) {
+						if (isset($_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_' . mb_strtoupper($item, 'UTF-8')])) {
+							$transports[$val] .= '&' . $item . '=' . 
+								strtr(rawurlencode($_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_' . mb_strtoupper($item, 'UTF-8')]), [
+									'%2F' => '/',
+								]);
+						}
+					}
+					break;
+
+				// it uses sendmail or smtp transports with ini_get() detection
+                // When using native://default, if php.ini uses the sendmail -t command, you won't have error reporting and Bcc headers won't be removed.
+                // It's highly recommended to NOT use native://default as you cannot control how sendmail is configured (prefer using sendmail://default if possible).
+				case 'native':
+					$transports[$val] = $val . '://default';
+					break;
+
+				//TODO
+                // only if proc_*() functions are not available...
+				// case 'mail':
+				// case 'mail+api':
+				// 	$transports[$val] = $val . '://default';
+				// 	break;
+			}
+		}
+		
+		return $transports;
 	}
 		
-	/* versione PHP MAILER */
+	/**
+	 * Send email using PHPMailer 6.x
+	 */
 	public static function sendMailPHPMAILER($address,$subject,$content,$text_content,$opt) 
 	{
-		include_once("class.phpmailer.php");
-		include_once("class.pop3.php");
-		include_once("class.smtp.php");
-		$optDef = ['replyTo'=>[],'addBCC'=>[],'sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>'','classMailer'=>''];	
+		$optDef = ['replyTo'=>[],'addBCC'=>[],'sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>''];	
 		$opt = array_merge($optDef,$opt);	
 	
-		$mail = new PHPMailer();
-		$mail->SetFrom($opt['fromEmail'],$opt['fromLabel']);
-		$mail->IsHTML(true);
-		$mail->CharSet = 'UTF-8';
-		$mail->Subject = $subject;
-		$mail->AltBody = $text_content;
-		$mail->MsgHTML($content);	
-		$mail->AddAddress($address);	
+		try {
+			$mail = new PHPMailer(true); // Enable exceptions
+			
+			// Server settings based on global configuration
+			switch (self::$globalSettings['mail server']) {
+				case 'SMTP':
+					$mail->isSMTP();
+					$mail->Host = self::$globalSettings['SMTP server'];
+					$mail->Port = (int)self::$globalSettings['SMTP port'];
+					
+					if (!empty(self::$globalSettings['SMTP username'])) {
+						$mail->SMTPAuth = true;
+						$mail->Username = self::$globalSettings['SMTP username'];
+						$mail->Password = self::$globalSettings['SMTP password'];
+					}
+					
+					// Auto-detect encryption
+					if ((int)self::$globalSettings['SMTP port'] === 465) {
+						$mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+					} elseif ((int)self::$globalSettings['SMTP port'] === 587) {
+						$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+					}
+					break;
+					
+				case 'sendmail':
+					$mail->isSendmail();
+					if (!empty(self::$globalSettings['sendmail server'])) {
+						$mail->Sendmail = self::$globalSettings['sendmail server'];
+					}
+					break;
+					
+				default:
+					$mail->isMail();
+					break;
+			}
 
-		if (is_array($opt['replyTo']) && count($opt['replyTo'])) {			
-			foreach ($opt['replyTo'] AS $key=>$value) {
-				if(is_string($key)) {
-					$mail->addReplyTo($key, $value);
-				} else {
-					$mail->addReplyTo($value);
+			// Recipients and content
+			$mail->setFrom($opt['fromEmail'], $opt['fromLabel']);
+			$mail->addAddress($address);
+			$mail->isHTML(true);
+			$mail->CharSet = 'UTF-8';
+			$mail->Subject = $subject;
+			$mail->AltBody = $text_content;
+			$mail->Body = $content;
+
+			// Reply-to addresses
+			if (is_array($opt['replyTo']) && count($opt['replyTo'])) {			
+				foreach ($opt['replyTo'] as $key => $value) {
+					if (is_string($key)) {
+						$mail->addReplyTo($key, $value);
+					} else {
+						$mail->addReplyTo($value);
+					}
 				}
 			}
-		}
-		
-		/* BCC */
-		if (is_array($opt['addBCC']) && count($opt['addBCC'])) {			
-			foreach ($opt['addBCC'] AS $key=>$value) {
-				if(is_string($key)) {
-					$mail->addBCC($key, $value);
-				} else {
-					$mail->addBCC($value);
+			
+			// BCC addresses
+			if (is_array($opt['addBCC']) && count($opt['addBCC'])) {			
+				foreach ($opt['addBCC'] as $key => $value) {
+					if (is_string($key)) {
+						$mail->addBCC($key, $value);
+					} else {
+						$mail->addBCC($value);
+					}
 				}
 			}
-		}
 
-		if ($opt['sendDebug'] == 1) {
-			if ($opt['sendDebugEmail'] != '') $mail->AddBCC($opt['sendDebugEmail']);
-		}
-			
-		/* allegati */
-		if (is_array($opt['attachments']) && count($opt['attachments'])) {			
-			foreach ($opt['attachments'] AS $key=>$value) {
-				$mail->addAttachment($value['filename'],$value['title']);    // Optional name
+			// Debug BCC
+			if ($opt['sendDebug'] == 1 && !empty($opt['sendDebugEmail'])) {
+				$mail->addBCC($opt['sendDebugEmail']);
 			}
-		}
-			
-		if (!$mail->Send()) {
-			Core::$resultOp->error = 1;
-			} else {
+				
+			// Attachments
+			if (is_array($opt['attachments']) && count($opt['attachments'])) {			
+				foreach ($opt['attachments'] as $attachment) {
+					$mail->addAttachment($attachment['filename'], $attachment['title'] ?? '');
+				}
+			}
+				
+			$mail->send();
 			Core::$resultOp->error = 0;
-			}
+			
+		} catch (PHPMailerException $exception) {
+			Core::$resultOp->error = 1;
+			Logger::error($e->getMessage(), [
+				'exception' => $exception,
+			]);
+		}
 	}	
 		
+	/**
+	 * Send email using native PHP mail() function
+	 */
 	public static function sendMailPHP($address,$subject,$content,$text_content,$opt) 
 	{
 		$optDef = ['sendDebug'=>0,'sendDebugEmail'=>'','fromEmail'=>'n.d','fromLabel'=>'n.d','attachments'=>''];	
 		$opt = array_merge($optDef,$opt);	
+		
 		$mail_boundary = "=_NextPart_" . md5(uniqid(time()));	
-		$headers = "From: ".$opt['fromLabel']." <".$opt['fromEmail'].">\n";
+		$headers = "From: " . $opt['fromLabel'] . " <" . $opt['fromEmail'] . ">\n";
 		$headers .= "MIME-Version: 1.0\n";
 		$headers .= "Content-Type: multipart/alternative;\n\tboundary=\"$mail_boundary\"\n";
 		$headers .= "X-Mailer: PHP " . phpversion();
-		// Costruisci il corpo del messaggio da inviare
+		
+		// Build message body
 		$msg = "This is a multi-part message in MIME format.\n\n";
 		$msg .= "--$mail_boundary\n";
 		$msg .= "Content-Type: text/plain; charset=\"UTF-8\"\n";
 		$msg .= "Content-Transfer-Encoding: 8bit\n\n";
-		$msg .= $text_content; // aggiungi il messaggio in formato text
+		$msg .= $text_content; // Add text version
  
 		$msg .= "\n--$mail_boundary\n";
 		$msg .= "Content-Type: text/html; charset=\"UTF-8\"\n";
 		$msg .= "Content-Transfer-Encoding: 8bit\n\n";
-		$msg .= $content;  // aggiungi il messaggio in formato HTML
+		$msg .= $content; // Add HTML version
  
-		// Boundary di terminazione multipart/alternative
+		// End multipart/alternative boundary
 		$msg .= "\n--$mail_boundary--\n";
- 		$sender = $opt['fromEmail'];
-		// Imposta il Return-Path (funziona solo su hosting Windows)
+		
+		$sender = $opt['fromEmail'];
+		// Set Return-Path (works only on Windows hosting)
 		ini_set("sendmail_from", $sender); 
-		// Invia il messaggio, il quinto parametro "-f$sender" imposta il Return-Path su hosting Linux
-		$result = mail((string) $address,(string) $subject,$msg,$headers, "-f$sender");		
+		// Send message, the fifth parameter "-f$sender" sets Return-Path on Linux hosting
+		$result = mail((string) $address, (string) $subject, $msg, $headers, "-f$sender");		
+		
 		if (!$result) {   
-    		//echo "Error";
-    		Core::$resultOp->error = 1;  
-			} else {
-    			//echo "Success";
-    			Core::$resultOp->error = 0;
-				}
+			Core::$resultOp->error = 1;
+			Logger::error('PHP mail() function failed for address: {address}', [
+				'address' =>  $address,
+			]);
+		} else {
+			Core::$resultOp->error = 0;
+		}
 	}
 
-				
+	/**
+	 * Parse mail template content with placeholders
+	 */				
 	public static function parseMailContent($post,$content,$opt=[]) 
 	{
 		$optDef = ['customFields'=>[],'customFieldsValue'=>[]];	
 		$opt = array_merge($optDef,$opt);
+		
 		$content = preg_replace('/%SITENAME%/',(string) SITE_NAME,(string) $content);
-
 
 		$content = preg_replace('/{{/','%',$content);
 		$content = preg_replace('/}}/','%',$content);
@@ -179,16 +354,16 @@ class Mails extends Core {
 		if (isset($post['subject'])) $content = preg_replace('/%SUBJECT%/',$post['subject'],$content);	
 		if (isset($post['object'])) $content = preg_replace('/%OBJECT%/',$post['object'],$content);	
 		if (isset($post['message'])) $content = preg_replace('/%MESSAGE%/',$post['message'],$content);	
+		
 		if ((is_array($opt['customFields']) && count($opt['customFields'])) 
 			&& (is_array($opt['customFieldsValue']) && count($opt['customFieldsValue'])) 
 			&& (count($opt['customFields']) == count($opt['customFieldsValue']))
 			) {			
-			foreach ($opt['customFields'] AS $key=>$value) {
+			foreach ($opt['customFields'] as $key => $value) {
 				$content = preg_replace('/'.$opt['customFields'][$key].'/',(string) $opt['customFieldsValue'][$key],$content);
 			}
 		}
+		
 		return $content;
 	}	
-
 }
-?>

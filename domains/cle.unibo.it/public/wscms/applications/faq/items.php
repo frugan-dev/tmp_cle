@@ -37,7 +37,7 @@ switch(Core::$request->method) {
 			Sql::initQuery($App->params->tables['item'],['id'],[$App->id],'id = ?');
 			Sql::deleteRecord();
 			if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db'); }
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) $_lang['voce'],(string) $_lang['%ITEM% cancellata'])).'!';	
+			$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['voce'],(string) $_lang['%ITEM% cancellata'])).'!';	
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');		
 		} else {
 			ToolsStrings::redirect(URL_SITE.'error/404');
@@ -90,7 +90,7 @@ switch(Core::$request->method) {
 			
 			//die();
 
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) $_lang['voce'],(string) $_lang['%ITEM% inserita']));
+			$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['voce'],(string) $_lang['%ITEM% inserita']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');				
 			
 		} else {
@@ -110,7 +110,7 @@ switch(Core::$request->method) {
 			if (Core::$resultOp->error == 0) {
 				Sql::updateRawlyPost($App->params->fields['item'],$App->params->tables['item'],'id',$App->id);
 				if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE.'error/db');die(); }	
-				$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) $_lang['voce'],(string) $_lang['%ITEM% modificata']));
+				$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) $_lang['voce'],(string) $_lang['%ITEM% modificata']));
 				if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 					ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyItem/'.$App->id);
 				} else {
@@ -171,8 +171,8 @@ switch(Core::$request->method) {
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
 		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,(string) $App->paginationTitle);
 		
 		$App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['voci'],(string) $_lang['lista %ITEM%']);
 		$App->templateApp = 'listItem.tpl.php';

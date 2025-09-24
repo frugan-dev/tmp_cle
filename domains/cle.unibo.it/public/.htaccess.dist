@@ -36,7 +36,7 @@
 </IfModule>
 
 #https://stackoverflow.com/a/76483989
-<If "%{REQUEST_URI} =~ m#^/vendor/#">
+<If "%{REQUEST_URI} =~ m#^/vendor/|^/composer\.json$#">
     Require all denied
 </If>
 

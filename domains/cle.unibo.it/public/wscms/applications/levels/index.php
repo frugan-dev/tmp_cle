@@ -119,7 +119,7 @@ switch(Core::$request->method) {
 			}
 
 						
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['livello'],(string) Core::$langVars['%ITEM% inserito']));
+			$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['livello'],(string) Core::$langVars['%ITEM% inserito']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');				
 			
 		} else {
@@ -180,7 +180,7 @@ switch(Core::$request->method) {
 			
 			//die('fatto');
 
-			$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['livello'],(string) Core::$langVars['%ITEM% modificato']));
+			$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['livello'],(string) Core::$langVars['%ITEM% modificato']));
 			if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 				ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyItem/'.$App->id);
 			} else {
@@ -285,8 +285,8 @@ switch((string)$App->viewMethod) {
 		$App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
 		$App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
 		$App->paginationTitle = preg_replace('/%START%/',(string) $App->pagination->firstPartItem,(string) $App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,$App->paginationTitle);
-		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,$App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%END%/',(string) $App->pagination->lastPartItem,(string) $App->paginationTitle);
+		$App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,(string) $App->paginationTitle);
 
 		$App->pageSubTitle = $_lang['lista delle voci'];
 		$App->templateApp = 'listItems.html';	

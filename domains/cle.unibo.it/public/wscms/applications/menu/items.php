@@ -41,7 +41,7 @@ switch(Core::$request->method) {
 		/* controlla se ha figli associati */			
 		Sql::initQuery($App->params->tables['menu'],['id'],[$App->id],'parent = ?');
 		if (Sql::countRecord() > 0) {
-			$_SESSION['message'] = '2|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['voci'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
+			$_SESSION['message'] = '2|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['voci'],(string) Core::$langVars['Ci sono ancora %ITEM% associati!']));
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 		}
 
@@ -53,7 +53,7 @@ switch(Core::$request->method) {
 			@unlink($App->params->uploadPaths['item'].$App->itemOld->filename);			
 		}
 		
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Core::$langVars['voce'],(string) Core::$langVars['%ITEM% cancellato'])).'!';	
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Core::$langVars['voce'],(string) Core::$langVars['%ITEM% cancellato'])).'!';	
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 	break;
 	
@@ -125,7 +125,7 @@ switch(Core::$request->method) {
 
 		$App->id = Sql::getLastInsertedIdVar(); /* preleva l'id della pagina */	
 		
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% inserito'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% inserito'])).'!';
 		ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/listItem');
 
 	break;
@@ -205,7 +205,7 @@ switch(Core::$request->method) {
 		if (Core::$resultOp->error > 0) { ToolsStrings::redirect(URL_SITE_ADMIN.'error/db'); die(); }
 
    		
-		$_SESSION['message'] = '0|'.ucfirst(preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% modificato'])).'!';
+		$_SESSION['message'] = '0|'.ucfirst((string) preg_replace('/%ITEM%/',(string) Config::$langVars['voce'],(string) Config::$langVars['%ITEM% modificato'])).'!';
 		if (isset($_POST['applyForm']) && $_POST['applyForm'] == 'apply') {
 			ToolsStrings::redirect(URL_SITE_ADMIN.Core::$request->action.'/modifyMenu/'.$App->id);
 		} else {
