@@ -43,15 +43,14 @@ if ($id > 0)
 		}
 	}
 }
+
 if ($avatarInfo != '') {
 	$img = $avatarInfo;
 	@header ("Content-type: ".$array_avatarInfo['type']);
 	echo $img;
-	} else {
-		$file = PATH.'templates/default/img/avatar.png';
-		@header ("Content-type: image/png");
-		@header('Content-Length: ' . filesize($file));
-		echo file_get_contents($file);
-		}
-die();
-?>
+} else {
+	$file = PATH.'templates/default/img/avatar.png';
+	@header ("Content-type: image/png");
+	@header('Content-Length: ' . filesize($file));
+	echo file_get_contents($file);
+}
