@@ -12,6 +12,20 @@
     "config": {
         "sort-packages": true
     },
+    "repositories": [
+      {
+        "type": "package",
+        "package": {
+          "name": "shuttle/export",
+          "version": "dev-master",
+          "source": {
+            "url": "https://github.com/2createStudio/shuttle-export.git",
+            "type": "git",
+            "reference": "master"
+          }
+        }
+      }
+    ],
     "require": {
         "google/recaptcha": "~1.1",
         "htmlawed/htmlawed": "^1.2",
@@ -20,6 +34,7 @@
         "monolog/monolog": "^3.5",
         "mos/cimage": "^0.8.5",
         "phpmailer/phpmailer": "^6.10",
+        "shuttle/export": "dev-master",
         "soundasleep/html2text": "^2.1",
         "symfony/mailer": "^7.0",
         "twig/twig": "^3.0",
