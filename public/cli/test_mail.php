@@ -38,11 +38,11 @@ $htmlContent = '
     <h1>Test Email</h1>
     <p>This is a test email sent using the transport-based mail system.</p>
     <p><strong>Sent at:</strong> ' . date('Y-m-d H:i:s') . '</p>
-    <p><strong>System:</strong> ' . ($_ENV['APP_ENV'] ?? 'unknown') . '</p>
+    <p><strong>Environment:</strong> ' . getEnvironment() . '</p>
 </body>
 </html>';
 
-$textContent = "Test Email\n\nThis is a test email sent using the transport-based mail system.\n\nSent at: " . date('Y-m-d H:i:s') . "\nSystem: " . ($_ENV['APP_ENV'] ?? 'unknown');
+$textContent = "Test Email\n\nThis is a test email sent using the transport-based mail system.\n\nSent at: " . date('Y-m-d H:i:s') . "\Environment: " . getEnvironment();
 
 $options = [
     'fromEmail' => $_ENV['MAIL_FROM_EMAIL'] ?? 'noreply@example.com',

@@ -6,6 +6,12 @@
  * classes/class.OAuth2SMTPProvider.php v.1.0.0. 24/09/2025
  */
 
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
+use Symfony\Component\Mailer\Transport\TransportInterface;
+
 class OAuth2SMTPProvider implements MailProviderInterface
 {
     private Office365TokenProvider $tokenProvider;
@@ -31,7 +37,7 @@ class OAuth2SMTPProvider implements MailProviderInterface
     
     public function isAvailable(): bool
     {
-        $enabled = ($_ENV['MAIL_OAUTH2_ENABLED'] ?? 'false') === 'true';
+        $enabled = ($_ENV['MAIL_OAUTH2_ENABLED'] ?? false) === true;
         $hasCredentials = !empty($_ENV['MAIL_OAUTH2_TENANT_ID']) && 
                          !empty($_ENV['MAIL_OAUTH2_CLIENT_ID']) && 
                          !empty($_ENV['MAIL_OAUTH2_CLIENT_SECRET']) &&
@@ -49,12 +55,12 @@ class OAuth2SMTPProvider implements MailProviderInterface
         
         try {
             $transport = $this->createTransport();
-            $mailer = new \Symfony\Component\Mailer\Mailer($transport);
+            $mailer = new Mailer($transport);
             
-            $email = new \Symfony\Component\Mime\Email()
-                ->from(new \Symfony\Component\Mime\Address(
-                    $options['fromEmail'] ?? $_ENV['MAIL_FROM_EMAIL'] ?? $this->username,
-                    $options['fromLabel'] ?? $_ENV['MAIL_FROM_NAME'] ?? 'System'
+            $email = new Email()
+                ->from(new Address(
+                    $options['fromEmail'] ?: $_ENV['MAIL_FROM_EMAIL'] ?? $this->username,
+                    $options['fromLabel'] ?: $_ENV['MAIL_FROM_NAME'] ?? 'System'
                 ))
                 ->to($to)
                 ->subject($subject)
@@ -65,7 +71,7 @@ class OAuth2SMTPProvider implements MailProviderInterface
             if (!empty($options['replyTo']) && is_array($options['replyTo'])) {
                 foreach ($options['replyTo'] as $key => $value) {
                     if (is_string($key)) {
-                        $email->addReplyTo(new \Symfony\Component\Mime\Address($key, $value));
+                        $email->addReplyTo(new Address($key, $value));
                     } else {
                         $email->addReplyTo($value);
                     }
@@ -76,7 +82,7 @@ class OAuth2SMTPProvider implements MailProviderInterface
             if (!empty($options['addBCC']) && is_array($options['addBCC'])) {
                 foreach ($options['addBCC'] as $key => $value) {
                     if (is_string($key)) {
-                        $email->addBcc(new \Symfony\Component\Mime\Address($key, $value));
+                        $email->addBcc(new Address($key, $value));
                     } else {
                         $email->addBcc($value);
                     }
@@ -105,11 +111,11 @@ class OAuth2SMTPProvider implements MailProviderInterface
             
             return true;
             
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             Logger::error('Failed to send email via OAuth2 SMTP', [
+                'exception' => $exception,
                 'to' => $to,
                 'subject' => $subject,
-                'error' => $e->getMessage(),
                 'provider' => $this->getName()
             ]);
             
@@ -148,7 +154,7 @@ class OAuth2SMTPProvider implements MailProviderInterface
             return [
                 'status' => 'success',
                 'message' => 'OAuth2 SMTP connection test successful',
-                'token_type' => $tokenData['token_type'] ?? 'unknown',
+                'token_type' => $tokenData['token_type'] ?: 'unknown',
                 'expires_in' => $tokenData['expires_in'] ?? 'unknown'
             ];
             
@@ -163,9 +169,9 @@ class OAuth2SMTPProvider implements MailProviderInterface
     /**
      * Create OAuth2 SMTP transport
      */
-    private function createTransport(): \Symfony\Component\Mailer\Transport\TransportInterface
+    private function createTransport(): TransportInterface
     {
-        $transport = new \Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport(
+        $transport = new EsmtpTransport(
             $this->smtpHost,
             $this->smtpPort,
             false, // TLS will be started automatically

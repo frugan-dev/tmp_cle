@@ -98,7 +98,7 @@ class Logger {
      */
     private static function addFileHandler(): void 
     {
-        if (in_array($_SERVER['APP_ENV'] ?? 'unknown', ['local', 'dev', 'develop', 'development'], true)) {
+        if (isDevelop()) {
             $handler = new ErrorLogHandler(level: Level::Debug);
         } else {
             $handler = new RotatingFileHandler(
@@ -144,14 +144,14 @@ class Logger {
             ->subject(sprintf(
                 _('Error reporting from %1$s - %2$s'), 
                 $_SERVER['HTTP_HOST'], 
-                $_SERVER['APP_ENV'] ?? 'unknown'
+                getEnvironment()
             ))
             ->to(...array_map('trim', explode(',', (string) $_ENV['MAIL_TO_EMAILS'])));
 
         $handler = new SymfonyMailerHandler($mailer, $message, Level::Error);
         $handler->setFormatter(new HtmlFormatter());
 
-        if (in_array($_SERVER['APP_ENV'] ?? 'unknown', ['production'], true)) {
+        if (isProduction()) {
             $handler = new DeduplicationHandler(
                 $handler, 
                 PATH_LOG_DIR . '/dedup.log', 

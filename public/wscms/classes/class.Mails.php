@@ -171,9 +171,9 @@ class Mails extends Core {
 							$transport = self::createOAuth2SMTPTransport();
 							$transports['oauth2-smtp'] = $transport;
 							Logger::debug('OAuth2 SMTP transport created');
-						} catch (Exception $e) {
+						} catch (Exception $exception) {
 							Logger::error('Failed to create OAuth2 SMTP transport', [
-								'error' => $e->getMessage()
+								'exception' => $exception,
 							]);
 						}
 					} else {
@@ -189,9 +189,9 @@ class Mails extends Core {
 								$transports['oauth2-graph'] = $transport;
 								Logger::debug('OAuth2 Graph API transport created');
 							}
-						} catch (Exception $e) {
+						} catch (Exception $exception) {
 							Logger::error('Failed to create OAuth2 Graph API transport', [
-								'error' => $e->getMessage()
+								'exception' => $exception,
 							]);
 						}
 					} else {
@@ -281,7 +281,7 @@ class Mails extends Core {
 			}
 		}
 		
-		$username = $_ENV['MAIL_OAUTH2_SMTP_USERNAME'] ?: $_ENV['MAIL_FROM_EMAIL'] ?? '';
+		$username = $_ENV['MAIL_OAUTH2_SMTP_USERNAME'] ?? $_ENV['MAIL_FROM_EMAIL'] ?? '';
 		return !empty($username);
 	}
 	
@@ -302,7 +302,7 @@ class Mails extends Core {
 			}
 		}
 		
-		$userId = $_ENV['MAIL_OAUTH2_GRAPH_USER_ID'] ?: $_ENV['MAIL_FROM_EMAIL'] ?? '';
+		$userId = $_ENV['MAIL_OAUTH2_GRAPH_USER_ID'] ?? $_ENV['MAIL_FROM_EMAIL'] ?? '';
 		return !empty($userId);
 	}
 
