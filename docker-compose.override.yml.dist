@@ -67,6 +67,18 @@ services:
       ${MOCK_OAUTH2_JSON_CONFIG:+JSON_CONFIG}: ${MOCK_OAUTH2_JSON_CONFIG}
       ${MOCK_OAUTH2_LOGBACK_CONFIG:+LOGBACK_CONFIG}: ${MOCK_OAUTH2_LOGBACK_CONFIG}
 
+  mock-graph-api:
+    container_name: ${APP_ID}_mock-graph-api
+    image: wiremock/wiremock:${MOCK_GRAPH_API_TAG:-latest}
+    networks:
+      - default
+    ports:
+      - ${MOCK_GRAPH_API_PORT}:8080
+    volumes:
+      - ${PWD}/private/docker/wiremock/mappings:/home/wiremock/mappings
+      - ${PWD}/private/docker/wiremock/__files:/home/wiremock/__files
+    command: --global-response-templating --disable-gzip --verbose
+
 #networks:
 #  network-external:
 #    external:
