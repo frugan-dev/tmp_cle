@@ -37,8 +37,6 @@ class Office365TokenProvider
             return $cachedToken;
         }
 
-        Logger::debug('Fetching new OAuth2 token for Microsoft Office365');
-
         // Fetch new token
         $tokenData = $this->fetchNewToken();
 
@@ -98,12 +96,13 @@ class Office365TokenProvider
             return false;
         }
 
+        // Consider token invalid if it expires in less than 5 minutes
         $expiryTime = $tokenData['fetched_at'] + $tokenData['expires_in'] - 60; // 60s buffer
         return time() < $expiryTime;
     }
 
     /**
-     * Make HTTP request to OAuth2 endpoint with mock support
+     * Make HTTP request to OAuth2 endpoint
      */
     private function makeHttpRequest(string $url, array $postData): array
     {

@@ -46,6 +46,7 @@ class GraphAPITransport implements TransportInterface
 
         if ($this->mockEnabled) {
             $this->baseUrl = $_ENV['MAIL_GRAPH_API_MOCK_URL'] ?? 'http://mock-graph-api:8080';
+            Logger::debug('GraphAPITransport initialized in mock mode', ['base_url' => $this->baseUrl]);
         }
     }
 
@@ -80,7 +81,7 @@ class GraphAPITransport implements TransportInterface
                 }
             }
 
-            Logger::info('Email sent successfully via Graph API Transport', [
+            Logger::debug('Email sent successfully via Graph API Transport', [
                 'to' => $this->getRecipientsString($message->getTo()),
                 'subject' => $message->getSubject(),
                 'mailbox' => $this->mailbox,
@@ -106,47 +107,26 @@ class GraphAPITransport implements TransportInterface
     }
 
     /**
-     * Send email via mock Graph API (wiremock) and also to Mailpit for     visualization
+     * Send email via mock Graph API and also to Mailpit for visualization
      */
     private function sendEmailViaMockGraphAPI(Email $message): void
     {
-        Logger::debug('Graph API mock: Sending email via wiremock', [
-            'mock_url' => $this->baseUrl,
-            'to' => $this->getRecipientsString($message->getTo()),
-            'subject' => $message->getSubject(),
-        ]);
+        $graphMessage = $this->convertEmailToGraphMessage($message);
 
-        // 1. Call mock Graph API (wiremock) to simulate the API behavior
-        $this->callMockGraphAPI($message);
+        // Prepare the request for wiremock (simulate Graph API sendMail    endpoint)
+        $endpoint = rtrim($this->baseUrl, '/') . '/v1.0/me/sendMail';
+        if ($this->mailbox !== $this->userId) {
+            $endpoint = rtrim($this->baseUrl, '/') . '/v1.0/users/' . urlencode($this->mailbox) . '/sendMail';
+        }
 
-        // 2. Also send to Mailpit for visualization (like oauth2-smtp does)
-        $this->sendToMailpit($message);
-    }
-
-    /**
-     * Call the mock Graph API (wiremock) to simulate Microsoft Graph behavior
-     */
-    private function callMockGraphAPI(Email $message): void
-    {
-        Logger::debug('callMockGraphAPI: Starting');
-
-        try {
-            $graphMessage = $this->convertEmailToGraphMessage($message);
-
-            // Prepare the request for wiremock (simulate Graph API sendMail    endpoint)
-            $endpoint = rtrim($this->baseUrl, '/') . '/v1.0/me/sendMail';
-            if ($this->mailbox !== $this->userId) {
-                $endpoint = rtrim($this->baseUrl, '/') . '/v1.0/users/' . urlencode($this->mailbox) . '/sendMail';
-            }
-
-            $payload = [
+        $payload = [
                 'message' => [
                     'subject' => $message->getSubject(),
                     'body' => [
                         'contentType' => $message->getHtmlBody() ? 'HTML' : 'Text',
                         'content' => $message->getHtmlBody() ?: $message->getTextBody(),
                     ],
-                    'toRecipients' => array_map(fn($addr) => [
+                    'toRecipients' => array_map(fn ($addr) => [
                         'emailAddress' => [
                             'address' => $addr->getAddress(),
                             'name' => $addr->getName(),
@@ -162,56 +142,37 @@ class GraphAPITransport implements TransportInterface
                 'saveToSentItems' => true,
             ];
 
-            $ch = curl_init();
-            curl_setopt_array($ch, [
-                CURLOPT_URL => $endpoint,
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => json_encode($payload),
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_HTTPHEADER => [
-                    'Content-Type: application/json',
-                    'Authorization: Bearer mock-token',
-                ],
-                CURLOPT_TIMEOUT => 10,
-                CURLOPT_CONNECTTIMEOUT => 5,
-                // For local mock, disable SSL verification
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => false,
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $endpoint,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Authorization: Bearer mock-token',
+            ],
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            // For local mock, disable SSL verification
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($httpCode !== 202 && $httpCode !== 200) {
+            Logger::warning('Mock Graph API call failed', [
+                'http_code' => $httpCode,
+                'response' => $response,
             ]);
-
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $error = curl_error($ch);
-            curl_close($ch);
-
-            if ($error) {
-                Logger::warning('Mock Graph API call failed', [
-                    'error' => $error,
-                    'endpoint' => $endpoint,
-                ]);
-            } else {
-                Logger::debug('Mock Graph API call completed', [
-                    'endpoint' => $endpoint,
-                    'http_code' => $httpCode,
-                    'response_length' => strlen($response),
-                ]);
-            }
-        } catch (Exception $e) {
-            Logger::error('callMockGraphAPI failed', [
-                'exception' => $e,
-            ]);
-
-            throw $e;
         }
-    }
 
-    /**
-     * Send email to Mailpit for visualization (similar to oauth2-smtp behavior)
-     */
-    private function sendToMailpit(Email $message): void
-    {
+        // Also send to Mailpit for visualization
         try {
-            // Get Mailpit SMTP settings from environment
             $mailpitHost = $_ENV['MAIL_OAUTH2_SMTP_HOST'] ?? 'mailpit';
             $mailpitPort = (int)($_ENV['MAIL_OAUTH2_SMTP_PORT'] ?? 1025);
 
@@ -231,14 +192,12 @@ class GraphAPITransport implements TransportInterface
 
             $mailpitMailer = new Mailer($mailpitTransport);
 
-            // Clone the message and add a header to identify it as from Graph  API mock
+            // Clone the message and add a header to identify it as from Graph API mock
             $mailpitMessage = clone $message;
             $mailpitMessage->getHeaders()->addTextHeader('X-Graph-API-Mock', 'true');
             $mailpitMessage->getHeaders()->addTextHeader('X-Original-Transport', 'GraphAPITransport');
 
             $mailpitMailer->send($mailpitMessage);
-
-            Logger::debug('Email sent to Mailpit successfully');
 
         } catch (Exception $e) {
             Logger::warning('Failed to send email to Mailpit', [
@@ -259,156 +218,98 @@ class GraphAPITransport implements TransportInterface
      */
     private function convertEmailToGraphMessage(Email $email): Message
     {
-        Logger::debug('convertEmailToGraphMessage: Starting conversion');
+        $message = new Message();
+        $message->setSubject($email->getSubject());
 
-        try {
-            $message = new Message();
-            Logger::debug('convertEmailToGraphMessage: Message object created');
-
-            $message->setSubject($email->getSubject());
-            Logger::debug('convertEmailToGraphMessage: Subject set');
-
-            // Set body - prefer HTML if available
-            $body = new ItemBody();
-            Logger::debug('convertEmailToGraphMessage: ItemBody created');
-
-            if ($email->getHtmlBody()) {
-                Logger::debug('convertEmailToGraphMessage: Setting HTML body');
-                $body->setContentType(new BodyType(BodyType::HTML));
-                $body->setContent($email->getHtmlBody());
-            } else {
-                Logger::debug('convertEmailToGraphMessage: Setting text body');
-                $body->setContentType(new BodyType(BodyType::TEXT));
-                $body->setContent($email->getTextBody());
-            }
-            Logger::debug('convertEmailToGraphMessage: Body content type and content set');
-
-            $message->setBody($body);
-            Logger::debug('convertEmailToGraphMessage: Body attached to message');
-
-            // Set recipients
-            if ($email->getTo()) {
-                Logger::debug('convertEmailToGraphMessage: Processing TO recipients');
-                $toRecipients = [];
-                foreach ($email->getTo() as $address) {
-                    $emailAddress = new EmailAddress();
-                    $emailAddress->setAddress($address->getAddress());
-                    if ($address->getName()) {
-                        $emailAddress->setName($address->getName());
-                    }
-
-                    $recipient = new Recipient();
-                    $recipient->setEmailAddress($emailAddress);
-
-                    $toRecipients[] = $recipient;
-                }
-                $message->setToRecipients($toRecipients);
-                Logger::debug('convertEmailToGraphMessage: TO recipients set');
-            }
-
-            // Set CC recipients
-            if ($email->getCc()) {
-                Logger::debug('convertEmailToGraphMessage: Processing CC recipients');
-                $ccRecipients = [];
-                foreach ($email->getCc() as $address) {
-                    $emailAddress = new EmailAddress();
-                    $emailAddress->setAddress($address->getAddress());
-                    if ($address->getName()) {
-                        $emailAddress->setName($address->getName());
-                    }
-
-                    $recipient = new Recipient();
-                    $recipient->setEmailAddress($emailAddress);
-
-                    $ccRecipients[] = $recipient;
-                }
-                $message->setCcRecipients($ccRecipients);
-                Logger::debug('convertEmailToGraphMessage: CC recipients set');
-            }
-
-            // Set BCC recipients
-            if ($email->getBcc()) {
-                Logger::debug('convertEmailToGraphMessage: Processing BCC recipients');
-                $bccRecipients = [];
-                foreach ($email->getBcc() as $address) {
-                    $emailAddress = new EmailAddress();
-                    $emailAddress->setAddress($address->getAddress());
-                    if ($address->getName()) {
-                        $emailAddress->setName($address->getName());
-                    }
-
-                    $recipient = new Recipient();
-                    $recipient->setEmailAddress($emailAddress);
-
-                    $bccRecipients[] = $recipient;
-                }
-                $message->setBccRecipients($bccRecipients);
-                Logger::debug('convertEmailToGraphMessage: BCC recipients set');
-            }
-
-            // Set from address
-            if ($email->getFrom() && count($email->getFrom()) > 0) {
-                Logger::debug('convertEmailToGraphMessage: Processing FROM address');
-                $fromAddress = $email->getFrom()[0];
-
-                $fromEmailAddress = new EmailAddress();
-                $fromEmailAddress->setAddress($fromAddress->getAddress());
-                if ($fromAddress->getName()) {
-                    $fromEmailAddress->setName($fromAddress->getName());
-                }
-
-                $fromRecipient = new Recipient();
-                $fromRecipient->setEmailAddress($fromEmailAddress);
-                $message->setFrom($fromRecipient);
-                Logger::debug('convertEmailToGraphMessage: FROM address set');
-            }
-
-            // Set reply-to addresses
-            if ($email->getReplyTo()) {
-                Logger::debug('convertEmailToGraphMessage: Processing REPLY-TO addresses');
-                $replyToRecipients = [];
-                foreach ($email->getReplyTo() as $address) {
-                    $emailAddress = new EmailAddress();
-                    $emailAddress->setAddress($address->getAddress());
-                    if ($address->getName()) {
-                        $emailAddress->setName($address->getName());
-                    }
-
-                    $recipient = new Recipient();
-                    $recipient->setEmailAddress($emailAddress);
-
-                    $replyToRecipients[] = $recipient;
-                }
-                $message->setReplyTo($replyToRecipients);
-                Logger::debug('convertEmailToGraphMessage: REPLY-TO addresses set');
-            }
-
-            // Handle attachments
-            if ($email->getAttachments()) {
-                Logger::debug('convertEmailToGraphMessage: Processing attachments');
-                $attachments = [];
-                foreach ($email->getAttachments() as $attachment) {
-                    $fileAttachment = new FileAttachment();
-                    $fileAttachment->setName($attachment->getFilename() ?: 'attachment');
-                    $fileAttachment->setContentType($attachment->getContentType() ?: 'application/octet-stream');
-                    $fileAttachment->setContentBytes(base64_encode($attachment->getBody()));
-
-                    $attachments[] = $fileAttachment;
-                }
-                $message->setAttachments($attachments);
-                Logger::debug('convertEmailToGraphMessage: Attachments set');
-            }
-
-            Logger::debug('convertEmailToGraphMessage: Conversion completed successfully');
-            return $message;
-
-        } catch (Exception $e) {
-            Logger::error('convertEmailToGraphMessage failed', [
-                'exception' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            throw $e;
+        // Set body - prefer HTML if available
+        $body = new ItemBody();
+        if ($email->getHtmlBody()) {
+            $body->setContentType(new BodyType(BodyType::HTML));
+            $body->setContent($email->getHtmlBody());
+        } else {
+            $body->setContentType(new BodyType(BodyType::TEXT));
+            $body->setContent($email->getTextBody());
         }
+        $message->setBody($body);
+
+        // Set recipients
+        if ($email->getTo()) {
+            $toRecipients = [];
+            foreach ($email->getTo() as $toAddress) {
+                $recipient = new Recipient();
+                $emailAddr = new EmailAddress();
+                $emailAddr->setAddress($toAddress->getAddress());
+                if ($toAddress->getName()) {
+                    $emailAddr->setName($toAddress->getName());
+                }
+                $recipient->setEmailAddress($emailAddr);
+                $toRecipients[] = $recipient;
+            }
+            $message->setToRecipients($toRecipients);
+        }
+
+        // Set CC recipients
+        if ($email->getCc()) {
+            $ccRecipients = [];
+            foreach ($email->getCc() as $ccAddress) {
+                $recipient = new Recipient();
+                $emailAddr = new EmailAddress();
+                $emailAddr->setAddress($ccAddress->getAddress());
+                if ($ccAddress->getName()) {
+                    $emailAddr->setName($ccAddress->getName());
+                }
+                $recipient->setEmailAddress($emailAddr);
+                $ccRecipients[] = $recipient;
+            }
+            $message->setCcRecipients($ccRecipients);
+        }
+
+        // Set BCC recipients
+        if ($email->getBcc()) {
+            $bccRecipients = [];
+            foreach ($email->getBcc() as $bccAddress) {
+                $recipient = new Recipient();
+                $emailAddr = new EmailAddress();
+                $emailAddr->setAddress($bccAddress->getAddress());
+                if ($bccAddress->getName()) {
+                    $emailAddr->setName($bccAddress->getName());
+                }
+                $recipient->setEmailAddress($emailAddr);
+                $bccRecipients[] = $recipient;
+            }
+            $message->setBccRecipients($bccRecipients);
+        }
+
+        // Set From
+        if ($email->getFrom()) {
+            $fromArray = $email->getFrom();
+            if (!empty($fromArray)) {
+                $fromAddress = reset($fromArray);
+                $from = new Recipient();
+                $emailAddr = new EmailAddress();
+                $emailAddr->setAddress($fromAddress->getAddress());
+                if ($fromAddress->getName()) {
+                    $emailAddr->setName($fromAddress->getName());
+                }
+                $from->setEmailAddress($emailAddr);
+                $message->setFrom($from);
+            }
+        }
+
+        // Handle attachments
+        if ($email->getAttachments()) {
+            $attachments = [];
+            foreach ($email->getAttachments() as $attachment) {
+                $fileAttachment = new FileAttachment();
+                $fileAttachment->setName($attachment->getFilename() ?? 'attachment');
+                $fileAttachment->setContentType($attachment->getContentType());
+                $fileAttachment->setContentBytes(base64_encode($attachment->getBody()));
+                $attachments[] = $fileAttachment;
+            }
+            $message->setAttachments($attachments);
+        }
+
+        return $message;
     }
 
     /**
@@ -427,13 +328,7 @@ class GraphAPITransport implements TransportInterface
                 $this->clientId,
                 $this->clientSecret
             );
-
-            $this->graphClient = new GraphServiceClient($tokenRequestContext);
-
-            Logger::debug('Graph API client initialized', [
-                'tenant_id' => $this->tenantId,
-                'base_url' => $this->baseUrl,
-            ]);
+            $this->graphClient = new GraphServiceClient($tokenRequestContext, [], $this->baseUrl);
         }
 
         return $this->graphClient;
@@ -456,22 +351,9 @@ class GraphAPITransport implements TransportInterface
      */
     public function isConfigured(): bool
     {
-        $configured = !empty($this->tenantId) &&
-                  !empty($this->clientId) &&
-                  !empty($this->clientSecret) &&
-                  !empty($this->userId);
-
-        // Debug logging to identify missing configuration
-        Logger::debug('GraphAPITransport configuration check', [
-            'tenant_id' => !empty($this->tenantId) ? 'SET' : 'EMPTY',
-            'client_id' => !empty($this->clientId) ? 'SET' : 'EMPTY',
-            'client_secret' => !empty($this->clientSecret) ? 'SET' : 'EMPTY',
-            'user_id' => $this->userId ?: 'EMPTY',
-            'mailbox' => $this->mailbox ?: 'EMPTY',
-            'configured' => $configured,
-            'mock_enabled' => $this->mockEnabled,
-        ]);
-
-        return $configured;
+        return !empty($this->tenantId) &&
+               !empty($this->clientId) &&
+               !empty($this->clientSecret) &&
+               !empty($this->userId);
     }
 }

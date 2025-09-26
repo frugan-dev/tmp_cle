@@ -45,19 +45,10 @@ class Mails extends Core
         $opt = array_merge($optDef, $opt);
 
         try {
-            Logger::debug('sendMailSymfony: Starting email send process');
-
             // Build transports array from environment configuration
             $transports = self::buildTransports();
 
-            Logger::debug('sendMailSymfony: buildTransports() returned', [
-                'transport_count' => count($transports),
-                'transport_keys' => array_keys($transports),
-                'transport_types' => array_map(fn ($t) => get_debug_type($t), $transports),
-            ]);
-
             if (empty($transports)) {
-                Logger::warning('sendMailSymfony: No transports found, using null transport');
 
                 // https://symfony.com/doc/current/mailer.html#disabling-delivery
                 $transports['null'] = 'null://null';
@@ -66,16 +57,10 @@ class Mails extends Core
             // Create transport instances - some may be custom OAuth2 transports
             $transportInstances = [];
             foreach ($transports as $key => $dsnOrInstance) {
-                Logger::debug("sendMailSymfony: Processing transport '{$key}'", [
-                    'type' => is_object($dsnOrInstance) ? $dsnOrInstance::class : 'DSN_STRING',
-                    'value' => is_object($dsnOrInstance) ? 'OBJECT_INSTANCE' : $dsnOrInstance,
-                ]);
 
                 if (is_object($dsnOrInstance)) {
                     // Already a transport instance (OAuth2 custom transports)
                     $transportInstances[] = $dsnOrInstance;
-
-                    Logger::debug('sendMailSymfony: Added object transport to instances');
                 } else {
                     // Create from DSN (standard transports)
                     $transportInstances[] = Transport::fromDsn(
@@ -84,14 +69,8 @@ class Mails extends Core
                         null,
                         Logger::getInstance()
                     );
-                    Logger::debug('sendMailSymfony: Created transport from DSN');
                 }
             }
-
-            Logger::debug('sendMailSymfony: Transport instances created', [
-                'instance_count' => count($transportInstances),
-                'instance_types' => array_map(fn ($t) => $t::class, $transportInstances),
-            ]);
 
             if (empty($transportInstances)) {
                 throw new Exception('No transports found');
@@ -106,11 +85,8 @@ class Mails extends Core
                 } else {
                     $transport = new FailoverTransport($transportInstances);
                 }
-
-                Logger::debug("sendMailSymfony: Created {$technique}    transport with " . count($transportInstances) . ' instances');
             } else {
                 $transport = $transportInstances[0];
-                Logger::debug('sendMailSymfony: Using single transport: ' . $transport::class);
             }
 
             $mailer = new Mailer($transport);
@@ -159,8 +135,6 @@ class Mails extends Core
                 }
             }
 
-            Logger::debug('sendMailSymfony: About to send email');
-
             $mailer->send($email);
             Core::$resultOp->error = 0;
 
@@ -191,18 +165,14 @@ class Mails extends Core
         $transports = [];
 
         if (empty($_ENV['MAIL_TRANSPORTS'])) {
-            Logger::debug('buildTransports: MAIL_TRANSPORTS is empty');
             return $transports;
         }
-
-        Logger::debug('buildTransports: Starting', ['MAIL_TRANSPORTS' => $_ENV  ['MAIL_TRANSPORTS']]);
 
         // https://github.com/symfony/mailer
         // https://symfony.com/doc/current/mailer.html
         // https://github.com/swiftmailer/swiftmailer/issues/866
         // https://github.com/swiftmailer/swiftmailer/issues/633
         foreach (array_map('trim', explode(',', (string) $_ENV['MAIL_TRANSPORTS'])) as $val) {
-            Logger::debug("buildTransports: Processing transport type '{$val}'");
             switch ($val) {
                 case 'oauth2-smtp':
                     if (self::isOAuth2SMTPConfigured()) {
@@ -221,17 +191,14 @@ class Mails extends Core
                     break;
 
                 case 'oauth2-graph':
-                    Logger::debug('buildTransports: Checking OAuth2 Graph configuration');
                     if (self::isOAuth2GraphConfigured()) {
-                        Logger::debug('buildTransports: OAuth2 Graph is configured, creating transport');
                         try {
                             $transport = new GraphAPITransport();
-                            Logger::debug('buildTransports: GraphAPITransport instance created, checking isConfigured()');
                             if ($transport->isConfigured()) {
                                 $transports['oauth2-graph'] = $transport;
                                 Logger::debug('OAuth2 Graph API transport created');
                             } else {
-                                Logger::warning('buildTransports:   GraphAPITransport isConfigured() returned false');
+                                Logger::warning('OAuth2 Graph API transport configuration invalid');
                             }
                         } catch (Exception $exception) {
                             Logger::error('Failed to create OAuth2 Graph API transport', [
@@ -304,11 +271,6 @@ class Mails extends Core
                     break;
             }
         }
-
-        Logger::debug('buildTransports: Final result', [
-            'transport_count' => count($transports),
-            'transport_keys' => array_keys($transports),
-        ]);
 
         return $transports;
     }
@@ -486,7 +448,7 @@ class Mails extends Core
 
         } catch (PHPMailerException $exception) {
             Core::$resultOp->error = 1;
-            Logger::error($e->getMessage(), [
+            Logger::error($exception->getMessage(), [
                 'exception' => $exception,
             ]);
         }
