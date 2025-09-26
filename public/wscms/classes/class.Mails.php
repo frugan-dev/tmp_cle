@@ -53,7 +53,7 @@ class Mails extends Core
             Logger::debug('sendMailSymfony: buildTransports() returned', [
                 'transport_count' => count($transports),
                 'transport_keys' => array_keys($transports),
-                'transport_types' => array_map(fn ($t) => is_object($t) ? get_class($t) : gettype($t), $transports),
+                'transport_types' => array_map(fn ($t) => get_debug_type($t), $transports),
             ]);
 
             if (empty($transports)) {
@@ -67,7 +67,7 @@ class Mails extends Core
             $transportInstances = [];
             foreach ($transports as $key => $dsnOrInstance) {
                 Logger::debug("sendMailSymfony: Processing transport '{$key}'", [
-                    'type' => is_object($dsnOrInstance) ? get_class($dsnOrInstance) : 'DSN_STRING',
+                    'type' => is_object($dsnOrInstance) ? $dsnOrInstance::class : 'DSN_STRING',
                     'value' => is_object($dsnOrInstance) ? 'OBJECT_INSTANCE' : $dsnOrInstance,
                 ]);
 
@@ -90,7 +90,7 @@ class Mails extends Core
 
             Logger::debug('sendMailSymfony: Transport instances created', [
                 'instance_count' => count($transportInstances),
-                'instance_types' => array_map(fn ($t) => get_class($t), $transportInstances),
+                'instance_types' => array_map(fn ($t) => $t::class, $transportInstances),
             ]);
 
             if (empty($transportInstances)) {
@@ -110,7 +110,7 @@ class Mails extends Core
                 Logger::debug("sendMailSymfony: Created {$technique}    transport with " . count($transportInstances) . ' instances');
             } else {
                 $transport = $transportInstances[0];
-                Logger::debug('sendMailSymfony: Using single transport: ' . get_class($transport));
+                Logger::debug('sendMailSymfony: Using single transport: ' . $transport::class);
             }
 
             $mailer = new Mailer($transport);

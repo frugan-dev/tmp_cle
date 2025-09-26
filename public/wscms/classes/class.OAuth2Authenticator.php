@@ -54,7 +54,7 @@ class OAuth2Authenticator implements AuthenticatorInterface
             ]);
 
         } catch (Exception $exception) {
-            Logger::error($e->getMessage(), [
+            Logger::error($exception->getMessage(), [
                 'exception' => $exception,
                 'provider' => 'microsoft-office365',
             ]);

@@ -146,14 +146,12 @@ class GraphAPITransport implements TransportInterface
                         'contentType' => $message->getHtmlBody() ? 'HTML' : 'Text',
                         'content' => $message->getHtmlBody() ?: $message->getTextBody(),
                     ],
-                    'toRecipients' => array_map(function ($addr) {
-                        return [
-                            'emailAddress' => [
-                                'address' => $addr->getAddress(),
-                                'name' => $addr->getName(),
-                            ],
-                        ];
-                    }, $message->getTo()),
+                    'toRecipients' => array_map(fn($addr) => [
+                        'emailAddress' => [
+                            'address' => $addr->getAddress(),
+                            'name' => $addr->getName(),
+                        ],
+                    ], $message->getTo()),
                     'from' => $message->getFrom() ? [
                         'emailAddress' => [
                             'address' => $message->getFrom()[0]->getAddress(),

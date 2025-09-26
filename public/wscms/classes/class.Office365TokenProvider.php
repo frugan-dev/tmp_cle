@@ -56,7 +56,7 @@ class Office365TokenProvider
     {
         if ($this->mockEnabled) {
             $mockUrl = $_ENV['MAIL_OAUTH2_MOCK_URL'] ?? 'http://mock-oauth2:8080';
-            $tokenUrl = rtrim($mockUrl, '/') . '/oauth2/token';
+            $tokenUrl = rtrim((string) $mockUrl, '/') . '/oauth2/token';
 
             Logger::debug('Using mock OAuth2 service', ['url' => $tokenUrl]);
 
@@ -170,7 +170,7 @@ class Office365TokenProvider
 
         if ($this->mockEnabled) {
             $info['mock_url'] = $_ENV['MAIL_OAUTH2_MOCK_URL'] ?? 'http://mock-oauth2:8080';
-            $info['token_endpoint'] = rtrim($info['mock_url'], '/') . '/oauth2/token';
+            $info['token_endpoint'] = rtrim((string) $info['mock_url'], '/') . '/oauth2/token';
         } else {
             $info['token_endpoint'] = sprintf(self::OAUTH_URL, $this->tenantId);
         }
