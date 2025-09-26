@@ -7,6 +7,8 @@
  * classes/class.GraphAPITransport.php v.1.0.0. 24/09/2025
  */
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mailer\Envelope;
@@ -120,55 +122,62 @@ class GraphAPITransport implements TransportInterface
         }
 
         $payload = [
-                'message' => [
-                    'subject' => $message->getSubject(),
-                    'body' => [
-                        'contentType' => $message->getHtmlBody() ? 'HTML' : 'Text',
-                        'content' => $message->getHtmlBody() ?: $message->getTextBody(),
-                    ],
-                    'toRecipients' => array_map(fn ($addr) => [
-                        'emailAddress' => [
-                            'address' => $addr->getAddress(),
-                            'name' => $addr->getName(),
-                        ],
-                    ], $message->getTo()),
-                    'from' => $message->getFrom() ? [
-                        'emailAddress' => [
-                            'address' => $message->getFrom()[0]->getAddress(),
-                            'name' => $message->getFrom()[0]->getName(),
-                        ],
-                    ] : null,
+            'message' => [
+                'subject' => $message->getSubject(),
+                'body' => [
+                    'contentType' => $message->getHtmlBody() ? 'HTML' : 'Text',
+                    'content' => $message->getHtmlBody() ?: $message->getTextBody(),
                 ],
-                'saveToSentItems' => true,
-            ];
-
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $endpoint,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Authorization: Bearer mock-token',
+                'toRecipients' => array_map(fn ($addr) => [
+                    'emailAddress' => [
+                        'address' => $addr->getAddress(),
+                        'name' => $addr->getName(),
+                    ],
+                ], $message->getTo()),
+                'from' => $message->getFrom() ? [
+                    'emailAddress' => [
+                        'address' => $message->getFrom()[0]->getAddress(),
+                        'name' => $message->getFrom()[0]->getName(),
+                    ],
+                ] : null,
             ],
-            CURLOPT_TIMEOUT => 10,
-            CURLOPT_CONNECTTIMEOUT => 5,
-            // For local mock, disable SSL verification
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
-        ]);
+            'saveToSentItems' => true,
+        ];
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
+        $options = [
+            'json' => $payload,
+            'headers' => [
+                'Authorization' => 'Bearer mock-token',
+            ],
+            'timeout' => 10,
+            'connect_timeout' => 5,
+            'verify' => false, // For local mock, disable SSL verification
+        ];
 
-        if ($httpCode !== 202 && $httpCode !== 200) {
+        try {
+            $client = new Client();
+            $response = $client->post($endpoint, $options);
+
+            $statusCode = $response->getStatusCode();
+            if ($statusCode !== 202 && $statusCode !== 200) {
+                Logger::warning('Mock Graph API call returned unexpected status', [
+                    'http_code' => $statusCode,
+                    'response' => $response->getBody()->getContents(),
+                ]);
+            }
+
+        } catch (RequestException $e) {
             Logger::warning('Mock Graph API call failed', [
-                'http_code' => $httpCode,
-                'response' => $response,
+                'exception' => $e->getMessage(),
+                'endpoint' => $endpoint,
             ]);
+
+            if ($e->hasResponse()) {
+                Logger::warning('Response details', [
+                    'http_code' => $e->getResponse()->getStatusCode(),
+                    'response' => $e->getResponse()->getBody()->getContents(),
+                ]);
+            }
         }
 
         // Also send to Mailpit for visualization

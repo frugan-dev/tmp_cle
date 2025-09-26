@@ -48,11 +48,6 @@ class Mails extends Core
             // Build transports array from environment configuration
             $transports = self::buildTransports();
 
-            if (empty($transports)) {
-                // https://symfony.com/doc/current/mailer.html#disabling-delivery
-                $transports['null'] = 'null://null';
-            }
-
             // Create transport instances - some may be custom OAuth2 transports
             $transportInstances = [];
             foreach ($transports as $key => $dsnOrInstance) {
@@ -163,8 +158,8 @@ class Mails extends Core
     {
         $transports = [];
 
-        if (empty($_ENV['MAIL_TRANSPORTS'])) {
-            return $transports;
+        if (empty($_ENV['MAIL_TRANSPORTS']) && $_ENV['MAIL_TRANSPORTS'] !== null) {
+            throw new Exception('MAIL_TRANSPORTS environment variable not configured. Use "null" to disable email sending.');
         }
 
         // https://github.com/symfony/mailer
@@ -263,12 +258,22 @@ class Mails extends Core
                     // 	$transports[$val] = $val . '://default';
                     // 	break;
 
+                case null:
+                    // https://symfony.com/doc/current/mailer.html#disabling-delivery
+                    $transports['null'] = 'null://null';
+                    Logger::debug('Null transport configured - emails will be discarded');
+                    break;
+
                 default:
                     Logger::warning('Unknown transport type: {transport_type}', [
                         'transport_type' => $val,
                     ]);
                     break;
             }
+        }
+
+        if (empty($transports)) {
+            throw new Exception('No mail transports configured. Check MAIL_TRANSPORTS environment variable.');
         }
 
         return $transports;
@@ -544,7 +549,7 @@ class Mails extends Core
             && (count($opt['customFields']) == count($opt['customFieldsValue']))
         ) {
             foreach ($opt['customFields'] as $key => $value) {
-                $content = preg_replace('/'.$opt['customFields'][$key].'/',(string) $opt['customFieldsValue'][$key],(string) $content);
+                $content = preg_replace('/'.$opt['customFields'][$key].'/', (string) $opt['customFieldsValue'][$key], (string) $content);
             }
         }
 

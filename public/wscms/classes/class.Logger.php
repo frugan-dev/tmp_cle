@@ -121,11 +121,6 @@ class Logger
     {
         $transports = Mails::buildTransports();
 
-        if (empty($transports)) {
-            // https://symfony.com/doc/current/mailer.html#disabling-delivery
-            $transports['null'] = 'null://null';
-        }
-
         $transport = Transport::fromDsn(
             ($_ENV['MAIL_TRANSPORTS_TECHNIQUE'] ?? 'failover') . '(' . implode(' ', $transports) . ')',
             null,

@@ -7,6 +7,9 @@
  * classes/class.Office365TokenProvider.php v.1.0.0. 24/09/2025
  */
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+
 class Office365TokenProvider
 {
     private const string OAUTH_URL = 'https://login.microsoftonline.com/%s/oauth2/v2.0/token';
@@ -106,52 +109,44 @@ class Office365TokenProvider
      */
     private function makeHttpRequest(string $url, array $postData): array
     {
-        $ch = curl_init();
-
-        $curlOptions = [
-            CURLOPT_URL => $url,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => http_build_query($postData),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/x-www-form-urlencoded',
-                'Accept: application/json',
+        $options = [
+            'form_params' => $postData,
+            'headers' => [
+                'Accept' => 'application/json',
             ],
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_CONNECTTIMEOUT => 10,
+            'timeout' => 30,
+            'connect_timeout' => 10,
         ];
 
         // For mock services, disable SSL verification
         if ($this->mockEnabled) {
-            $curlOptions[CURLOPT_SSL_VERIFYPEER] = false;
-            $curlOptions[CURLOPT_SSL_VERIFYHOST] = false;
-
+            $options['verify'] = false;
             Logger::debug('OAuth2 Mock mode: SSL verification disabled');
         }
 
-        curl_setopt_array($ch, $curlOptions);
+        try {
+            $client = new Client();
+            $response = $client->post($url, $options);
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
+            $data = json_decode($response->getBody()->getContents(), true);
 
-        curl_close($ch);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception('Invalid JSON response: ' . json_last_error_msg());
+            }
 
-        if ($error) {
-            throw new Exception("cURL error: {$error}");
+            return $data;
+
+        } catch (RequestException $e) {
+            $message = 'HTTP request failed: ' . $e->getMessage();
+
+            if ($e->hasResponse()) {
+                $statusCode = $e->getResponse()->getStatusCode();
+                $responseBody = $e->getResponse()->getBody()->getContents();
+                $message .= " (HTTP {$statusCode}: {$responseBody})";
+            }
+
+            throw new Exception($message, 0, $e);
         }
-
-        if ($httpCode !== 200) {
-            throw new Exception("HTTP error {$httpCode}: {$response}");
-        }
-
-        $data = json_decode($response, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Invalid JSON response: ' . json_last_error_msg());
-        }
-
-        return $data;
     }
 
     /**
