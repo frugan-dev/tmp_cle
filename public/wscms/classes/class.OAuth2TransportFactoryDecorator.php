@@ -111,6 +111,11 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
             // Set placeholder password - will be replaced by authenticator
             $transport->setPassword('oauth2_token_placeholder');
 
+            // Configura il transport per richiedere sempre autenticazione
+            if (method_exists($transport, 'setAuthMode')) {
+                $transport->setAuthMode('login');
+            }
+
             Logger::debug('OAuth2 transport configured successfully', [
                 'provider' => $provider,
                 'username' => $dsn->getUser(),

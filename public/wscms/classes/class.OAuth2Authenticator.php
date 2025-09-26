@@ -13,8 +13,12 @@ use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 
 class OAuth2Authenticator implements AuthenticatorInterface
 {
+    private BaseXOAuth2Authenticator $authenticator;
+
     public function __construct(private readonly Office365TokenProvider $tokenProvider)
     {
+        Logger::debug('OAuth2Authenticator::getAuthKeyword called');
+        
         $this->authenticator = new BaseXOAuth2Authenticator();
     }
 

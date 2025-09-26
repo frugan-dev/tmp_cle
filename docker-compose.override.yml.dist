@@ -81,6 +81,7 @@ services:
       - ${PWD}/private/docker/wiremock/__files:/home/wiremock/__files
     command: --global-response-templating --disable-gzip --verbose
 
+  #https://github.com/simonrob/email-oauth2-proxy
   smtp-server:
     container_name: ${APP_ID}_smtp-server
     build: ${PWD}/private/docker/smtp-server
