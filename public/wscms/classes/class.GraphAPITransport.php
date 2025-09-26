@@ -39,7 +39,7 @@ class GraphAPITransport implements TransportInterface
         $this->userId = $_ENV['MAIL_OAUTH2_GRAPH_USER_ID'] ?? $_ENV['MAIL_FROM_EMAIL'] ?? '';
         $this->mailbox = $_ENV['MAIL_OAUTH2_GRAPH_MAILBOX'] ?? $this->userId;
         $this->baseUrl = $_ENV['MAIL_OAUTH2_GRAPH_BASE_URL'] ?? 'https://graph.microsoft.com/v1.0';
-        $this->mockEnabled = ($_ENV['MAIL_GRAPH_API_MOCK_ENABLED'] ?? 'false') === 'true';
+        $this->mockEnabled = ($_ENV['MAIL_GRAPH_API_MOCK_ENABLED'] ?? false) === true;
         
         if ($this->mockEnabled) {
             $this->baseUrl = $_ENV['MAIL_GRAPH_API_MOCK_URL'] ?? 'http://mock-graph-api:8080';
@@ -51,11 +51,11 @@ class GraphAPITransport implements TransportInterface
         if (!$message instanceof Email) {
             throw new \InvalidArgumentException('GraphAPITransport only supports Email messages');
         }
-        
+
         try {
             $graphClient = $this->getGraphClient();
             $graphMessage = $this->convertEmailToGraphMessage($message);
-            
+
             // Send email using Graph API
             if ($this->mailbox !== $this->userId) {
                 // Send as shared mailbox
@@ -70,22 +70,26 @@ class GraphAPITransport implements TransportInterface
                     'saveToSentItems' => true
                 ]);
             }
-            
+
             Logger::info('Email sent successfully via Graph API Transport', [
                 'to' => $this->getRecipientsString($message->getTo()),
                 'subject' => $message->getSubject(),
                 'mailbox' => $this->mailbox
             ]);
-            
-            return new SentMessage($message, 'graph-api');
-            
-        } catch (Exception $e) {
+
+            // Use a valid envelope or create one from the message
+            $finalEnvelope = $envelope ?? Envelope::create($message);
+
+            return new SentMessage($message, $finalEnvelope);
+
+        } catch (Exception $exception) {
             Logger::error('Failed to send email via Graph API Transport', [
-                'error' => $e->getMessage(),
+                'exception' => $exception,
                 'to' => $this->getRecipientsString($message->getTo()),
-                'subject' => $message->getSubject()
+                'subject' => $message->getSubject(),
+                'mailbox' => $this->mailbox
             ]);
-            
+
             throw $e;
         }
     }
