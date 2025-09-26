@@ -39,6 +39,22 @@ $config = new Config()
         'fully_qualified_strict_types' => [
             'import_symbols' => true,
         ],
+        'ordered_class_elements' => [
+            'order' => [
+                'use_trait',
+                'constant_public',
+                'constant_protected', 
+                'constant_private',
+                'property_public',
+                'property_protected',
+                'property_private',
+                'construct',
+                'destruct',
+                'method_public',
+                'method_protected',
+                'method_private',
+            ],
+        ],
         //'header_comment' => ['header' => $header],
     ])
     ->setFinder($finder)

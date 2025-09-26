@@ -59,7 +59,7 @@ class OAuth2Authenticator implements AuthenticatorInterface
                 'provider' => 'microsoft-office365',
             ]);
 
-            throw $e;
+            throw $exception;
         }
     }
 }

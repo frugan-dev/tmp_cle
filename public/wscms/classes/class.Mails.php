@@ -14,8 +14,6 @@ use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Transport\FailoverTransport;
 use Symfony\Component\Mailer\Transport\RoundRobinTransport;
-use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
-use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
 
@@ -48,55 +46,60 @@ class Mails extends Core
             // Build transports array from environment configuration
             $transports = self::buildTransports();
 
-            // Create transport instances - some may be custom OAuth2 transports
+            // Create transport instances using custom transport factory
             $transportInstances = [];
-            foreach ($transports as $key => $dsnOrInstance) {
-
-                if (is_object($dsnOrInstance)) {
-                    // Already a transport instance (OAuth2 custom transports)
-                    $transportInstances[] = $dsnOrInstance;
-                } else {
-                    // Create from DSN (standard transports)
-                    $transportInstances[] = Transport::fromDsn(
-                        $dsnOrInstance,
-                        null,
-                        null,
-                        Logger::getInstance()
-                    );
+            foreach ($transports as $key => $dsn) {
+                try {
+                    $transportInstances[] = self::createTransportWithCustomFactories($dsn);
+                } catch (Exception $e) {
+                    Logger::error('Failed to create transport from DSN', [
+                        'exception' => $e,
+                        'key' => $key,
+                        'dsn' => preg_replace('/:[^:@]*@/', ':***@', $dsn),
+                    ]);
+                    continue;
                 }
             }
 
             if (empty($transportInstances)) {
-                throw new Exception('No transports found');
+                throw new Exception('No transports available');
             }
 
             // Create final transport based on technique
             $technique = $_ENV['MAIL_TRANSPORTS_TECHNIQUE'] ?? 'failover';
-
-            if (count($transportInstances) > 1) {
-                if ($technique === 'roundrobin') {
-                    $transport = new RoundRobinTransport($transportInstances);
-                } else {
-                    $transport = new FailoverTransport($transportInstances);
-                }
-            } else {
+            if (count($transportInstances) === 1) {
                 $transport = $transportInstances[0];
+            } elseif ($technique === 'roundrobin') {
+                $transport = new RoundRobinTransport($transportInstances);
+            } else {
+                $transport = new FailoverTransport($transportInstances);
             }
 
             $mailer = new Mailer($transport);
 
-            // https://github.com/symfony/symfony/issues/41322
-            // https://stackoverflow.com/a/14253556/3929620
-            // https://stackoverflow.com/a/25873119/3929620
-            $email = new Email()
-                ->from(new Address($opt['fromEmail'], $opt['fromLabel']))
-                ->to($address)
-                ->subject($subject)
-                ->text($text_content)
-                ->html($content);
+            // Create email message
+            $email = new Email();
+
+            // Set sender
+            $fromEmail = $opt['fromEmail'] !== 'n.d' ? $opt['fromEmail'] : ($_ENV['MAIL_FROM_EMAIL'] ?? '');
+            $fromLabel = $opt['fromLabel'] !== 'n.d' ? $opt['fromLabel'] : ($_ENV['MAIL_FROM_NAME'] ?? '');
+
+            if (!empty($fromEmail)) {
+                $email->from(new Address($fromEmail, $fromLabel));
+            }
+
+            // Set recipient
+            $email->to($address);
+
+            // Set subject and content
+            $email->subject($subject);
+            $email->html($content);
+            if (!empty($text_content)) {
+                $email->text($text_content);
+            }
 
             // Add reply-to addresses
-            if (is_array($opt['replyTo']) && count($opt['replyTo'])) {
+            if (!empty($opt['replyTo']) && is_array($opt['replyTo'])) {
                 foreach ($opt['replyTo'] as $key => $value) {
                     if (is_string($key)) {
                         $email->addReplyTo(new Address($key, $value));
@@ -107,7 +110,7 @@ class Mails extends Core
             }
 
             // Add BCC addresses
-            if (is_array($opt['addBCC']) && count($opt['addBCC'])) {
+            if (!empty($opt['addBCC']) && is_array($opt['addBCC'])) {
                 foreach ($opt['addBCC'] as $key => $value) {
                     if (is_string($key)) {
                         $email->addBcc(new Address($key, $value));
@@ -118,18 +121,19 @@ class Mails extends Core
             }
 
             // Add debug BCC if enabled
-            if ($opt['sendDebug'] == 1 && !empty($opt['sendDebugEmail'])) {
+            if (($opt['sendDebug'] ?? 0) == 1 && !empty($opt['sendDebugEmail'])) {
                 $email->addBcc($opt['sendDebugEmail']);
             }
 
             // Add attachments
-            if (is_array($opt['attachments']) && count($opt['attachments'])) {
+            if (!empty($opt['attachments']) && is_array($opt['attachments'])) {
                 foreach ($opt['attachments'] as $attachment) {
                     $email->attachFromPath($attachment['filename'], $attachment['title'] ?? null);
                 }
             }
 
-            $mailer->send($email);
+            // Send email
+            $sentMessage = $mailer->send($email);
             Core::$resultOp->error = 0;
 
             Logger::info('Email sent successfully', [
@@ -138,15 +142,16 @@ class Mails extends Core
                 'transport_count' => count($transportInstances),
             ]);
 
+            return true;
+
         } catch (Exception $exception) {
             Core::$resultOp->error = 1;
-            Logger::error($exception->getMessage(), [
+            Logger::error('Failed to send email via Symfony Mailer', [
                 'exception' => $exception,
                 'to' => $address,
                 'subject' => $subject,
             ]);
-
-            throw $exception;
+            return false;
         }
     }
 
@@ -171,11 +176,11 @@ class Mails extends Core
                 case 'oauth2-smtp':
                     if (self::isOAuth2SMTPConfigured()) {
                         try {
-                            $transport = self::createOAuth2SMTPTransport();
-                            $transports['oauth2-smtp'] = $transport;
-                            Logger::debug('OAuth2 SMTP transport created');
+                            $dsn = self::createOAuth2SMTPTransport();
+                            $transports['oauth2-smtp'] = $dsn;
+                            Logger::debug('OAuth2 SMTP transport DSN created');
                         } catch (Exception $exception) {
-                            Logger::error('Failed to create OAuth2 SMTP transport', [
+                            Logger::error('Failed to create OAuth2 SMTP transport DSN', [
                                 'exception' => $exception,
                             ]);
                         }
@@ -319,45 +324,6 @@ class Mails extends Core
 
         $userId = $_ENV['MAIL_OAUTH2_GRAPH_USER_ID'] ?? $_ENV['MAIL_FROM_EMAIL'] ?? '';
         return !empty($userId);
-    }
-
-    /**
-     * Create OAuth2 SMTP transport
-     */
-    private static function createOAuth2SMTPTransport(): TransportInterface
-    {
-        $host = $_ENV['MAIL_OAUTH2_SMTP_HOST'] ?? 'smtp.office365.com';
-        $port = (int)($_ENV['MAIL_OAUTH2_SMTP_PORT'] ?? 587);
-        $username = $_ENV['MAIL_OAUTH2_SMTP_USERNAME'] ?? $_ENV['MAIL_FROM_EMAIL'] ?? '';
-
-        if (empty($username)) {
-            throw new Exception('OAuth2 SMTP requires username (MAIL_OAUTH2_SMTP_USERNAME or MAIL_FROM_EMAIL)');
-        }
-
-        // Create SMTP transport
-        $transport = new EsmtpTransport(
-            $host,
-            $port,
-            false, // TLS will be started automatically
-            null,
-            Logger::getInstance()
-        );
-
-        // Set up OAuth2 authentication
-        $tokenProvider = Office365TokenProvider::createFromEnv();
-        $authenticator = new OAuth2Authenticator($tokenProvider);
-
-        $transport->setUsername($username);
-        $transport->setPassword('oauth2'); // Placeholder, replaced by authenticator
-        $transport->addAuthenticator($authenticator);
-
-        Logger::debug('OAuth2 SMTP transport configured', [
-            'host' => $host,
-            'port' => $port,
-            'username' => $username,
-        ]);
-
-        return $transport;
     }
 
     /**
@@ -554,5 +520,60 @@ class Mails extends Core
         }
 
         return $content;
+    }
+
+    /**
+     * Create transport with custom factories (following cleca approach)
+     */
+    private static function createTransportWithCustomFactories(string $dsnString): TransportInterface
+    {
+        // Get default factories
+        $factories = Transport::getDefaultFactories(null, null, Logger::getInstance());
+
+        // Convert to array to allow modifications
+        $factoriesArray = iterator_to_array($factories);
+
+        // Add OAuth2 transport factory at the beginning (higher priority)
+        array_unshift($factoriesArray, new OAuth2TransportFactoryDecorator(null, null, Logger::getInstance()));
+
+        Logger::debug('Custom transport factories registered', [
+            'factory_count' => count($factoriesArray),
+            'dsn' => preg_replace('/:[^:@]*@/', ':***@', $dsnString),
+        ]);
+
+        // Create Transport factory instance with custom factories
+        $transportFactory = new Transport($factoriesArray);
+
+        // Create the transport
+        return $transportFactory->fromString($dsnString);
+    }
+
+    /**
+     * Create OAuth2 SMTP transport DSN
+     */
+    private static function createOAuth2SMTPTransport(): string
+    {
+        $host = $_ENV['MAIL_OAUTH2_SMTP_HOST'] ?? 'smtp.office365.com';
+        $port = (int)($_ENV['MAIL_OAUTH2_SMTP_PORT'] ?? 587);
+        $username = $_ENV['MAIL_OAUTH2_SMTP_USERNAME'] ?? $_ENV['MAIL_FROM_EMAIL'] ?? '';
+
+        if (empty($username)) {
+            throw new Exception('OAuth2 SMTP requires username (MAIL_OAUTH2_SMTP_USERNAME or MAIL_FROM_EMAIL)');
+        }
+
+        // Build OAuth2 DSN using oauth2:// scheme
+        $dsn = 'oauth2://' . rawurlencode($username) . ':@' . $host . ':' . $port;
+
+        // Add OAuth2 provider parameter
+        $dsn .= '?oauth2_provider=microsoft';
+
+        Logger::debug('OAuth2 SMTP DSN configured', [
+            'host' => $host,
+            'port' => $port,
+            'username' => $username,
+            'dsn' => preg_replace('/:[^:@]*@/', ':***@', $dsn), // Hide credentials in log
+        ]);
+
+        return $dsn;
     }
 }
