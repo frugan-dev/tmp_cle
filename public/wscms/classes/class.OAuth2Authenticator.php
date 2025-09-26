@@ -7,6 +7,7 @@
  * classes/class.OAuth2Authenticator.php v.1.0.0. 24/09/2025
  */
 
+use Symfony\Component\Mailer\Transport\Smtp\Auth\XOAuth2Authenticator as BaseXOAuth2Authenticator;
 use Symfony\Component\Mailer\Transport\Smtp\Auth\AuthenticatorInterface;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 
@@ -14,6 +15,7 @@ class OAuth2Authenticator implements AuthenticatorInterface
 {
     public function __construct(private readonly Office365TokenProvider $tokenProvider)
     {
+        $this->authenticator = new BaseXOAuth2Authenticator();
     }
 
     /**
@@ -21,7 +23,7 @@ class OAuth2Authenticator implements AuthenticatorInterface
      */
     public function getAuthKeyword(): string
     {
-        return 'XOAUTH2';
+        return $this->authenticator->getAuthKeyword();
     }
 
     /**
@@ -29,37 +31,26 @@ class OAuth2Authenticator implements AuthenticatorInterface
      */
     public function authenticate(EsmtpTransport $client): void
     {
+        Logger::debug('OAuth2Authenticator starting authentication', [
+            'username' => $client->getUsername(),
+        ]);
+
+        // Get fresh token
+        $tokenData = $this->tokenProvider->getAccessToken();
+        $accessToken = $tokenData['access_token'];
+
+        // Set token as password temporarily
+        $originalPassword = $client->getPassword();
+        $client->setPassword($accessToken);
+
         try {
-            $tokenData = $this->tokenProvider->getAccessToken();
-            $accessToken = $tokenData['access_token'];
+            // Use Symfony's tested authenticator
+            $this->authenticator->authenticate($client);
 
-            $username = $client->getUsername();
-
-            // Build XOAUTH2 string
-            // Format: user={email}\x01auth=Bearer {token}\x01\x01
-            $authString = sprintf(
-                "user=%s\x01auth=Bearer %s\x01\x01",
-                $username,
-                $accessToken
-            );
-
-            $authString = base64_encode($authString);
-
-            // Send AUTH XOAUTH2 command
-            $client->executeCommand("AUTH XOAUTH2 {$authString}\r\n", [235]);
-
-            Logger::debug('OAuth2 authentication successful', [
-                'provider' => 'microsoft-office365',
-                'username' => $username,
-            ]);
-
-        } catch (Exception $exception) {
-            Logger::error($exception->getMessage(), [
-                'exception' => $exception,
-                'provider' => 'microsoft-office365',
-            ]);
-
-            throw $exception;
+            Logger::debug('OAuth2 authentication successful');
+        } finally {
+            // Restore original password
+            $client->setPassword($originalPassword);
         }
     }
 }

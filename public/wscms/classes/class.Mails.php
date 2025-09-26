@@ -14,6 +14,7 @@ use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Transport\FailoverTransport;
 use Symfony\Component\Mailer\Transport\RoundRobinTransport;
+use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
 
@@ -561,10 +562,10 @@ class Mails extends Core
             throw new Exception('OAuth2 SMTP requires username (MAIL_OAUTH2_SMTP_USERNAME or MAIL_FROM_EMAIL)');
         }
 
-        // Build OAuth2 DSN using oauth2:// scheme
-        $dsn = 'oauth2://' . rawurlencode($username) . ':@' . $host . ':' . $port;
+        // Build SMTP DSN with OAuth2 provider parameter (instead of oauth2:// scheme)
+        $dsn = 'smtp://' . rawurlencode($username) . ':@' . $host . ':' . $port;
 
-        // Add OAuth2 provider parameter
+        // Add OAuth2 provider parameter to signal OAuth2 usage
         $dsn .= '?oauth2_provider=microsoft';
 
         Logger::debug('OAuth2 SMTP DSN configured', [

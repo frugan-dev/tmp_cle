@@ -108,6 +108,23 @@ class GraphAPITransport implements TransportInterface
         }
     }
 
+    public function __toString(): string
+    {
+        // Use a valid DSN format with recognized scheme like in the gist example
+        return $this->mockEnabled ? 'smtp://graph-api-mock' : 'smtp://graph-api-live';
+    }
+
+    /**
+     * Check if transport is properly configured
+     */
+    public function isConfigured(): bool
+    {
+        return !empty($this->tenantId) &&
+               !empty($this->clientId) &&
+               !empty($this->clientSecret) &&
+               !empty($this->userId);
+    }
+
     /**
      * Send email via mock Graph API and also to Mailpit for visualization
      */
@@ -214,12 +231,6 @@ class GraphAPITransport implements TransportInterface
             ]);
             // Don't throw - this is just for visualization, not critical
         }
-    }
-
-    public function __toString(): string
-    {
-        // Use a valid DSN format with recognized scheme like in the gist example
-        return $this->mockEnabled ? 'smtp://graph-api-mock' : 'smtp://graph-api-live';
     }
 
     /**
@@ -353,16 +364,5 @@ class GraphAPITransport implements TransportInterface
         }
 
         return implode(', ', array_map(fn ($addr) => $addr->getAddress(), $recipients));
-    }
-
-    /**
-     * Check if transport is properly configured
-     */
-    public function isConfigured(): bool
-    {
-        return !empty($this->tenantId) &&
-               !empty($this->clientId) &&
-               !empty($this->clientSecret) &&
-               !empty($this->userId);
     }
 }

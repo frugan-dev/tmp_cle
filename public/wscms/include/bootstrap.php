@@ -49,7 +49,7 @@ if (!function_exists('get_magic_quotes_gpc')) {
 }
 
 if (!function_exists('getEnvironment')) {
-    function getEnvironment()
+    function getEnvironment(): string
     {
         return match ($_SERVER['APP_ENV'] ?: $_ENV['APP_ENV'] ?? '') {
             'dev', 'develop', 'development', 'local' => 'develop',
@@ -61,30 +61,37 @@ if (!function_exists('getEnvironment')) {
 }
 
 if (!function_exists('isDebug')) {
-    function isDebug()
+    function isDebug(): bool
     {
         return (bool) $_ENV['APP_DEBUG'];
     }
 }
 
 if (!function_exists('isDevelop')) {
-    function isDevelop()
+    function isDevelop(): bool
     {
         return 'develop' === getEnvironment();
     }
 }
 
 if (!function_exists('isStaging')) {
-    function isStaging()
+    function isStaging(): bool
     {
         return 'production' === getEnvironment();
     }
 }
 
 if (!function_exists('isProduction')) {
-    function isProduction()
+    function isProduction(): bool
     {
         return 'production' === getEnvironment();
+    }
+}
+
+if (!function_exists('isCli')) {
+    function isCli(): bool
+    {
+        return 'cli' === \PHP_SAPI;
     }
 }
 

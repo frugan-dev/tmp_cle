@@ -60,30 +60,32 @@ class Logger
         // For placeholder substitution
         self::$logger->pushProcessor(new PsrLogMessageProcessor());
 
-        // Add processor for request data
-        self::$logger->pushProcessor(function (LogRecord $record) {
-            if (isset($_REQUEST) && (\is_array($_REQUEST) || $_REQUEST instanceof ArrayAccess)) {
-                $record->extra['_REQUEST'] = $_REQUEST;
-            }
+        if (!isCli()) {
+            // Add processor for request data
+            self::$logger->pushProcessor(function (LogRecord $record) {
+                if (isset($_REQUEST) && (\is_array($_REQUEST) || $_REQUEST instanceof ArrayAccess)) {
+                    $record->extra['_REQUEST'] = $_REQUEST;
+                }
 
-            if (isset($_POST) && (\is_array($_POST) || $_POST instanceof ArrayAccess)) {
-                $record->extra['_POST'] = $_POST;
-            }
+                if (isset($_POST) && (\is_array($_POST) || $_POST instanceof ArrayAccess)) {
+                    $record->extra['_POST'] = $_POST;
+                }
 
-            if (isset($_FILES) && (\is_array($_FILES) || $_FILES instanceof ArrayAccess)) {
-                $record->extra['_FILES'] = $_FILES;
-            }
+                if (isset($_FILES) && (\is_array($_FILES) || $_FILES instanceof ArrayAccess)) {
+                    $record->extra['_FILES'] = $_FILES;
+                }
 
-            if (isset($_SESSION) && (\is_array($_SESSION) || $_SESSION instanceof ArrayAccess)) {
-                $record->extra['_SESSION'] = $_SESSION;
-            }
+                if (isset($_SESSION) && (\is_array($_SESSION) || $_SESSION instanceof ArrayAccess)) {
+                    $record->extra['_SESSION'] = $_SESSION;
+                }
 
-            if (isset($_SERVER) && (\is_array($_SERVER) || $_SERVER instanceof ArrayAccess)) {
-                $record->extra['_SERVER'] = str_contains(\ini_get('variables_order') ?: '', 'E') ? $_SERVER : array_diff_key($_SERVER, $_ENV);
-            }
+                if (isset($_SERVER) && (\is_array($_SERVER) || $_SERVER instanceof ArrayAccess)) {
+                    $record->extra['_SERVER'] = str_contains(\ini_get('variables_order') ?: '', 'E') ? $_SERVER : array_diff_key($_SERVER, $_ENV);
+                }
 
-            return $record;
-        });
+                return $record;
+            });
+        }
 
         // Add file/error log handler
         self::addFileHandler();

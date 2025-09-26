@@ -32,6 +32,8 @@ class Office365TokenProvider
      */
     public function getAccessToken(): array
     {
+        Logger::debug('Fetching OAuth2 token from provider');
+
         // Try to get from cache first
         $cachedToken = OAuth2Cache::getToken('microsoft-office365');
 
@@ -48,6 +50,46 @@ class Office365TokenProvider
         OAuth2Cache::storeToken('microsoft-office365', $tokenData, $ttl);
 
         return $tokenData;
+    }
+
+    /**
+     * Get provider information
+     */
+    public function getInfo(): array
+    {
+        $info = [
+            'provider' => 'microsoft-office365',
+            'tenant' => $this->tenantId,
+            'scope' => $this->scope,
+            'grant_type' => self::GRANT_TYPE,
+            'mock_enabled' => $this->mockEnabled,
+        ];
+
+        if ($this->mockEnabled) {
+            $info['mock_url'] = $_ENV['MAIL_OAUTH2_MOCK_URL'] ?? 'http://mock-oauth2:8080';
+            $info['token_endpoint'] = rtrim((string) $info['mock_url'], '/') . '/oauth2/token';
+        } else {
+            $info['token_endpoint'] = sprintf(self::OAUTH_URL, $this->tenantId);
+        }
+
+        return $info;
+    }
+
+    /**
+     * Create instance from environment variables
+     */
+    public static function createFromEnv(): self
+    {
+        $tenantId = $_ENV['MAIL_OAUTH2_TENANT_ID'] ?? '';
+        $clientId = $_ENV['MAIL_OAUTH2_CLIENT_ID'] ?? '';
+        $clientSecret = $_ENV['MAIL_OAUTH2_CLIENT_SECRET'] ?? '';
+        $scope = $_ENV['MAIL_OAUTH2_SCOPE'] ?? self::SCOPE;
+
+        if (empty($tenantId) || empty($clientId) || empty($clientSecret)) {
+            throw new InvalidArgumentException('Missing OAuth2 credentials in environment variables');
+        }
+
+        return new self($tenantId, $clientId, $clientSecret, $scope);
     }
 
     /**
@@ -147,45 +189,5 @@ class Office365TokenProvider
 
             throw new Exception($message, 0, $e);
         }
-    }
-
-    /**
-     * Get provider information
-     */
-    public function getInfo(): array
-    {
-        $info = [
-            'provider' => 'microsoft-office365',
-            'tenant' => $this->tenantId,
-            'scope' => $this->scope,
-            'grant_type' => self::GRANT_TYPE,
-            'mock_enabled' => $this->mockEnabled,
-        ];
-
-        if ($this->mockEnabled) {
-            $info['mock_url'] = $_ENV['MAIL_OAUTH2_MOCK_URL'] ?? 'http://mock-oauth2:8080';
-            $info['token_endpoint'] = rtrim((string) $info['mock_url'], '/') . '/oauth2/token';
-        } else {
-            $info['token_endpoint'] = sprintf(self::OAUTH_URL, $this->tenantId);
-        }
-
-        return $info;
-    }
-
-    /**
-     * Create instance from environment variables
-     */
-    public static function createFromEnv(): self
-    {
-        $tenantId = $_ENV['MAIL_OAUTH2_TENANT_ID'] ?? '';
-        $clientId = $_ENV['MAIL_OAUTH2_CLIENT_ID'] ?? '';
-        $clientSecret = $_ENV['MAIL_OAUTH2_CLIENT_SECRET'] ?? '';
-        $scope = $_ENV['MAIL_OAUTH2_SCOPE'] ?? self::SCOPE;
-
-        if (empty($tenantId) || empty($clientId) || empty($clientSecret)) {
-            throw new InvalidArgumentException('Missing OAuth2 credentials in environment variables');
-        }
-
-        return new self($tenantId, $clientId, $clientSecret, $scope);
     }
 }

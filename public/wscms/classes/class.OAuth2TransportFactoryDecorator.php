@@ -33,6 +33,13 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
      */
     public function create(Dsn $dsn): TransportInterface
     {
+        Logger::debug('OAuth2TransportFactoryDecorator::create called', [
+            'scheme' => $dsn->getScheme(),
+            'host' => $dsn->getHost(),
+            'port' => $dsn->getPort(),
+            'oauth2_provider' => $dsn->getOption('oauth2_provider'),
+        ]);
+
         // Convert oauth2:// scheme to smtp:// for inner factory
         $adjustedDsn = $this->convertOAuth2DsnToSmtp($dsn);
 
@@ -52,16 +59,29 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
      */
     public function supports(Dsn $dsn): bool
     {
+        Logger::debug('OAuth2TransportFactoryDecorator::supports called', [
+            'scheme' => $dsn->getScheme(),
+            'oauth2_provider' => $dsn->getOption('oauth2_provider'),
+        ]);
+
         // Support oauth2:// scheme or smtp:// with oauth2_provider option
         if ('oauth2' === $dsn->getScheme()) {
+            Logger::debug('OAuth2TransportFactoryDecorator supports oauth2:// scheme');
             return true;
         }
 
         if ($dsn->getOption('oauth2_provider')) {
+            Logger::debug('OAuth2TransportFactoryDecorator supports smtp:// with oauth2_provider');
             return true;
         }
 
-        return $this->innerFactory->supports($dsn);
+        // Delegate to inner factory for regular SMTP
+        $supports = $this->innerFactory->supports($dsn);
+        Logger::debug('OAuth2TransportFactoryDecorator delegating to inner factory', [
+            'supports' => $supports,
+        ]);
+
+        return $supports;
     }
 
     /**
@@ -85,6 +105,8 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
 
             // Add OAuth2 authenticator to transport
             $transport->addAuthenticator($authenticator);
+
+            $transport->setUsername('oauth2:microsoft');
 
             // Set placeholder password - will be replaced by authenticator
             $transport->setPassword('oauth2_token_placeholder');
@@ -112,6 +134,12 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
         if ('oauth2' !== $dsn->getScheme()) {
             return $dsn;
         }
+
+        Logger::debug('Converting oauth2:// DSN to smtp://', [
+            'original_scheme' => $dsn->getScheme(),
+            'host' => $dsn->getHost(),
+            'port' => $dsn->getPort(),
+        ]);
 
         return new Dsn(
             'smtp',
