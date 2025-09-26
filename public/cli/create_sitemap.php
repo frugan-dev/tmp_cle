@@ -2,9 +2,10 @@
 <?php
 /* cron/create_sitemap.php */
 //header("Content-type: text/xml; charset=utf-8");
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-define('PATH','../');
+//error_reporting(E_ALL);
+//ini_set('display_errors', 1);
+
+define('PATH', dirname(__DIR__).'/');
 
 include_once(PATH."wscms/include/configuration.inc.php");
 

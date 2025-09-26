@@ -5,7 +5,7 @@
  * Usage: php test_mail.php email@example.com
  */
 
-define('PATH', '../');
+define('PATH', dirname(__DIR__).'/');
 
 include_once(PATH."wscms/include/configuration.inc.php");
 

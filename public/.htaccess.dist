@@ -36,7 +36,7 @@
 </IfModule>
 
 #https://stackoverflow.com/a/76483989
-<If "%{REQUEST_URI} =~ m#^/vendor/|^/(composer\.json|rector\.php)$#">
+<If "%{REQUEST_URI} =~ m#^/vendor/|^/(composer\.json|\.php-cs-fixer\.dist\.php|rector\.php)$#">
     Require all denied
 </If>
 

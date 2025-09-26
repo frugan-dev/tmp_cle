@@ -1,6 +1,6 @@
 {
     "name": "websync/framework",
-    "description": "Il framework PHP di websync",
+    "description": "Il framework PHP di WebSync",
     "type": "project",
     "authors": [
         {
@@ -8,7 +8,7 @@
             "email": "info@websync.it"
         }
     ],
-    "license": "MIT",
+    "license": "GPL-3.0-or-later",
     "config": {
         "sort-packages": true,
         "allow-plugins": {
@@ -48,6 +48,7 @@
         "vlucas/phpdotenv": "^5.5"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.88",
         "marcocesarato/amwscan": "^0.14.0",
         "rector/rector": "2.1.7"
     },
@@ -62,6 +63,8 @@
         "post-update-cmd": "@post-cmd",
         "post-cmd": "rm -f vendor/mos/cimage/webroot/img_config.php || true",
         "amwscan": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/marcocesarato/amwscan/dist/scanner -- --report --ignore-paths=\"/vendor\" --path-logs=\"./var/log/scanner.log\" --path-report=\"./var/tmp/scanner-report.html\" .",
+        "lint": "./vendor/bin/php-cs-fixer fix --diff --dry-run",
+        "lint:fix": "./vendor/bin/php-cs-fixer fix --diff",
         "rector": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/bin/rector -- process --ansi --clear-cache"
     }
 }
