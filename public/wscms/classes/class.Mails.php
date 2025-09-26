@@ -49,7 +49,6 @@ class Mails extends Core
             $transports = self::buildTransports();
 
             if (empty($transports)) {
-
                 // https://symfony.com/doc/current/mailer.html#disabling-delivery
                 $transports['null'] = 'null://null';
             }
