@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+
 /**
  * Simple CLI script to send test email using Mails::sendEmail()
  * Usage: php test_mail.php email@example.com
@@ -7,7 +8,7 @@
 
 define('PATH', dirname(__DIR__).'/');
 
-include_once(PATH."wscms/include/configuration.inc.php");
+include_once(PATH.'wscms/include/configuration.inc.php');
 
 Config::setGlobalSettings($globalSettings);
 Config::init();
@@ -51,7 +52,7 @@ $options = [
 
 try {
     Mails::sendEmail($toEmail, $subject, $htmlContent, $textContent, $options);
-    
+
     if (Core::$resultOp->error === 0) {
         echo "✅ Email sent successfully!\n";
         echo "   To: {$toEmail}\n";
@@ -61,7 +62,7 @@ try {
         echo "❌ Email sending failed!\n";
         echo "   Check logs for details\n";
     }
-    
+
 } catch (Exception $e) {
-    echo "❌ Exception occurred: " . $e->getMessage() . "\n";
+    echo '❌ Exception occurred: ' . $e->getMessage() . "\n";
 }

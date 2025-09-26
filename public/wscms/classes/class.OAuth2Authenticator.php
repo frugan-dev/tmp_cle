@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework App PHP-MySQL
  * PHP Version 8.4
@@ -14,7 +15,7 @@ class OAuth2Authenticator implements AuthenticatorInterface
     public function __construct(private readonly Office365TokenProvider $tokenProvider)
     {
     }
-    
+
     /**
      * Get authentication mode
      */
@@ -22,7 +23,7 @@ class OAuth2Authenticator implements AuthenticatorInterface
     {
         return 'XOAUTH2';
     }
-    
+
     /**
      * Perform OAuth2 authentication
      */
@@ -31,9 +32,9 @@ class OAuth2Authenticator implements AuthenticatorInterface
         try {
             $tokenData = $this->tokenProvider->getAccessToken();
             $accessToken = $tokenData['access_token'];
-            
+
             $username = $client->getUsername();
-            
+
             // Build XOAUTH2 string
             // Format: user={email}\x01auth=Bearer {token}\x01\x01
             $authString = sprintf(
@@ -41,23 +42,23 @@ class OAuth2Authenticator implements AuthenticatorInterface
                 $username,
                 $accessToken
             );
-            
+
             $authString = base64_encode($authString);
-            
+
             // Send AUTH XOAUTH2 command
             $client->executeCommand("AUTH XOAUTH2 {$authString}\r\n", [235]);
-            
+
             Logger::debug('OAuth2 authentication successful', [
                 'provider' => 'microsoft-office365',
-                'username' => $username
+                'username' => $username,
             ]);
-            
+
         } catch (Exception $exception) {
             Logger::error($e->getMessage(), [
                 'exception' => $exception,
-                'provider' => 'microsoft-office365'
+                'provider' => 'microsoft-office365',
             ]);
-            
+
             throw $e;
         }
     }

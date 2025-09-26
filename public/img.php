@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Resize and crop images on the fly, store generated images in a cache.
  *
@@ -13,15 +14,15 @@ require_once __DIR__ . '/wscms/include/bootstrap.php';
 
 /**
  * IMPORTANT: Configuration Override Mechanism
- * 
+ *
  * The original vendor/mos/cimage/webroot/img.php file looks for its own configuration
- * file (img_config.php) in the vendor directory using __DIR__, which takes precedence 
+ * file (img_config.php) in the vendor directory using __DIR__, which takes precedence
  * over any $config array we define here.
- * 
+ *
  * To use our custom configuration instead of the vendor's default, we implemented
  * a composer post-install/post-update hook that automatically removes the vendor
  * config file after each composer install/update operation.
- * 
+ *
  * Required composer.json scripts:
  * {
  *   "scripts": {
@@ -30,7 +31,7 @@ require_once __DIR__ . '/wscms/include/bootstrap.php';
  *     "post-cmd": "rm -f vendor/mos/cimage/webroot/img_config.php || true"
  *   }
  * }
- * 
+ *
  * This approach ensures:
  * - Our $config array below is always used
  * - Updates don't break the configuration
@@ -48,12 +49,12 @@ require_once __DIR__ . '/wscms/include/bootstrap.php';
  *
  * The settings below are only a few of the available ones. Check the file in
  * webroot/img_config.php for a complete list of configuration options.
- * 
+ *
  * @see https://cimage.se/doc/configure
  */
 $config = [
     // 'production', 'development', 'strict'
-    'mode'          => 'production', 
+    'mode'          => 'production',
 
     'image_path'    =>  __DIR__ . '/uploads/',
     'cache_path'    =>  __DIR__ . '/uploads/cache/',
