@@ -40,33 +40,50 @@ class Office365TokenProvider {
         
         return $tokenData;
     }
-    
+
     /**
-     * Fetch new token from Microsoft
+     * Fetch new token from Microsoft or Mock service
      */
     private function fetchNewToken(): array
     {
-        $tokenUrl = sprintf(self::OAUTH_URL, $this->tenantId);
-        
-        $postData = [
-            'client_id' => $this->clientId,
-            'client_secret' => $this->clientSecret,
-            'scope' => $this->scope,
-            'grant_type' => self::GRANT_TYPE,
-        ];
-        
+        // Check if mock is enabled
+        $mockEnabled = ($_ENV['MAIL_OAUTH2_MOCK_ENABLED'] ?? false) ===  true;
+
+        if ($mockEnabled) {
+            $mockUrl = $_ENV['MAIL_OAUTH2_MOCK_URL'] ?? 'http://mock-oauth2:8080';
+            $tokenUrl = rtrim($mockUrl, '/') . '/oauth2/token';
+
+            Logger::debug('Using mock OAuth2 service', ['url' => $tokenUrl]);
+
+            $postData = [
+                'client_id' => $this->clientId,
+                'client_secret' => $this->clientSecret,
+                'scope' => $this->scope,
+                'grant_type' => self::GRANT_TYPE,
+            ];
+        } else {
+            $tokenUrl = sprintf(self::OAUTH_URL, $this->tenantId);
+
+            $postData = [
+                'client_id' => $this->clientId,
+                'client_secret' => $this->clientSecret,
+                'scope' => $this->scope,
+                'grant_type' => self::GRANT_TYPE,
+            ];
+        }
+
         $response = $this->makeHttpRequest($tokenUrl, $postData);
-        
+
         if (!isset($response['access_token'])) {
             throw new Exception('Failed to get OAuth2 token: ' . json_encode($response));
         }
-        
+
         // Add timestamp for expiry checking
         $response['fetched_at'] = time();
-        
+
         return $response;
     }
-    
+
     /**
      * Check if token is still valid
      */
@@ -79,15 +96,17 @@ class Office365TokenProvider {
         $expiryTime = $tokenData['fetched_at'] + $tokenData['expires_in'] - 60; // 60s buffer
         return time() < $expiryTime;
     }
-    
+
     /**
-     * Make HTTP request to OAuth2 endpoint
+     * Make HTTP request to OAuth2 endpoint with mock support
      */
     private function makeHttpRequest(string $url, array $postData): array
     {
+        $mockEnabled = ($_ENV['MAIL_OAUTH2_MOCK_ENABLED'] ?? false) === true;
+
         $ch = curl_init();
-        
-        curl_setopt_array($ch, [
+
+        $curlOptions = [
             CURLOPT_URL => $url,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => http_build_query($postData),
@@ -98,44 +117,66 @@ class Office365TokenProvider {
             ],
             CURLOPT_TIMEOUT => 30,
             CURLOPT_CONNECTTIMEOUT => 10,
-        ]);
-        
+        ];
+
+        // For mock services, disable SSL verification
+        if ($mockEnabled) {
+            $curlOptions[CURLOPT_SSL_VERIFYPEER] = false;
+            $curlOptions[CURLOPT_SSL_VERIFYHOST] = false;
+
+            Logger::debug('OAuth2 Mock mode: SSL verification disabled');
+        }
+
+        curl_setopt_array($ch, $curlOptions);
+
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
-        
+
         curl_close($ch);
-        
+
         if ($error) {
             throw new Exception("cURL error: {$error}");
         }
-        
+
         if ($httpCode !== 200) {
             throw new Exception("HTTP error {$httpCode}: {$response}");
         }
-        
+
         $data = json_decode($response, true);
-        
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('Invalid JSON response: ' . json_last_error_msg());
         }
-        
+
         return $data;
     }
-    
+
     /**
      * Get provider information
      */
     public function getInfo(): array
     {
-        return [
+        $mockEnabled = ($_ENV['MAIL_OAUTH2_MOCK_ENABLED'] ?? false) === true;
+        
+        $info = [
             'provider' => 'microsoft-office365',
             'tenant' => $this->tenantId,
             'scope' => $this->scope,
             'grant_type' => self::GRANT_TYPE,
+            'mock_enabled' => $mockEnabled,
         ];
+        
+        if ($mockEnabled) {
+            $info['mock_url'] = $_ENV['MAIL_OAUTH2_MOCK_URL'] ?? 'http://mock-oauth2:8080';
+            $info['token_endpoint'] = rtrim($info['mock_url'], '/') . '/oauth2/token';
+        } else {
+            $info['token_endpoint'] = sprintf(self::OAUTH_URL,  $this->tenantId);
+        }
+        
+        return $info;
     }
-    
+
     /**
      * Create instance from environment variables
      */

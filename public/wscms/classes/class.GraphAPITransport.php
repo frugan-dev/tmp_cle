@@ -96,7 +96,8 @@ class GraphAPITransport implements TransportInterface
     
     public function __toString(): string
     {
-        return sprintf('graph-api://graph.microsoft.com');
+        // Use a valid scheme that Symfony recognizes
+        return sprintf('smtp://%s', parse_url($this->baseUrl, PHP_URL_HOST) ?? 'graph.microsoft.com');
     }
     
     /**
