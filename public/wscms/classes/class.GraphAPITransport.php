@@ -24,6 +24,7 @@ use Microsoft\Graph\Generated\Models\FileAttachment;
 use Microsoft\Graph\Generated\Users\Item\SendMail\SendMailPostRequestBody;
 use Microsoft\Kiota\Authentication\Oauth\ClientCredentialContext;
 use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 
 class GraphAPITransport implements TransportInterface
@@ -137,7 +138,12 @@ class GraphAPITransport implements TransportInterface
                 'mock_mode' => $this->mockEnabled,
             ]);
 
-            throw $e;
+            // Use TransportException so Symfony's FailoverTransport recognizes this as a transport failure
+            throw new TransportException(
+                'Graph API transport failed: ' . $e->getMessage(),
+                0,
+                $e
+            );
         }
     }
 

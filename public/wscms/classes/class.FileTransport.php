@@ -11,6 +11,7 @@
 
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -56,29 +57,39 @@ class FileTransport extends AbstractTransport
         $envelope = $message->getEnvelope();
         $rawMessage = $message->getOriginalMessage();
 
-        // Generate filename with timestamp and random component
-        $filename = sprintf(
-            '%s_%s_%s.eml',
-            date('Y-m-d_H-i-s'),
-            uniqid(),
-            substr(md5($envelope->getSender()->getAddress()), 0, 8)
-        );
+        try {
+            // Generate filename with timestamp and random component
+            $filename = sprintf(
+                '%s_%s_%s.eml',
+                date('Y-m-d_H-i-s'),
+                uniqid(),
+                substr(md5($envelope->getSender()->getAddress()), 0, 8)
+            );
 
-        $filepath = $this->filePath . '/' . $filename;
+            $filepath = $this->filePath . '/' . $filename;
 
-        // Save email as EML format
-        $content = $rawMessage->toString();
+            // Save email as EML format
+            $content = $rawMessage->toString();
 
-        if (file_put_contents($filepath, $content) === false) {
-            throw new RuntimeException("Failed to write email to file: {$filepath}");
+            if (file_put_contents($filepath, $content) === false) {
+                throw new RuntimeException("Failed to write email to file: {$filepath}");
+            }
+
+            Logger::debug('Email saved to file', [
+                'transport' => 'file',
+                'file' => $filepath,
+                'to' => implode(', ', array_map(fn ($addr) => $addr->getAddress(), $envelope->getRecipients())),
+                'subject' => $rawMessage instanceof Email ? $rawMessage->getSubject() : 'N/A',
+                'size' => strlen($content),
+            ]);
+        } catch (Exception $e) {
+            // If it's already a TransportException, re-throw as-is
+            if ($e instanceof TransportException) {
+                throw $e;
+            }
+
+            // Wrap other exceptions in TransportException for proper failover behavior
+            throw new TransportException('File transport failed: ' . $e->getMessage(), 0, $e);
         }
-
-        Logger::debug('Email saved to file', [
-            'transport' => 'file',
-            'file' => $filepath,
-            'to' => implode(', ', array_map(fn ($addr) => $addr->getAddress(), $envelope->getRecipients())),
-            'subject' => $rawMessage instanceof Email ? $rawMessage->getSubject() : 'N/A',
-            'size' => strlen($content),
-        ]);
     }
 }

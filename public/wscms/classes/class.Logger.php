@@ -8,18 +8,14 @@
 */
 
 use Monolog\ErrorHandler;
-use Monolog\Formatter\HtmlFormatter;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\DeduplicationHandler;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Handler\RotatingFileHandler;
-use Monolog\Handler\SymfonyMailerHandler;
 use Monolog\Level;
 use Monolog\Logger as MonologLogger;
 use Monolog\LogRecord;
 use Monolog\Processor\PsrLogMessageProcessor;
-use Symfony\Component\Mailer\Mailer;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
 class Logger
@@ -120,25 +116,8 @@ class Logger
      */
     private static function addEmailHandler(): void
     {
-        $transport = Mails::createMailerTransport();
-        $mailer = new Mailer($transport);
-
-        // https://github.com/symfony/symfony/issues/41322
-        // https://stackoverflow.com/a/14253556/3929620
-        // https://stackoverflow.com/a/25873119/3929620
-        $message = new Email()
-            ->returnPath($_ENV['MAIL_RETURN_PATH'])
-            ->sender(new Address($_ENV['MAIL_SENDER_EMAIL'], $_ENV['MAIL_SENDER_NAME']))
-            ->from(new Address($_ENV['MAIL_FROM_EMAIL'], $_ENV['MAIL_FROM_NAME']))
-            ->subject(sprintf(
-                _('Error reporting from %1$s - %2$s'),
-                $_SERVER['HTTP_HOST'],
-                getEnvironment()
-            ))
-            ->to(...array_map('trim', explode(',', (string) $_ENV['MAIL_TO_EMAILS'])));
-
-        $handler = new SymfonyMailerHandler($mailer, $message, Level::Error);
-        $handler->setFormatter(new HtmlFormatter());
+        // Use the new FailoverEmailHandler that handles both SymfonyMailer and Native fallback
+        $handler = new FailoverEmailHandler(Level::Error);
 
         if (isProduction()) {
             $handler = new DeduplicationHandler(

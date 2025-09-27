@@ -657,7 +657,7 @@ class Mails extends Core
         $dsn = 'smtp://' . rawurlencode((string) $username) . ':@' . $host . ':' . $port;
 
         // Add OAuth2 provider parameter
-        $dsn .= '?oauth2_provider=' . urlencode($provider);
+        $dsn .= '?oauth2_provider=' . urlencode((string) $provider);
 
         Logger::debug('OAuth2 SMTP DSN configured', [
             'host' => $host,
