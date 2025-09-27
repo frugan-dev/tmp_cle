@@ -175,9 +175,9 @@ define('TIMEZONE', $globalSettings['server timezone']);
 define('URL_SITE', $http.SITE_HOST.FOLDER_SITE);
 define('URL_SITE_ADMIN', $http.SITE_HOST.FOLDER_SITE.FOLDER_ADMIN);
 define('URL_SITE_APPLICATION', $http.SITE_HOST.FOLDER_SITE.FOLDER_ADMIN.'application/');
-define('PATH_DOCUMENT', $_SERVER['DOCUMENT_ROOT'].'/');
-define('PATH_SITE', $_SERVER['DOCUMENT_ROOT'].'/'.FOLDER_SITE);
-define('PATH_SITE_ADMIN', $_SERVER['DOCUMENT_ROOT'].'/'.FOLDER_SITE.FOLDER_ADMIN);
+define('PATH_DOCUMENT', dirname(__DIR__, 2).'/');
+define('PATH_SITE', dirname(__DIR__, 2).'/'.FOLDER_SITE);
+define('PATH_SITE_ADMIN', dirname(__DIR__, 2).'/'.FOLDER_SITE.FOLDER_ADMIN);
 // moved to bootstrap.php (specifically PATH_TMP_DIR) to allow the Logger to use the mail transport 'file'
 //define('PATH_CACHE_DIR', PATH_SITE.'var/cache/');
 //define('PATH_LOG_DIR', PATH_SITE.'var/log/');

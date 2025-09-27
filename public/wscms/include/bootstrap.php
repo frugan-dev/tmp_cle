@@ -2,9 +2,9 @@
 
 require_once dirname(__DIR__, 2).'/vendor/autoload.php';
 
-define('PATH_CACHE_DIR', $_SERVER['DOCUMENT_ROOT'].'/var/cache/');
-define('PATH_LOG_DIR', $_SERVER['DOCUMENT_ROOT'].'/var/log/');
-define('PATH_TMP_DIR', $_SERVER['DOCUMENT_ROOT'].'/var/tmp/');
+define('PATH_CACHE_DIR', dirname(__DIR__, 2).'/var/cache/');
+define('PATH_LOG_DIR', dirname(__DIR__, 2).'/var/log/');
+define('PATH_TMP_DIR', dirname(__DIR__, 2).'/var/tmp/');
 
 $suffix = '';
 $env = '.env';

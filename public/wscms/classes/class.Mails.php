@@ -40,7 +40,8 @@ class Mails extends Core
      *
      * Email sending process overview:
      * 1. Transport Creation Phase:
-     *    - buildTransports() creates available transport DSNs (SMTP OAuth2, Graph API, etc.)
+     *    - buildTransports() creates available transport DSNs (SMTP OAuth2, Graph API, File, etc.)
+     *    - createMailerTransport() handles both DSN strings and transport objects centrally
      *    - OAuth2TransportFactoryDecorator handles OAuth2 scheme conversion and authentication
      *    - Office365TokenProvider obtains access tokens for Microsoft OAuth2
      *
@@ -51,18 +52,24 @@ class Mails extends Core
      *    - In development: forces OAuth2-only to prevent plain/login fallback
      *
      * 3. Graph API Flow:
-     *    - GraphAPITransport uses Microsoft Graph API instead of SMTP
-     *    - Sends emails via REST API calls to https://graph.microsoft.com/v1.0/me/sendMail
+     *    - GraphAPITransport uses Graph API instead of SMTP (requires explicit provider configuration)
+     *    - Sends emails via REST API calls to configured Graph API endpoint
      *    - Handles attachments and complex email structures through API
      *
-     * 4. Transport Selection:
+     * 4. File Transport Flow:
+     *    - FileTransport saves emails to .eml files in specified directory
+     *    - Can be used for debugging or as fallback option
+     *    - Generates unique filenames with timestamp and hash
+     *
+     * 5. Transport Selection:
      *    - Failover/roundrobin techniques handle multiple transport fallback
-     *    - Logger uses same transport system but may fallback to plain auth for error emails
+     *    - Logger uses same centralized transport system for error emails
      *
      * Classes involved:
-     * - OAuth2TransportFactoryDecorator: OAuth2 SMTP transport factory
-     * - Office365TokenProvider: OAuth2 token management
+     * - OAuth2TransportFactoryDecorator: OAuth2 SMTP transport factory with dynamic provider support
+     * - Office365TokenProvider: Microsoft-specific OAuth2 token management
      * - GraphAPITransport: Graph API email transport
+     * - FileTransport: File-based email storage transport
      * - XOAuth2Authenticator: SMTP OAuth2 SASL authentication
      */
     public static function sendMailSymfony($address, $subject, $content, $text_content, $opt)
@@ -71,53 +78,8 @@ class Mails extends Core
         $opt = array_merge($optDef, $opt);
 
         try {
-            // Build transports array from environment configuration
-            $transports = self::buildTransports();
-
-            // Create transport instances using custom transport factory
-            $transportInstances = [];
-            foreach ($transports as $key => $dsn) {
-                try {
-                    // Check if it's already a TransportInterface object or a DSN string
-                    if ($dsn instanceof TransportInterface) {
-                        // It's already a transport object, use it directly
-                        $transportInstances[] = $dsn;
-                        Logger::debug('Using existing transport object', [
-                            'key' => $key,
-                            'class' => $dsn::class,
-                        ]);
-                    } else {
-                        // It's a DSN string, create transport from it
-                        $transportInstances[] = self::createTransportWithCustomFactories($dsn);
-                        Logger::debug('Created transport from DSN', [
-                            'key' => $key,
-                            'dsn' => preg_replace('/:[^:@]*@/', ':***@', (string) $dsn),
-                        ]);
-                    }
-                } catch (Exception $e) {
-                    Logger::error('Failed to create transport from DSN', [
-                        'exception' => $e,
-                        'key' => $key,
-                        'value_type' => get_debug_type($dsn),
-                    ]);
-                    continue;
-                }
-            }
-
-            if (empty($transportInstances)) {
-                throw new Exception('No transports available');
-            }
-
-            // Create final transport based on technique
-            $technique = $_ENV['MAIL_TRANSPORTS_TECHNIQUE'] ?? 'failover';
-            if (count($transportInstances) === 1) {
-                $transport = $transportInstances[0];
-            } elseif ($technique === 'roundrobin') {
-                $transport = new RoundRobinTransport($transportInstances);
-            } else {
-                $transport = new FailoverTransport($transportInstances);
-            }
-
+            // Create transport using centralized method
+            $transport = self::createMailerTransport();
             $mailer = new Mailer($transport);
 
             // Create email message
@@ -182,7 +144,6 @@ class Mails extends Core
             Logger::info('Email sent successfully', [
                 'to' => $address,
                 'subject' => $subject,
-                'transport_count' => count($transportInstances),
             ]);
 
             return true;
@@ -196,6 +157,68 @@ class Mails extends Core
             ]);
             return false;
         }
+    }
+
+    /**
+     * Create final transport from configuration
+     * Public method so it can be used by both sendMailSymfony and Logger::addEmailHandler
+     */
+    public static function createMailerTransport(): TransportInterface
+    {
+        // Build transports array from environment configuration
+        $transports = self::buildTransports();
+
+        // Create transport instances using custom transport factory
+        $transportInstances = [];
+        foreach ($transports as $key => $dsn) {
+            try {
+                // Check if it's already a TransportInterface object or a DSN string
+                if ($dsn instanceof TransportInterface) {
+                    // It's already a transport object, use it directly
+                    $transportInstances[] = $dsn;
+                    Logger::debug('Using existing transport object', [
+                        'key' => $key,
+                        'class' => $dsn::class,
+                    ]);
+                } else {
+                    // It's a DSN string, create transport from it
+                    $transportInstances[] = self::createTransportWithCustomFactories($dsn);
+                    Logger::debug('Created transport from DSN', [
+                        'key' => $key,
+                        'dsn' => preg_replace('/:[^:@]*@/', ':***@', (string) $dsn),
+                    ]);
+                }
+            } catch (Exception $e) {
+                Logger::error('Failed to create transport from DSN', [
+                    'exception' => $e,
+                    'key' => $key,
+                    'value_type' => get_debug_type($dsn),
+                ]);
+                continue;
+            }
+        }
+
+        if (empty($transportInstances)) {
+            throw new Exception('No transports available');
+        }
+
+        // Create final transport based on technique
+        $technique = $_ENV['MAIL_TRANSPORTS_TECHNIQUE'] ?? 'failover';
+        if (count($transportInstances) === 1) {
+            $transport = $transportInstances[0];
+        } elseif ($technique === 'roundrobin') {
+            $transport = new RoundRobinTransport($transportInstances);
+        } else {
+            $transport = new FailoverTransport($transportInstances);
+        }
+
+        Logger::debug('Final transport created', [
+            'technique' => $technique,
+            'transport_count' => count($transportInstances),
+            'transports' => array_keys($transports),
+        ]);
+
+        return $transport;
     }
 
     /**
@@ -307,12 +330,11 @@ class Mails extends Core
                     // 	break;
 
                 case 'file':
-                    $filePath = $_ENV['MAIL_FILE_PATH'] ?? PATH_TMP_DIR . '/emails';
+                    $filePath = $_ENV['MAIL_FILE_PATH'] ?? PATH_TMP_DIR . 'emails';
 
                     try {
-                        $fileTransport = FileTransportFactory::create($filePath);
-                        $transports['file'] = $fileTransport;
-                        Logger::debug('File transport configured', [
+                        $transports[$val] = FileTransportFactory::createTransport($filePath);
+                        Logger::debug('File transport created', [
                             'path' => $filePath,
                         ]);
                     } catch (Exception $e) {
@@ -613,24 +635,28 @@ class Mails extends Core
      */
     private static function createOAuth2SMTPTransport(): string
     {
-        $host = $_ENV['MAIL_OAUTH2_SMTP_HOST'] ?? 'smtp.office365.com';
-        $port = (int)($_ENV['MAIL_OAUTH2_SMTP_PORT'] ?? 587);
-        $username = $_ENV['MAIL_OAUTH2_SMTP_USERNAME'] ?? $_ENV['MAIL_FROM_EMAIL'] ?? '';
+        $provider = $_ENV['MAIL_OAUTH2_PROVIDER'] ?? throw new Exception('MAIL_OAUTH2_PROVIDER must be configured for OAuth2 SMTP transport');
 
-        if (empty($username)) {
-            throw new Exception('OAuth2 SMTP requires username (MAIL_OAUTH2_SMTP_USERNAME or MAIL_FROM_EMAIL)');
+        // Currently only Microsoft Office365 is supported for OAuth2 SMTP
+        if ($provider !== 'microsoft-office365') {
+            throw new Exception("OAuth2 provider '{$provider}' is not supported for SMTP. Currently only 'microsoft-office365' is supported.");
         }
+
+        $host = $_ENV['MAIL_OAUTH2_SMTP_HOST'] ?? $_ENV['MAIL_SMTP_HOST'] ?? throw new Exception('MAIL_OAUTH2_SMTP_HOST or MAIL_SMTP_HOST must be configured');
+        $port = (int)($_ENV['MAIL_OAUTH2_SMTP_PORT'] ?? $_ENV['MAIL_SMTP_PORT'] ?? throw new Exception('MAIL_OAUTH2_SMTP_PORT or MAIL_SMTP_PORT must be configured'));
+        $username = $_ENV['MAIL_OAUTH2_SMTP_USERNAME'] ?? $_ENV['MAIL_FROM_EMAIL'] ?? throw new Exception('MAIL_OAUTH2_SMTP_USERNAME or MAIL_FROM_EMAIL must be configured');
 
         // Build SMTP DSN with OAuth2 provider parameter (instead of oauth2:// scheme)
         $dsn = 'smtp://' . rawurlencode((string) $username) . ':@' . $host . ':' . $port;
 
-        // Add OAuth2 provider parameter to signal OAuth2 usage
-        $dsn .= '?oauth2_provider=microsoft';
+        // Add OAuth2 provider parameter
+        $dsn .= '?oauth2_provider=' . urlencode($provider);
 
         Logger::debug('OAuth2 SMTP DSN configured', [
             'host' => $host,
             'port' => $port,
             'username' => $username,
+            'provider' => $provider,
             'dsn' => preg_replace('/:[^:@]*@/', ':***@', $dsn), // Hide credentials in log
         ]);
 

@@ -38,18 +38,28 @@ class GraphAPITransport implements TransportInterface
 
     public function __construct()
     {
-        $this->tenantId = $_ENV['MAIL_OAUTH2_TENANT_ID'] ?? '';
-        $this->clientId = $_ENV['MAIL_OAUTH2_CLIENT_ID'] ?? '';
-        $this->clientSecret = $_ENV['MAIL_OAUTH2_CLIENT_SECRET'] ?? '';
-        $this->userId = $_ENV['MAIL_OAUTH2_GRAPH_USER_ID'] ?? $_ENV['MAIL_FROM_EMAIL'] ?? '';
+        $provider = $_ENV['MAIL_OAUTH2_PROVIDER'] ?? throw new InvalidArgumentException('MAIL_OAUTH2_PROVIDER must be configured for Graph API transport');
+
+        $this->tenantId = $_ENV['MAIL_OAUTH2_TENANT_ID'] ?? throw new InvalidArgumentException('MAIL_OAUTH2_TENANT_ID must be configured');
+        $this->clientId = $_ENV['MAIL_OAUTH2_CLIENT_ID'] ?? throw new InvalidArgumentException('MAIL_OAUTH2_CLIENT_ID must be configured');
+        $this->clientSecret = $_ENV['MAIL_OAUTH2_CLIENT_SECRET'] ?? throw new InvalidArgumentException('MAIL_OAUTH2_CLIENT_SECRET must be configured');
+        $this->userId = $_ENV['MAIL_OAUTH2_GRAPH_USER_ID'] ?? $_ENV['MAIL_FROM_EMAIL'] ?? throw new InvalidArgumentException('MAIL_OAUTH2_GRAPH_USER_ID or MAIL_FROM_EMAIL must be configured');
         $this->mailbox = $_ENV['MAIL_OAUTH2_GRAPH_MAILBOX'] ?? $this->userId;
-        $this->baseUrl = $_ENV['MAIL_OAUTH2_GRAPH_BASE_URL'] ?? 'https://graph.microsoft.com/v1.0';
+
+        // Graph API base URL must be explicitly configured
+        $this->baseUrl = $_ENV['MAIL_OAUTH2_GRAPH_BASE_URL'] ?? throw new InvalidArgumentException("MAIL_OAUTH2_GRAPH_BASE_URL must be configured for provider: {$provider}");
         $this->mockEnabled = ($_ENV['MAIL_GRAPH_API_MOCK_ENABLED'] ?? false) === true;
 
         if ($this->mockEnabled) {
             $this->baseUrl = $_ENV['MAIL_GRAPH_API_MOCK_URL'] ?? 'http://mock-graph-api:8080';
-            Logger::debug('GraphAPITransport initialized in mock mode', ['base_url' => $this->baseUrl]);
+            Logger::debug('Graph API Mock mode enabled', ['base_url' => $this->baseUrl]);
         }
+
+        Logger::debug('Graph API Transport initialized', [
+            'provider' => $provider,
+            'base_url' => $this->baseUrl,
+            'mock_enabled' => $this->mockEnabled,
+        ]);
     }
 
     public function send(RawMessage $message, ?Envelope $envelope = null): ?SentMessage

@@ -15,10 +15,9 @@ date_default_timezone_set('Europe/Rome');
 setlocale(LC_CTYPE, 'en_US'); //correct transliteration
 
 if (!defined('PATH')) {
-    define('PATH', '../');
+    define('PATH', dirname(__DIR__, 2).'/');
 }
 
-//include_once($_SERVER['DOCUMENT_ROOT']."/sito/wscms/include/configuration.inc.php");
 include_once(PATH.'wscms/include/configuration.inc.php');
 
 /*

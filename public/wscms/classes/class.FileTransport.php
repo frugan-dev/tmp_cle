@@ -1,7 +1,10 @@
 <?php
 
 /**
- * Custom File Transport for saving emails to files
+ * Framework App PHP-MySQL
+ * PHP Version 8.4
+ * @copyright 2025 Websync
+ * classes/class.FileTransport.php v.1.0.0. 27/09/2025
  *
  * @see https://github.com/symfony/symfony/issues/33563
  */
@@ -10,6 +13,9 @@ use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Symfony\Component\Mime\Email;
 
+/**
+ * File Transport for saving emails to files
+ */
 class FileTransport extends AbstractTransport
 {
     private readonly string $filePath;
@@ -25,12 +31,24 @@ class FileTransport extends AbstractTransport
             }
         }
 
+        if (!is_writable($this->filePath)) {
+            throw new RuntimeException("Directory is not writable: {$this->filePath}");
+        }
+
         parent::__construct();
     }
 
     public function __toString(): string
     {
         return sprintf('file://%s', $this->filePath);
+    }
+
+    /**
+     * Get the file path where emails are saved
+     */
+    public function getFilePath(): string
+    {
+        return $this->filePath;
     }
 
     protected function doSend(SentMessage $message): void
@@ -43,7 +61,7 @@ class FileTransport extends AbstractTransport
             '%s_%s_%s.eml',
             date('Y-m-d_H-i-s'),
             uniqid(),
-            md5($envelope->getSender()->getAddress())
+            substr(md5($envelope->getSender()->getAddress()), 0, 8)
         );
 
         $filepath = $this->filePath . '/' . $filename;
@@ -56,9 +74,11 @@ class FileTransport extends AbstractTransport
         }
 
         Logger::debug('Email saved to file', [
+            'transport' => 'file',
             'file' => $filepath,
             'to' => implode(', ', array_map(fn ($addr) => $addr->getAddress(), $envelope->getRecipients())),
             'subject' => $rawMessage instanceof Email ? $rawMessage->getSubject() : 'N/A',
+            'size' => strlen($content),
         ]);
     }
 }

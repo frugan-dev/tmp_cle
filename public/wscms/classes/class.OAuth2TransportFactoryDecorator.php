@@ -91,7 +91,7 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
     private function configureOAuth2Transport(EsmtpTransport $transport, Dsn $dsn): void
     {
         try {
-            $provider = $dsn->getOption('oauth2_provider', 'microsoft');
+            $provider = $dsn->getOption('oauth2_provider') ?? $_ENV['MAIL_OAUTH2_PROVIDER'] ?? throw new Exception('OAuth2 provider must be specified in DSN or MAIL_OAUTH2_PROVIDER environment variable');
 
             Logger::debug('Configuring OAuth2 transport', [
                 'provider' => $provider,
@@ -101,8 +101,8 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
                 'scheme' => $dsn->getScheme(),
             ]);
 
-            // Get OAuth2 token
-            $tokenProvider = Office365TokenProvider::createFromEnv();
+            // Dynamic provider discovery
+            $tokenProvider = $this->createTokenProvider($provider);
             $tokenData = $tokenProvider->getAccessToken();
             $accessToken = $tokenData['access_token'];
 
@@ -135,18 +135,44 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
             Logger::debug('OAuth2 token obtained', [
                 'token_length' => strlen((string) $accessToken),
                 'token_preview' => substr((string) $accessToken, 0, 20) . '...',
+                'provider' => $provider,
             ]);
 
         } catch (Exception $e) {
             Logger::error('Failed to configure OAuth2 transport', [
                 'exception' => $e,
-                'provider' => $dsn->getOption('oauth2_provider'),
-                'host' => $dsn->getHost(),
+                'provider' => $provider ?? 'unknown',
             ]);
             throw $e;
         }
     }
 
+    /**
+     * Create token provider dynamically based on provider name
+     */
+    private function createTokenProvider(string $provider): object
+    {
+        // Mapping provider -> token provider class
+        $classMapping = [
+            'microsoft-office365' => Office365TokenProvider::class,
+            // Future providers can be added here:
+            // 'google' => GoogleTokenProvider::class,
+            // 'amazon-ses' => AmazonSESTokenProvider::class,
+        ];
+
+        $className = $classMapping[$provider] ?? throw new Exception("Unsupported OAuth2 provider: {$provider}. Supported providers: " . implode(', ', array_keys($classMapping)));
+
+        if (!class_exists($className)) {
+            throw new Exception("Token provider class not found: {$className}");
+        }
+
+        Logger::debug('Creating OAuth2 token provider', [
+            'provider' => $provider,
+            'class' => $className,
+        ]);
+
+        return $className::createFromEnv();
+    }
     /**
      * Convert oauth2:// DSN to smtp:// for inner factory
      */

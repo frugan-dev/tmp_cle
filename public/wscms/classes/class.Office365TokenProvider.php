@@ -12,9 +12,12 @@ use GuzzleHttp\Exception\RequestException;
 
 class Office365TokenProvider
 {
+    public const string GRANT_TYPE = 'client_credentials';
+
+    // Microsoft Office365 specific constants
     private const string OAUTH_URL = 'https://login.microsoftonline.com/%s/oauth2/v2.0/token';
     private const string SCOPE = 'https://outlook.office365.com/.default';
-    private const string GRANT_TYPE = 'client_credentials';
+    private const string CACHE_KEY = 'microsoft-office365';
 
     private readonly bool $mockEnabled;
 
@@ -25,6 +28,15 @@ class Office365TokenProvider
         private readonly string $scope = self::SCOPE
     ) {
         $this->mockEnabled = ($_ENV['MAIL_OAUTH2_MOCK_ENABLED'] ?? false) === true;
+
+        // Use Microsoft Office365 specific defaults, allow override
+        $this->oauthUrl = $_ENV['MAIL_OAUTH2_TOKEN_URL'] ?? self::OAUTH_URL;
+        $this->cacheKey = $_ENV['MAIL_OAUTH2_CACHE_KEY'] ?? self::CACHE_KEY;
+
+        Logger::debug('Office365TokenProvider initialized', [
+            'cache_key' => $this->cacheKey,
+            'mock_enabled' => $this->mockEnabled,
+        ]);
     }
 
     /**
@@ -32,13 +44,13 @@ class Office365TokenProvider
      */
     public function getAccessToken(): array
     {
-        Logger::debug('Fetching OAuth2 token from provider');
+        Logger::debug('Fetching OAuth2 token from Microsoft Office365');
 
         // Try to get from cache first
-        $cachedToken = OAuth2Cache::getToken('microsoft-office365');
+        $cachedToken = OAuth2Cache::getToken($this->cacheKey);
 
         if ($cachedToken && $this->isTokenValid($cachedToken)) {
-            Logger::debug('Using cached OAuth2 token for Microsoft Office365');
+            Logger::debug('Using cached OAuth2 token', ['cache_key' => $this->cacheKey]);
             return $cachedToken;
         }
 
@@ -47,7 +59,7 @@ class Office365TokenProvider
 
         // Cache the token (expires_in - 60 seconds buffer)
         $ttl = isset($tokenData['expires_in']) ? (int)$tokenData['expires_in'] - 60 : 3600;
-        OAuth2Cache::storeToken('microsoft-office365', $tokenData, $ttl);
+        OAuth2Cache::storeToken($this->cacheKey, $tokenData, $ttl);
 
         return $tokenData;
     }
@@ -63,13 +75,14 @@ class Office365TokenProvider
             'scope' => $this->scope,
             'grant_type' => self::GRANT_TYPE,
             'mock_enabled' => $this->mockEnabled,
+            'cache_key' => $this->cacheKey,
         ];
 
         if ($this->mockEnabled) {
             $info['mock_url'] = $_ENV['MAIL_OAUTH2_MOCK_URL'] ?? 'http://mock-oauth2:8080';
             $info['token_endpoint'] = rtrim((string) $info['mock_url'], '/') . '/oauth2/token';
         } else {
-            $info['token_endpoint'] = sprintf(self::OAUTH_URL, $this->tenantId);
+            $info['token_endpoint'] = sprintf($this->oauthUrl, $this->tenantId);
         }
 
         return $info;
@@ -80,20 +93,18 @@ class Office365TokenProvider
      */
     public static function createFromEnv(): self
     {
-        $tenantId = $_ENV['MAIL_OAUTH2_TENANT_ID'] ?? '';
-        $clientId = $_ENV['MAIL_OAUTH2_CLIENT_ID'] ?? '';
-        $clientSecret = $_ENV['MAIL_OAUTH2_CLIENT_SECRET'] ?? '';
-        $scope = $_ENV['MAIL_OAUTH2_SCOPE'] ?? self::SCOPE;
+        $tenantId = $_ENV['MAIL_OAUTH2_TENANT_ID'] ?? throw new InvalidArgumentException('MAIL_OAUTH2_TENANT_ID must be configured for Microsoft Office365');
+        $clientId = $_ENV['MAIL_OAUTH2_CLIENT_ID'] ?? throw new InvalidArgumentException('MAIL_OAUTH2_CLIENT_ID must be configured for Microsoft Office365');
+        $clientSecret = $_ENV['MAIL_OAUTH2_CLIENT_SECRET'] ?? throw new InvalidArgumentException('MAIL_OAUTH2_CLIENT_SECRET must be configured for Microsoft Office365');
 
-        if (empty($tenantId) || empty($clientId) || empty($clientSecret)) {
-            throw new InvalidArgumentException('Missing OAuth2 credentials in environment variables');
-        }
+        // Use Microsoft Office365 default scope, allow override
+        $scope = $_ENV['MAIL_OAUTH2_SCOPE'] ?? self::SCOPE;
 
         return new self($tenantId, $clientId, $clientSecret, $scope);
     }
 
     /**
-     * Fetch new token from Microsoft or Mock service
+     * Fetch new token from Microsoft Office365 or Mock service
      */
     private function fetchNewToken(): array
     {
@@ -110,7 +121,7 @@ class Office365TokenProvider
                 'grant_type' => self::GRANT_TYPE,
             ];
         } else {
-            $tokenUrl = sprintf(self::OAUTH_URL, $this->tenantId);
+            $tokenUrl = sprintf($this->oauthUrl, $this->tenantId);
 
             $postData = [
                 'client_id' => $this->clientId,
@@ -123,7 +134,7 @@ class Office365TokenProvider
         $response = $this->makeHttpRequest($tokenUrl, $postData);
 
         if (!isset($response['access_token'])) {
-            throw new Exception('Failed to get OAuth2 token: ' . json_encode($response));
+            throw new Exception('Failed to get OAuth2 token from Microsoft Office365: ' . json_encode($response));
         }
 
         // Add timestamp for expiry checking
