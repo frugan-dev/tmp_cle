@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework Siti HTML-PHP-MySQL
  * PHP Version 7
@@ -9,11 +10,13 @@
 */
 
 $App->params = new stdClass();
-$App->params->label = "Info box";
+$App->params->label = 'Info box';
 /* prende i dati del modulo */
-Sql::initQuery(DB_TABLE_PREFIX.'modules',['name','label','help_small','help'],['homeinfobox'],'name = ?');
+Sql::initQuery(DB_TABLE_PREFIX.'modules', ['name','label','help_small','help'], ['homeinfobox'], 'name = ?');
 $obj = Sql::getRecord();
-if (Core::$resultOp->error == 0 && isset($obj) && count((array)$obj) > 1) $App->params = $obj;
+if (Core::$resultOp->error == 0 && isset($obj) && count((array)$obj) > 1) {
+    $App->params = $obj;
+}
 
 $App->params->tables = [];
 $App->params->fields = [];
@@ -29,8 +32,7 @@ $App->params->tableRif =  DB_TABLE_PREFIX.'faq';
 
 /* ITEM */
 $App->params->orderTypes['item'] = 'ASC';
-$App->params->uploadPaths['item'] = ADMIN_PATH_UPLOAD_DIR."homeinfobox/";
-$App->params->uploadDirs['item'] = UPLOAD_DIR."homeinfobox/";
+$App->params->uploadPaths['item'] = ADMIN_PATH_UPLOAD_DIR.'homeinfobox/';
+$App->params->uploadDirs['item'] = UPLOAD_DIR.'homeinfobox/';
 $App->params->tables['item'] = Config::$DatabaseTables['home info box'];
 $App->params->fields['item'] = Config::$DatabaseTablesFields['home info box'];
-?>

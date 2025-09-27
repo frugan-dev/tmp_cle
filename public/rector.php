@@ -16,6 +16,7 @@ return static function (RectorConfig $rectorConfig): void {
         __DIR__.'/uploads',
         __DIR__.'/var',
         __DIR__.'/vendor',
+        __DIR__.'/wscms/templates',
     ]);
 
     // https://github.com/rectorphp/rector/issues/7323

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework App PHP-Mysql
  * PHP Version 7
@@ -10,9 +11,9 @@
 
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
-define('PATH','../');
+define('PATH', '../');
 
-include_once(PATH."include/configuration.inc.php");
+include_once(PATH.'include/configuration.inc.php');
 
 // autoload by composer
 //include_once(PATH."classes/class.Config.php");
@@ -33,18 +34,18 @@ Config::initDatabaseTables();
 Core::init();
 
 /* variabili globali */
-$App = new stdClass;
+$App = new stdClass();
 $_lang = Config::$langVars;
-define('DB_TABLE_PREFIX',Sql::getTablePrefix());
+define('DB_TABLE_PREFIX', Sql::getTablePrefix());
 
 /* avvio sessione */
-$my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME,SESSIONS_COOKIE_NAME);
+$my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME, SESSIONS_COOKIE_NAME);
 $my_session->my_session_start();
 $_MY_SESSION_VARS = [];
 $_MY_SESSION_VARS = $my_session->my_session_read();
 $App->mySessionVars = $_MY_SESSION_VARS;
 
-$App->params = new stdClass;
+$App->params = new stdClass();
 $App->params->tables['users']  = DB_TABLE_PREFIX.'users';
 $App->params->tables['levels'] = DB_TABLE_PREFIX.'levels';
 $App->params->tables['caus'] = DB_TABLE_PREFIX.'users_categories';
@@ -54,9 +55,11 @@ $users_categories_id = (isset($_POST['']) ? $_POST['users_categories_id'] : 3);
 $levels_id_alias = '';
 
 // trova levels_alias_id in base al livello
-Sql::initQuery($App->params->tables['levels'],['*'],[$levels_id],'id = ?');
+Sql::initQuery($App->params->tables['levels'], ['*'], [$levels_id], 'id = ?');
 $foo = Sql::getRecord();
-if (isset($foo->id_alias)) $levels_id_alias = $foo->id_alias;
+if (isset($foo->id_alias)) {
+    $levels_id_alias = $foo->id_alias;
+}
 
 // prelevo le categorie
 /*
@@ -75,8 +78,7 @@ if ($levels_id_alias != '') {
     $queryVars['fieldsValue'][] = intval($levels_id_alias);
     $queryVars['and'] = ' AND ';
 }
-Sql::initQuery($queryVars['table'],$queryVars['fields'],$queryVars['fieldsValue'],$queryVars['where']);
+Sql::initQuery($queryVars['table'], $queryVars['fields'], $queryVars['fieldsValue'], $queryVars['where']);
 $obj = Sql::getRecords();
 echo json_encode($obj);
 die();
-?>

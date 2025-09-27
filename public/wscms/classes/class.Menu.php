@@ -1,346 +1,367 @@
 <?php
+
 /* wscms/class.Menu.php v.4.0.0. 07/12/2020 */
 
-class Menu extends Core {
+class Menu extends Core
+{
+    public static $output = '';
+    public static $level = 0;
+    public static $colum = [];
+    public static $subItems = 0;
+    public static $treeData = '';
 
-	public static $output = '';
-	public static $level = 0;
-	public static $colum = [];
-	public static $subItems = 0;
-	public static $treeData = '';
-	
-	public function __construct() 	{
-		parent::__construct();
-	}
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
-	public static function createMenuOutputFromTemplate($obj,$parent,$opt) 
-	{	
-		$optDef = [
-			'ulIsMain'=>1, 
-		];
-		$opt = array_merge($optDef,$opt);
+    public static function createMenuOutputFromTemplate($obj, $parent, $opt)
+    {
+        $optDef = [
+            'ulIsMain' => 1,
+        ];
+        $opt = array_merge($optDef, $opt);
 
-		$has_children = false;
-		if (is_array($obj) && count($obj) > 0) {
-			foreach($obj AS $key=>$value) {				
-				if (intval($value->parent) == $parent) { 	
-				
-					// per menu module
-					if ($value->type == 'module-menu' && $value->type != '') {
-						$alias = $value->alias;
+        $has_children = false;
+        if (is_array($obj) && count($obj) > 0) {
+            foreach ($obj as $key => $value) {
+                if (intval($value->parent) == $parent) {
 
-						if (is_array($opt['modulesmenu']) && count($opt['modulesmenu']) > 0) {
-							foreach($opt['modulesmenu'] AS $mmkey=>$mmvalue) {
-								//echo '<br>module: #'.$mmkey.'#';
-								//echo '<br>replaces: #'.$mmvalue['replace'].'#';
-								$alias = preg_replace($mmvalue['replace'],(string) $mmvalue['values'],(string) $alias);
-							}
-						}
-						$alias = preg_replace('/%SUBMODULEMENULABEL%/',(string) $value->title,(string) $alias);
-						self::$output .= $alias;
-	
-					} else {
+                    // per menu module
+                    if ($value->type == 'module-menu' && $value->type != '') {
+                        $alias = $value->alias;
 
-						$id = intval($value->id);
-						$ul = $opt['ulDefault'];
-						$ulClose = $opt['ulDefaultClose'];
+                        if (is_array($opt['modulesmenu']) && count($opt['modulesmenu']) > 0) {
+                            foreach ($opt['modulesmenu'] as $mmkey => $mmvalue) {
+                                //echo '<br>module: #'.$mmkey.'#';
+                                //echo '<br>replaces: #'.$mmvalue['replace'].'#';
+                                $alias = preg_replace($mmvalue['replace'], (string) $mmvalue['values'], (string) $alias);
+                            }
+                        }
+                        $alias = preg_replace('/%SUBMODULEMENULABEL%/', (string) $value->title, (string) $alias);
+                        self::$output .= $alias;
 
-						$li = $opt['liDefault'];
-						$liClose = $opt['liDefaultClose'];
+                    } else {
 
-						$href = $opt['hrefDefault'];
-						$hrefClose = $opt['hrefDefaultClose'];
+                        $id = intval($value->id);
+                        $ul = $opt['ulDefault'];
+                        $ulClose = $opt['ulDefaultClose'];
 
-						if ($has_children === false) {
-							$has_children = true;											
-							if (self::$level == 0) {
-								$ul = $opt['ulMain'];
-								$ulClose = $opt['ulMainClose'];
-							}
+                        $li = $opt['liDefault'];
+                        $liClose = $opt['liDefaultClose'];
 
-							if (self::$level > 0) {
-								$ul = $opt['ulSubMenu'];	
-								$ulClose = $opt['ulSubMenuClose'];	
-							}
-					
-							if (self::$level > $opt['ulIsMain']) self::$output .= $ul.PHP_EOL;  
-						}			
-						
+                        $href = $opt['hrefDefault'];
+                        $hrefClose = $opt['hrefDefaultClose'];
 
+                        if ($has_children === false) {
+                            $has_children = true;
+                            if (self::$level == 0) {
+                                $ul = $opt['ulMain'];
+                                $ulClose = $opt['ulMainClose'];
+                            }
 
-						if (self::$level == 0) {
-							$li = $opt['liMain']; 
-							$liClose = $opt['liMainClose']; 
-						}
-						
-						if (self::$level == 0 && $value->sons == 0) {
-							$ul = $opt['liDefault'];
-							$ulClose = $opt['liDefaultClose'];
-						}
+                            if (self::$level > 0) {
+                                $ul = $opt['ulSubMenu'];
+                                $ulClose = $opt['ulSubMenuClose'];
+                            }
 
-						if (self::$level == 0 && $value->sons > 0) {
-							$li = $opt['liSubMenu'];
-							$liclose = $opt['liSubMenuClose'];
-							$href = $opt['hrefSubMenu'];
-							$hrefClose = $opt['hrefSubMenuClose'];
-						}
+                            if (self::$level > $opt['ulIsMain']) {
+                                self::$output .= $ul.PHP_EOL;
+                            }
+                        }
 
-						if (self::$level > 0 && $value->sons == 0)  {
-							$li = $opt['liDefault'];					
-							$liClose = $opt['liDefaultClose'];
-							$href = $opt['hrefMain'];
-							$hrefClose = $opt['hrefMainClose'];
-						
-						}
+                        if (self::$level == 0) {
+                            $li = $opt['liMain'];
+                            $liClose = $opt['liMainClose'];
+                        }
 
-						if (self::$level > 0 && $value->sons > 0) {
-							$li = $opt['liSubSubMenu'];					
-							$liClose = $opt['liSubSubMenuClose'];
-							$href = $opt['hrefSubMenu'];
-							$hrefClose = $opt['hrefSubMenuClose'];
-						}
+                        if (self::$level == 0 && $value->sons == 0) {
+                            $ul = $opt['liDefault'];
+                            $ulClose = $opt['liDefaultClose'];
+                        }
 
-						if (self::$level > 0 && $value->sons > 1) {
-							$li = $opt['liSubSubMenu'];					
-							$liClose = $opt['ulSubSubMenuClose'];
-							$href = $opt['hrefSubMenu'];
-							$hrefClose = $opt['hrefSubMenuClose'];
-						}
-						
-						$href = $href.$hrefClose;
+                        if (self::$level == 0 && $value->sons > 0) {
+                            $li = $opt['liSubMenu'];
+                            $liclose = $opt['liSubMenuClose'];
+                            $href = $opt['hrefSubMenu'];
+                            $hrefClose = $opt['hrefSubMenuClose'];
+                        }
 
-						// crea url 
-						$url = $opt['urlDefault'];
-						//ToolsStrings::dump($value);
-						
-						if (isset($value->type)) {
-							$url = self::getUrlFromType($value,$value->title,$opt);
-						}
-						
-						
-						self::$output .= $li.PHP_EOL;
-						self::$output .= $href.PHP_EOL;
+                        if (self::$level > 0 && $value->sons == 0) {
+                            $li = $opt['liDefault'];
+                            $liClose = $opt['liDefaultClose'];
+                            $href = $opt['hrefMain'];
+                            $hrefClose = $opt['hrefMainClose'];
 
-						if ($value->alias == $opt['activepage']) {
-							self::$output = preg_replace('/%CLASSACTIVE%/',(string) $opt['classactive'],self::$output);
-							self::$output = preg_replace('/%TEXTACTIVE%/',(string) $opt['textactive'],(string) self::$output);
-						} else {
-							self::$output = preg_replace('/%CLASSACTIVE%/','',self::$output);
-							self::$output = preg_replace('/%TEXTACTIVE%/','',(string) self::$output);
-						}
+                        }
 
-						self::$output = preg_replace('/%URL%/',(string) $url,(string) self::$output);
-						self::$output = preg_replace('/%URLTITLE%/',(string) $value->title,(string) self::$output);
-						self::$output = preg_replace('/%TITLE%/',(string) $value->title,(string) self::$output);
-						
-						
-						self::$output = preg_replace('/%LEVEL%/',(string) self::$level,(string) self::$output);
-						self::$output = preg_replace('/%SONS%/',(string) $value->sons,(string) self::$output);
-						self::$output = preg_replace('/%ID%/',(string) $value->id,(string) self::$output);
-						self::$output = preg_replace('/%PARENT%/',(string) $value->parent,(string) self::$output);
-						if (isset($value->alias)) {
-							self::$output = preg_replace('/%ALIAS%/',$value->alias,(string) self::$output);
-						}
+                        if (self::$level > 0 && $value->sons > 0) {
+                            $li = $opt['liSubSubMenu'];
+                            $liClose = $opt['liSubSubMenuClose'];
+                            $href = $opt['hrefSubMenu'];
+                            $hrefClose = $opt['hrefSubMenuClose'];
+                        }
 
+                        if (self::$level > 0 && $value->sons > 1) {
+                            $li = $opt['liSubSubMenu'];
+                            $liClose = $opt['ulSubSubMenuClose'];
+                            $href = $opt['hrefSubMenu'];
+                            $hrefClose = $opt['hrefSubMenuClose'];
+                        }
 
-					
+                        $href = $href.$hrefClose;
 
-						self::$level++;	
-							self::createMenuOutputFromTemplate($obj,$id,$opt); 
-						self::$level--;	
-															
-						self::$output .= $liClose.PHP_EOL;	
-					
-					}
-			
-				}	 		
-			}
-		}
-		if ($has_children === true && self::$level > $opt['ulIsMain']) {
-			self::$output .= $ulClose.PHP_EOL;
-		}
-		return self::$output;
-	}
+                        // crea url
+                        $url = $opt['urlDefault'];
+                        //ToolsStrings::dump($value);
 
-	public static function createMenuOutput($obj,$parent,$opt) 
-	{	
-		$optDef = [
-			'modulesmenu'=>[],'ulIsMain'=>0, 'ulMain'=>'<ul>', 'ulSubMenu'=>'<ul>',	 'ulDefault'=>'<ul>',	 'liMain'=>'<li>', 'liSubMenu'=>'<li>', 'liSubSubMenu'=>'<li>', 'liDefault'=>'<li>', 'hrefMain'=>'<a>', 'hrefSubMenu'=>'<a>', 'hrefdefault'=>'<a>', 'lang'=>'it', 'urldefault'=>'#!', 'pagesModule'=>'pages/', 'valueUrlDefault'=>'%ID%/%SEOCLEAN%', 'titleField'=>'', 'activepage'=>'pages'
-			]; 
-		$opt = array_merge($optDef,$opt);
+                        if (isset($value->type)) {
+                            $url = self::getUrlFromType($value, $value->title, $opt);
+                        }
 
-		$has_children = false;
-		if (is_array($obj) && count($obj) > 0) {
-			foreach($obj AS $key=>$value) {				
-				if (intval($value->parent) == $parent) { 	
-					// per menu module
-					if ($value->type == 'module-menu' && $value->type != '') {
-						$alias = $value->alias;
+                        self::$output .= $li.PHP_EOL;
+                        self::$output .= $href.PHP_EOL;
 
-						if (is_array($opt['modulesmenu']) && count($opt['modulesmenu']) > 0) {
-							foreach($opt['modulesmenu'] AS $mmkey=>$mmvalue) {
-								//echo '<br>module: #'.$mmkey.'#';
-								//echo '<br>replaces: #'.$mmvalue['replace'].'#';
-								$alias = preg_replace($mmvalue['replace'],(string) $mmvalue['values'],(string) $alias);
-							}
-						}
-						$alias = preg_replace('/%SUBMODULEMENULABEL%/',(string) $value->title,(string) $alias);
-						self::$output .= $alias;
-						
-					} else {
-					
-						$ul = $opt['ulDefault'];
-						$li = $opt['liDefault'];
-						$href = $opt['hrefdefault'];						    
-						if ($has_children === false) {
-							$has_children = true;											
-							if (self::$level == 0) $ul = $opt['ulMain'];
-							if (self::$level > 0) $ul = $opt['ulSubMenu'];	
-							$ul = preg_replace('/%ACTIVEPAGE%%/',(string) $opt['activepage'],(string) $ul);						
-						if (self::$level > $opt['ulIsMain']) self::$output .= $ul.PHP_EOL;  
-						}								
-						/* gestione tag dinamici */
-						if (self::$level == 0) $li = $opt['liMain']; 
-						if (self::$level == 0 && $value->sons > 0) $li = $opt['liSubMenu'];
-						if (self::$level > 0 && $value->sons == 0)  $ul = $opt['liDefault'];
-						if (self::$level > 0 && $value->sons > 0) $li = $opt['liSubSubMenu'];					
-						if (self::$level == 0 && $value->sons == 0) $href = $opt['hrefMain'];
-						if (self::$level == 0 && $value->sons > 0) $href = $opt['hrefSubMenu'];
-						if (self::$level > 0 && $value->sons > 0) $href = $opt['hrefSubMenu'];
-						
-						//echo 'alias: '.$value->alias;
-						if (self::$level == 0 && $value->alias == $opt['activepage']) {
-							$li = preg_replace('/%CLASSACTIVE%/',' active',(string) $li);
-						} else {
-							$li = preg_replace('/%CLASSACTIVE%/','',(string) $li);
-						}
-						
-						$li = preg_replace('/%CLASSACTIVE%/','',(string) $li);	
-					
-						/* crea url */
-						$hrefUrl = $opt['urldefault'];
-						if (isset($value->type)) {
-							$hrefUrl = self::getUrlFromType($value,$value->title,$opt);
-						}           
-						$li = preg_replace('/%URL%/',(string) $hrefUrl,(string) $li);
-						$li = preg_replace('/%URLTITLE%/',(string) $value->title,(string) $li);
-						$li = preg_replace('/%TITLE%/',(string) $value->title,(string) $li);
-						$href = preg_replace('/%URL%/',(string) $hrefUrl,(string) $href);
-						$href = preg_replace('/%URLTITLE%/',(string) $value->title,(string) $href);
-						$href = preg_replace('/%TITLE%/',(string) $value->title,(string) $href);
-							
-						if (self::$level == 0 && $value->alias == $opt['activepage']) {
-							$href = preg_replace('/%CLASSACTIVE%/',' active',(string) $href);
-						} else {
-							$href = preg_replace('/%CLASSACTIVE%/','',(string) $href);
-						}
-						
-						$target = $value->target;
-						if ($target == '') $target = '_self';
-						$href = preg_replace('/%TARGET%/',(string) $target,(string) $href);
-						
-						self::$output .= $li.PHP_EOL;
-						self::$output .= $href.PHP_EOL;
-						self::$output = preg_replace('/%LEVEL%/',(string) self::$level,self::$output);
-						self::$output = preg_replace('/%SONS%/',(string) $value->sons,(string) self::$output);
-						$id = intval($value->id);
-						self::$level++;	
-							self::createMenuOutput($obj,$id,$opt); 
-						self::$level--;	
-															
-						self::$output .= '</li>'.PHP_EOL;	
-					
-					}
-			
-				}	 		
-			}
-		}
-		if ($has_children === true && self::$level > $opt['ulIsMain']) {
-			self::$output .= '</ul>'.PHP_EOL;
-		}
+                        if ($value->alias == $opt['activepage']) {
+                            self::$output = preg_replace('/%CLASSACTIVE%/', (string) $opt['classactive'], self::$output);
+                            self::$output = preg_replace('/%TEXTACTIVE%/', (string) $opt['textactive'], (string) self::$output);
+                        } else {
+                            self::$output = preg_replace('/%CLASSACTIVE%/', '', self::$output);
+                            self::$output = preg_replace('/%TEXTACTIVE%/', '', (string) self::$output);
+                        }
 
-		return self::$output;
-	}	
-		
+                        self::$output = preg_replace('/%URL%/', (string) $url, (string) self::$output);
+                        self::$output = preg_replace('/%URLTITLE%/', (string) $value->title, (string) self::$output);
+                        self::$output = preg_replace('/%TITLE%/', (string) $value->title, (string) self::$output);
 
-	
-	
-	/* SQL QUERIES */
-	public static function setMenuTreeData($opt) 
-	{
-		$optDef = ['langUser'=>'it','ordering'=>'ASC','getbreadcrumbs'=>0,'hideactive'=>1]; 
-		$opt = array_merge($optDef,$opt);
-		$languages = self::$globalSettings['languages'];
+                        self::$output = preg_replace('/%LEVEL%/', (string) self::$level, (string) self::$output);
+                        self::$output = preg_replace('/%SONS%/', (string) $value->sons, (string) self::$output);
+                        self::$output = preg_replace('/%ID%/', (string) $value->id, (string) self::$output);
+                        self::$output = preg_replace('/%PARENT%/', (string) $value->parent, (string) self::$output);
+                        if (isset($value->alias)) {
+                            self::$output = preg_replace('/%ALIAS%/', $value->alias, (string) self::$output);
+                        }
 
-		$table = DB_TABLE_PREFIX.'menu';		
-		$qry = "SELECT m.id AS id, m.parent AS parent";	
-		foreach($languages AS $lang) {		
-			$qry .= ", m.title_".$lang." AS title_".$lang;
-			}
-		$qry .= ", m.ordering AS ordering, m.type AS type, m.url AS url, m.target AS target, m.alias AS alias, m.active AS active";
-		foreach($languages AS $lang) {		
-			$qry .= ", (SELECT mp.title_".$lang." FROM ".$table." AS mp WHERE m.parent = mp.id) AS titleparent_".$lang;
-			}
-		$qry .= ", (SELECT COUNT(id) FROM ".$table." AS s WHERE s.parent = m.id AND s.active = 1) AS sons";
-		$qry .= " FROM ".$table." AS m WHERE ";
-		
-		if ( $opt['hideactive'] == 1 ) $qry .= "m.active = 1 AND ";
-		
-		$qry .= "m.parent = :parent ORDER BY ordering ".$opt['ordering'];		
-		//echo $qry;
-		Sql::resetListTreeData();
-		Sql::resetListDataVar();
-		Sql::setListTreeData($qry,0,$opt);
-		$obj = Sql::getListTreeData();
-		if (Core::$resultOp->error == 1) die('Errore database menu principale');
-		return $obj;
-	}	
+                        self::$level++;
+                        self::createMenuOutputFromTemplate($obj, $id, $opt);
+                        self::$level--;
 
-	public static function resetOutput() {
-		self::$output = '';	
-	}
+                        self::$output .= $liClose.PHP_EOL;
 
-	private static function getTitlesVal($value,$opt) 
-	{
-		$titlesVal = [];
-		$fieldTitle = 'title_';
- 		$fieldTitleSeo = 'title_seo_';
- 		$fieldTitleMeta = 'title_meta_';         		        		
- 		$titlesVal['title'] = Multilanguage::getLocaleObjectValue($value,$fieldTitle,Config::$langVars['user'],[]);
- 		$titlesVal['titleSeo'] = Multilanguage::getLocaleObjectValue($value,$fieldTitleSeo,Config::$langVars['user'],[]);
- 		$titlesVal['titleMeta'] = Multilanguage::getLocaleObjectValue($value,$fieldTitleMeta,Config::$langVars['user'],[]); 
-		return $titlesVal;	
-	}
+                    }
 
-	private static function getUrlFromType($value,$title,$opt) 
-	{
-		$url = match ($value->type) {
+                }
+            }
+        }
+        if ($has_children === true && self::$level > $opt['ulIsMain']) {
+            self::$output .= $ulClose.PHP_EOL;
+        }
+        return self::$output;
+    }
+
+    public static function createMenuOutput($obj, $parent, $opt)
+    {
+        $optDef = [
+            'modulesmenu' => [],'ulIsMain' => 0, 'ulMain' => '<ul>', 'ulSubMenu' => '<ul>',	 'ulDefault' => '<ul>',	 'liMain' => '<li>', 'liSubMenu' => '<li>', 'liSubSubMenu' => '<li>', 'liDefault' => '<li>', 'hrefMain' => '<a>', 'hrefSubMenu' => '<a>', 'hrefdefault' => '<a>', 'lang' => 'it', 'urldefault' => '#!', 'pagesModule' => 'pages/', 'valueUrlDefault' => '%ID%/%SEOCLEAN%', 'titleField' => '', 'activepage' => 'pages',
+            ];
+        $opt = array_merge($optDef, $opt);
+
+        $has_children = false;
+        if (is_array($obj) && count($obj) > 0) {
+            foreach ($obj as $key => $value) {
+                if (intval($value->parent) == $parent) {
+                    // per menu module
+                    if ($value->type == 'module-menu' && $value->type != '') {
+                        $alias = $value->alias;
+
+                        if (is_array($opt['modulesmenu']) && count($opt['modulesmenu']) > 0) {
+                            foreach ($opt['modulesmenu'] as $mmkey => $mmvalue) {
+                                //echo '<br>module: #'.$mmkey.'#';
+                                //echo '<br>replaces: #'.$mmvalue['replace'].'#';
+                                $alias = preg_replace($mmvalue['replace'], (string) $mmvalue['values'], (string) $alias);
+                            }
+                        }
+                        $alias = preg_replace('/%SUBMODULEMENULABEL%/', (string) $value->title, (string) $alias);
+                        self::$output .= $alias;
+
+                    } else {
+
+                        $ul = $opt['ulDefault'];
+                        $li = $opt['liDefault'];
+                        $href = $opt['hrefdefault'];
+                        if ($has_children === false) {
+                            $has_children = true;
+                            if (self::$level == 0) {
+                                $ul = $opt['ulMain'];
+                            }
+                            if (self::$level > 0) {
+                                $ul = $opt['ulSubMenu'];
+                            }
+                            $ul = preg_replace('/%ACTIVEPAGE%%/', (string) $opt['activepage'], (string) $ul);
+                            if (self::$level > $opt['ulIsMain']) {
+                                self::$output .= $ul.PHP_EOL;
+                            }
+                        }
+                        /* gestione tag dinamici */
+                        if (self::$level == 0) {
+                            $li = $opt['liMain'];
+                        }
+                        if (self::$level == 0 && $value->sons > 0) {
+                            $li = $opt['liSubMenu'];
+                        }
+                        if (self::$level > 0 && $value->sons == 0) {
+                            $ul = $opt['liDefault'];
+                        }
+                        if (self::$level > 0 && $value->sons > 0) {
+                            $li = $opt['liSubSubMenu'];
+                        }
+                        if (self::$level == 0 && $value->sons == 0) {
+                            $href = $opt['hrefMain'];
+                        }
+                        if (self::$level == 0 && $value->sons > 0) {
+                            $href = $opt['hrefSubMenu'];
+                        }
+                        if (self::$level > 0 && $value->sons > 0) {
+                            $href = $opt['hrefSubMenu'];
+                        }
+
+                        //echo 'alias: '.$value->alias;
+                        if (self::$level == 0 && $value->alias == $opt['activepage']) {
+                            $li = preg_replace('/%CLASSACTIVE%/', ' active', (string) $li);
+                        } else {
+                            $li = preg_replace('/%CLASSACTIVE%/', '', (string) $li);
+                        }
+
+                        $li = preg_replace('/%CLASSACTIVE%/', '', (string) $li);
+
+                        /* crea url */
+                        $hrefUrl = $opt['urldefault'];
+                        if (isset($value->type)) {
+                            $hrefUrl = self::getUrlFromType($value, $value->title, $opt);
+                        }
+                        $li = preg_replace('/%URL%/', (string) $hrefUrl, (string) $li);
+                        $li = preg_replace('/%URLTITLE%/', (string) $value->title, (string) $li);
+                        $li = preg_replace('/%TITLE%/', (string) $value->title, (string) $li);
+                        $href = preg_replace('/%URL%/', (string) $hrefUrl, (string) $href);
+                        $href = preg_replace('/%URLTITLE%/', (string) $value->title, (string) $href);
+                        $href = preg_replace('/%TITLE%/', (string) $value->title, (string) $href);
+
+                        if (self::$level == 0 && $value->alias == $opt['activepage']) {
+                            $href = preg_replace('/%CLASSACTIVE%/', ' active', (string) $href);
+                        } else {
+                            $href = preg_replace('/%CLASSACTIVE%/', '', (string) $href);
+                        }
+
+                        $target = $value->target;
+                        if ($target == '') {
+                            $target = '_self';
+                        }
+                        $href = preg_replace('/%TARGET%/', (string) $target, (string) $href);
+
+                        self::$output .= $li.PHP_EOL;
+                        self::$output .= $href.PHP_EOL;
+                        self::$output = preg_replace('/%LEVEL%/', (string) self::$level, self::$output);
+                        self::$output = preg_replace('/%SONS%/', (string) $value->sons, (string) self::$output);
+                        $id = intval($value->id);
+                        self::$level++;
+                        self::createMenuOutput($obj, $id, $opt);
+                        self::$level--;
+
+                        self::$output .= '</li>'.PHP_EOL;
+
+                    }
+
+                }
+            }
+        }
+        if ($has_children === true && self::$level > $opt['ulIsMain']) {
+            self::$output .= '</ul>'.PHP_EOL;
+        }
+
+        return self::$output;
+    }
+
+    /* SQL QUERIES */
+    public static function setMenuTreeData($opt)
+    {
+        $optDef = ['langUser' => 'it','ordering' => 'ASC','getbreadcrumbs' => 0,'hideactive' => 1];
+        $opt = array_merge($optDef, $opt);
+        $languages = self::$globalSettings['languages'];
+
+        $table = DB_TABLE_PREFIX.'menu';
+        $qry = 'SELECT m.id AS id, m.parent AS parent';
+        foreach ($languages as $lang) {
+            $qry .= ', m.title_'.$lang.' AS title_'.$lang;
+        }
+        $qry .= ', m.ordering AS ordering, m.type AS type, m.url AS url, m.target AS target, m.alias AS alias, m.active AS active';
+        foreach ($languages as $lang) {
+            $qry .= ', (SELECT mp.title_'.$lang.' FROM '.$table.' AS mp WHERE m.parent = mp.id) AS titleparent_'.$lang;
+        }
+        $qry .= ', (SELECT COUNT(id) FROM '.$table.' AS s WHERE s.parent = m.id AND s.active = 1) AS sons';
+        $qry .= ' FROM '.$table.' AS m WHERE ';
+
+        if ($opt['hideactive'] == 1) {
+            $qry .= 'm.active = 1 AND ';
+        }
+
+        $qry .= 'm.parent = :parent ORDER BY ordering '.$opt['ordering'];
+        //echo $qry;
+        Sql::resetListTreeData();
+        Sql::resetListDataVar();
+        Sql::setListTreeData($qry, 0, $opt);
+        $obj = Sql::getListTreeData();
+        if (Core::$resultOp->error == 1) {
+            die('Errore database menu principale');
+        }
+        return $obj;
+    }
+
+    public static function resetOutput()
+    {
+        self::$output = '';
+    }
+
+    private static function getTitlesVal($value, $opt)
+    {
+        $titlesVal = [];
+        $fieldTitle = 'title_';
+        $fieldTitleSeo = 'title_seo_';
+        $fieldTitleMeta = 'title_meta_';
+        $titlesVal['title'] = Multilanguage::getLocaleObjectValue($value, $fieldTitle, Config::$langVars['user'], []);
+        $titlesVal['titleSeo'] = Multilanguage::getLocaleObjectValue($value, $fieldTitleSeo, Config::$langVars['user'], []);
+        $titlesVal['titleMeta'] = Multilanguage::getLocaleObjectValue($value, $fieldTitleMeta, Config::$langVars['user'], []);
+        return $titlesVal;
+    }
+
+    private static function getUrlFromType($value, $title, $opt)
+    {
+        $url = match ($value->type) {
             'label' => $opt['urlDefault'],
             'module-link' => URL_SITE.$value->url,
             'modulemenu' => 'javascript:void(0);',
             default => $value->url,
         };
-	  		
-	  	$parentstring = '';
-	  	/* trova il parent alias */
-	  	$parentalias = '';
-	  	if ($value->parent > 0) {
-	  		if (isset($value->breadcrumbs[0]['alias'])) $parentalias = $value->breadcrumbs[0]['alias'].'/';
-	  	}
-		
-		$url = preg_replace('/%URLSITE%/',URL_SITE,(string) $url);	
-		$url = preg_replace('/%ID%/',(string) $value->id,(string) $url);
-		//$url = preg_replace('/%ALIAS%/',$value->alias,$url);
-		$url = preg_replace('/%SEO%/',(string) $title,(string) $url);
-		$url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($title,['delimiter'=>'-']),(string) $url);
-		$url = preg_replace('/%SEOENCODE%/', urlencode((string) $title),(string) $url);
-		$url = preg_replace('/%TITLE%/', urlencode((string) $title),(string) $url); 
-		$url = preg_replace('/%PARENTSTRING%/', urlencode($parentstring),(string) $url);
-		$url = preg_replace('/%PARENTALIAS%/', $parentalias,(string) $url);
-				
-		return $url;
-	}
-	
-	
+
+        $parentstring = '';
+        /* trova il parent alias */
+        $parentalias = '';
+        if ($value->parent > 0) {
+            if (isset($value->breadcrumbs[0]['alias'])) {
+                $parentalias = $value->breadcrumbs[0]['alias'].'/';
+            }
+        }
+
+        $url = preg_replace('/%URLSITE%/', URL_SITE, (string) $url);
+        $url = preg_replace('/%ID%/', (string) $value->id, (string) $url);
+        //$url = preg_replace('/%ALIAS%/',$value->alias,$url);
+        $url = preg_replace('/%SEO%/', (string) $title, (string) $url);
+        $url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($title, ['delimiter' => '-']), (string) $url);
+        $url = preg_replace('/%SEOENCODE%/', urlencode((string) $title),(string) $url);
+        $url = preg_replace('/%TITLE%/', urlencode((string) $title),(string) $url);
+        $url = preg_replace('/%PARENTSTRING%/', urlencode($parentstring),(string) $url);
+        $url = preg_replace('/%PARENTALIAS%/', $parentalias,(string) $url);
+
+        return $url;
+    }
+
 }
-?>

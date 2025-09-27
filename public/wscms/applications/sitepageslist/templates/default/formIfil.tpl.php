@@ -3,7 +3,9 @@
 	<div class="col-md-3 new">
  	</div>
 	<div class="col-md-7 help-small-form">
-		<?php if (isset($this->App->params->help_small) && $this->App->params->help_small != '') echo ToolsStrings::xss($this->App->params->help_small); ?>
+		<?php if (isset($this->App->params->help_small) && $this->App->params->help_small != '') {
+		    echo ToolsStrings::xss($this->App->params->help_small);
+		} ?>
 	</div>
 	<div class="col-md-2 help">
 	</div>
@@ -24,7 +26,7 @@
 		<?php endif; ?>
 	</div>
 	<div class="col-md-10"> 
-		<big><?php echo htmlspecialchars((string) $this->App->ownerData->title_it,ENT_QUOTES,'UTF-8'); ?></big>
+		<big><?php echo htmlspecialchars((string) $this->App->ownerData->title_it, ENT_QUOTES, 'UTF-8'); ?></big>
 	</div>
 </div>
 
@@ -45,13 +47,15 @@
 					
 					<fieldset>
 					<!-- sezione dati base dinamica lingue -->
-								<?php foreach($this->globalSettings['languages'] AS $lang): 
-									$titleField = 'title_'.$lang;
-									$titleValue = ($this->App->item->$titleField ?? '');			?>		
+								<?php foreach ($this->globalSettings['languages'] as $lang):
+								    $titleField = 'title_'.$lang;
+								    $titleValue = ($this->App->item->$titleField ?? '');			?>		
 									<div class="form-group">
 										<label for="title_<?php echo $lang; ?>ID" class="col-md-2 control-label">Titolo <?php echo ucfirst((string) $lang); ?> </label>
 										<div class="col-md-7">
-											<input<?php if ($lang == 'it') echo ' required'; ?> type="text" class="form-control" name="title_<?php echo $lang; ?>" placeholder="Inserisci un titolo <?php echo ucfirst((string) $lang); ?>" id="title_<?php echo $lang; ?>ID" rows="3" value="<?php echo htmlspecialchars($titleValue,ENT_QUOTES,'UTF-8'); ?>">
+											<input<?php if ($lang == 'it') {
+											    echo ' required';
+											} ?> type="text" class="form-control" name="title_<?php echo $lang; ?>" placeholder="Inserisci un titolo <?php echo ucfirst((string) $lang); ?>" id="title_<?php echo $lang; ?>ID" rows="3" value="<?php echo htmlspecialchars($titleValue, ENT_QUOTES, 'UTF-8'); ?>">
 										</div>
 									</div>
 								<?php endforeach; ?>
@@ -62,14 +66,16 @@
 						<div class="form-group">
 							<label for="filenameID" class="col-md-2 control-label">File</label>
 							<div class="col-md-4">
-								<input<?php if ($this->App->item->filenameRequired == true) echo ' required'; ?> type="file" name="filename" id="filenameID"  placeholder="Indica un file da caricare">
+								<input<?php if ($this->App->item->filenameRequired == true) {
+								    echo ' required';
+								} ?> type="file" name="filename" id="filenameID"  placeholder="Indica un file da caricare">
 								
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="filenameID" class="col-md-2 control-label">Nome File</label>
 							<div class="col-md-7">
-								<?php if(isset($this->App->item->filename) && $this->App->item->filename != ''): ?>
+								<?php if (isset($this->App->item->filename) && $this->App->item->filename != ''): ?>
 									<?php echo $this->App->item->filename; ?>
 								<?php endif; ?>					
 							</div>			
@@ -80,7 +86,9 @@
 						<div class="form-group">
 							<label for="activeID" class="col-md-3 control-label">Attiva</label>
 							<div class="col-md-7">
-								<input type="checkbox" name="active" id="activeID" <?php if(isset($this->App->item->active) && $this->App->item->active == 1) echo 'checked="checked"'; ?> value="1">
+								<input type="checkbox" name="active" id="activeID" <?php if (isset($this->App->item->active) && $this->App->item->active == 1) {
+								    echo 'checked="checked"';
+								} ?> value="1">
 				    		</div>
 				  		</div>
 					</fieldset>
@@ -93,9 +101,13 @@
 		
 			<div class="form-group">
 				<div class="col-md-offset-2 col-md-7">
-					<input type="hidden" name="created" id="createdID" value="<?php if(isset($this->App->item->created)) echo $this->App->item->created; ?>">
-					<input type="hidden" name="id" value="<?php if(isset($this->App->id)) echo $this->App->id ?>">
-					<?php if(isset($this->App->id_owner)): ?>
+					<input type="hidden" name="created" id="createdID" value="<?php if (isset($this->App->item->created)) {
+					    echo $this->App->item->created;
+					} ?>">
+					<input type="hidden" name="id" value="<?php if (isset($this->App->id)) {
+					    echo $this->App->id;
+					} ?>">
+					<?php if (isset($this->App->id_owner)): ?>
 						<input type="hidden" name="id_owner" value="<?php echo $this->App->id_owner; ?>">
 					<?php endif; ?>
 					<input type="hidden" name="method" value="<?php echo $this->App->methodForm; ?>">

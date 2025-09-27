@@ -3,7 +3,9 @@
 	<div class="col-md-3 new">
  	</div>
 	<div class="col-md-7 help-small-form">
-		<?php if (isset($this->App->params->help_small) && $this->App->params->help_small != '') echo SanitizeStrings::xss($this->App->params->help_small); ?>
+		<?php if (isset($this->App->params->help_small) && $this->App->params->help_small != '') {
+		    echo SanitizeStrings::xss($this->App->params->help_small);
+		} ?>
 	</div>
 	<div class="col-md-2 help">
 	</div>
@@ -14,7 +16,7 @@
 		<!-- Nav tabs -->
 		<ul class="nav nav-tabs">
 			<li class="active"><a href="#datibase-tab" data-toggle="tab">Dati Base <i class="fa"></i></a></li>	
-			<?php foreach($this->globalSettings['languages'] AS $lang): ?>
+			<?php foreach ($this->globalSettings['languages'] as $lang): ?>
 			<li><a href="#contents-<?php echo $lang; ?>-tab" data-toggle="tab">Contenuti <?php echo $lang; ?> <i class="fa"></i></a></li>	
 			<?php endforeach; ?>	
 		</ul>
@@ -29,7 +31,9 @@
 						<div class="form-group">
 							<label for="filenameID" class="col-md-2 control-label">File</label>
 							<div class="col-md-4">
-								<input<?php if ($this->App->item->filenameRequired == true) echo ' required'; ?> type="file" name="filename" id="filenameID"  placeholder="Indica un file da caricare">
+								<input<?php if ($this->App->item->filenameRequired == true) {
+								    echo ' required';
+								} ?> type="file" name="filename" id="filenameID"  placeholder="Indica un file da caricare">
 								
 							</div>
 						</div>
@@ -55,11 +59,13 @@
 									<option></option>
 
 									
-											<?php if(is_array($this->App->modules) && count($this->App->modules) > 0): ?>
-												<?php foreach ($this->App->modules AS $value): ?>
-													<?php //if ($value->alias != ''): ?>
-														<option value="<?php echo $value->alias; ?>"<?php if (isset($this->App->item->modulo) && $this->App->item->modulo == $value->alias) echo ' selected="selected"'; ?>><?php echo $value->label; ?></option>
-													<?php //endif; ?>									
+											<?php if (is_array($this->App->modules) && count($this->App->modules) > 0): ?>
+												<?php foreach ($this->App->modules as $value): ?>
+													<?php //if ($value->alias != ''):?>
+														<option value="<?php echo $value->alias; ?>"<?php if (isset($this->App->item->modulo) && $this->App->item->modulo == $value->alias) {
+														    echo ' selected="selected"';
+														} ?>><?php echo $value->label; ?></option>
+													<?php //endif;?>									
 												<?php endforeach; ?>										
 											<?php endif; ?>
 									
@@ -73,17 +79,21 @@
 	<!-- sezione opzioni --> 	
 	
 					<!-- se e un utente root visualizza l'input altrimenti lo genera o mantiene automaticamente -->	
-					<?php if($this->mySessionVars['usr']['root'] === 1): ?>			
+					<?php if ($this->mySessionVars['usr']['root'] === 1): ?>			
 					<fieldset>
 						<div class="form-group">
 							<label for="orderingID" class="col-md-2 control-label">Ordine</label>
 							<div class="col-md-1">
-								<input type="text" name="ordering" placeholder="Inserisci un ordine" class="form-control" id="orderingID" value="<?php if(isset($this->App->item->ordering)) echo $this->App->item->ordering; ?>">
+								<input type="text" name="ordering" placeholder="Inserisci un ordine" class="form-control" id="orderingID" value="<?php if (isset($this->App->item->ordering)) {
+								    echo $this->App->item->ordering;
+								} ?>">
 					    	</div>
 						</div>
 					</fieldset>
 					<?php else: ?>
-						<input type="hidden" name="ordering" value="<?php if(isset($this->App->item->ordering)) echo $this->App->item->ordering; ?>">		
+						<input type="hidden" name="ordering" value="<?php if (isset($this->App->item->ordering)) {
+						    echo $this->App->item->ordering;
+						} ?>">		
 					<?php endif; ?>
 					<!-- fine se root -->
 		
@@ -91,25 +101,29 @@
 						<div class="form-group">
 							<label for="activeID" class="col-md-2 control-label">Attiva</label>
 							<div class="col-md-7">
-								<input type="checkbox" name="active" id="activeID" <?php if(isset($this->App->item->active) && $this->App->item->active == 1) echo 'checked="checked"'; ?> value="1">
+								<input type="checkbox" name="active" id="activeID" <?php if (isset($this->App->item->active) && $this->App->item->active == 1) {
+								    echo 'checked="checked"';
+								} ?> value="1">
 				    		</div>
 				  		</div>
 					</fieldset>	
 	<!-- sezione opzioni -->									
 				</div>
 				
-				<?php foreach($this->globalSettings['languages'] AS $lang): 
-					$titleField = 'title_'.$lang;
-					$titleValue = (isset($this->App->item->$titleField) ? htmlspecialchars($this->App->item->$titleField,ENT_QUOTES,'UTF-8') : '');
-					$content1Field = 'content_'.$lang;
-					$content1Value = ($this->App->item->$content1Field ?? '');
-				?>		
+				<?php foreach ($this->globalSettings['languages'] as $lang):
+				    $titleField = 'title_'.$lang;
+				    $titleValue = (isset($this->App->item->$titleField) ? htmlspecialchars($this->App->item->$titleField, ENT_QUOTES, 'UTF-8') : '');
+				    $content1Field = 'content_'.$lang;
+				    $content1Value = ($this->App->item->$content1Field ?? '');
+				    ?>		
 				<div class="tab-pane" id="contents-<?php echo $lang; ?>-tab">
 					<fieldset>
 						<div class="form-group">
 							<label for="title_<?php echo $lang; ?>ID" class="col-md-2 control-label">Titolo <?php echo ucfirst((string) $lang); ?> </label>
 							<div class="col-md-7">
-								<input<?php if ($lang == 'it') echo ' required'; ?> type="text" class="form-control" name="title_<?php echo $lang; ?>" placeholder="Inserisci un titolo <?php echo ucfirst((string) $lang); ?>" id="title_<?php echo $lang; ?>ID" rows="3" value="<?php echo $titleValue; ?>">
+								<input<?php if ($lang == 'it') {
+								    echo ' required';
+								} ?> type="text" class="form-control" name="title_<?php echo $lang; ?>" placeholder="Inserisci un titolo <?php echo ucfirst((string) $lang); ?>" id="title_<?php echo $lang; ?>ID" rows="3" value="<?php echo $titleValue; ?>">
 							</div>
 						</div>
 					</fieldset>	
@@ -131,8 +145,12 @@
 			
 			<div class="form-group">
 				<div class="col-md-offset-2 col-md-7">
-					<input type="hidden" name="created" id="createdID" value="<?php if(isset($this->App->item->created)) echo $this->App->item->created; ?>">
-					<input type="hidden" name="id" value="<?php if(isset($this->App->id)) echo $this->App->id; ?>">
+					<input type="hidden" name="created" id="createdID" value="<?php if (isset($this->App->item->created)) {
+					    echo $this->App->item->created;
+					} ?>">
+					<input type="hidden" name="id" value="<?php if (isset($this->App->id)) {
+					    echo $this->App->id;
+					} ?>">
 					<input type="hidden" name="method" value="<?php echo $this->App->methodForm; ?>">
 					<button type="submit" name="submitForm" value="submit" class="btn btn-primary">Invia</button>
 					<?php if ($this->App->id > 0): ?>

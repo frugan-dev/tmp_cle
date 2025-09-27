@@ -37,31 +37,31 @@ class Mails extends Core
 
     /**
      * Send email using Symfony Mailer with OAuth2 support
-     * 
+     *
      * Email sending process overview:
      * 1. Transport Creation Phase:
      *    - buildTransports() creates available transport DSNs (SMTP OAuth2, Graph API, etc.)
      *    - OAuth2TransportFactoryDecorator handles OAuth2 scheme conversion and authentication
      *    - Office365TokenProvider obtains access tokens for Microsoft OAuth2
-     * 
+     *
      * 2. SMTP OAuth2 Flow:
      *    - OAuth2TransportFactoryDecorator converts oauth2:// DSN to smtp://
      *    - Configures EsmtpTransport with OAuth2 access token as password
      *    - XOAuth2Authenticator handles SASL XOAUTH2 authentication with SMTP server
      *    - In development: forces OAuth2-only to prevent plain/login fallback
-     * 
+     *
      * 3. Graph API Flow:
      *    - GraphAPITransport uses Microsoft Graph API instead of SMTP
      *    - Sends emails via REST API calls to https://graph.microsoft.com/v1.0/me/sendMail
      *    - Handles attachments and complex email structures through API
-     * 
+     *
      * 4. Transport Selection:
      *    - Failover/roundrobin techniques handle multiple transport fallback
      *    - Logger uses same transport system but may fallback to plain auth for error emails
-     * 
+     *
      * Classes involved:
      * - OAuth2TransportFactoryDecorator: OAuth2 SMTP transport factory
-     * - Office365TokenProvider: OAuth2 token management  
+     * - Office365TokenProvider: OAuth2 token management
      * - GraphAPITransport: Graph API email transport
      * - XOAuth2Authenticator: SMTP OAuth2 SASL authentication
      */

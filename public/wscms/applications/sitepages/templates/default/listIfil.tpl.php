@@ -4,7 +4,9 @@
  		<a href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/newIfil" title="Inserisci un nuov<?php echo $this->App->labels['ifil']['itemSex']; ?> <?php echo $this->App->labels['ifil']['item']; ?>" class="btn btn-primary">Nuov<?php echo $this->App->labels['ifil']['itemSex']; ?> <?php echo $this->App->labels['ifil']['item']; ?></a>
 	</div>
 	<div class="col-md-7 help-small-list">
-		<?php if (isset($this->App->params->help_small) && $this->App->params->help_small != '') echo SanitizeStrings::xss($this->App->params->help_small); ?>
+		<?php if (isset($this->App->params->help_small) && $this->App->params->help_small != '') {
+		    echo SanitizeStrings::xss($this->App->params->help_small);
+		} ?>
 	</div>
 	<div class="col-md-2">
  		<a href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/list" title="Torna alla lista <?php echo $this->App->labels['ifil']['owners']; ?>" class="btn btn-primary">Lista <?php echo $this->App->labels['ifil']['owners']; ?></a>
@@ -15,7 +17,7 @@
 		Dettagli <?php echo $this->App->labels['ifil']['owner']; ?>:
 	</div>
 	<div class="col-md-10"> 
-		<big><?php echo htmlspecialchars((string) $this->App->ownerData->title_it,ENT_QUOTES,'UTF-8'); ?></big>
+		<big><?php echo htmlspecialchars((string) $this->App->ownerData->title_it, ENT_QUOTES, 'UTF-8'); ?></big>
 	</div>
 </div>
 <form role="form" action="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/listIfil" method="post" enctype="multipart/form-data">
@@ -30,11 +32,21 @@
 								<div class="form-group">
 									<label>
 										<select class="form-control input-sm" name="itemsforpage" onchange="this.form.submit();" >
-											<option value="5"<?php if($this->App->itemsForPage == 5) echo ' selected="selected"'; ?>>5</option>
-											<option value="10"<?php if($this->App->itemsForPage == 10) echo ' selected="selected"'; ?>>10</option>
-											<option value="25"<?php if($this->App->itemsForPage == 25) echo ' selected="selected"'; ?>>25</option>
-											<option value="50"<?php if($this->App->itemsForPage == 50) echo ' selected="selected"'; ?>>50</option>
-											<option value="100"<?php if($this->App->itemsForPage == 100) echo ' selected="selected"'; ?>>100</option>
+											<option value="5"<?php if ($this->App->itemsForPage == 5) {
+											    echo ' selected="selected"';
+											} ?>>5</option>
+											<option value="10"<?php if ($this->App->itemsForPage == 10) {
+											    echo ' selected="selected"';
+											} ?>>10</option>
+											<option value="25"<?php if ($this->App->itemsForPage == 25) {
+											    echo ' selected="selected"';
+											} ?>>25</option>
+											<option value="50"<?php if ($this->App->itemsForPage == 50) {
+											    echo ' selected="selected"';
+											} ?>>50</option>
+											<option value="100"<?php if ($this->App->itemsForPage == 100) {
+											    echo ' selected="selected"';
+											} ?>>100</option>
 										</select>
 										Voci per pagina
 									</label>
@@ -45,7 +57,9 @@
 							<div class="tables_filter text-right">
 								<label>
 									Search:
-									<input name="searchFromTable" value="<?php if(isset($this->mySessionVars[$this->App->sessionName]['srcTab']) && $this->mySessionVars[$this->App->sessionName]['srcTab'] != '') echo htmlspecialchars((string) $this->mySessionVars[$this->App->sessionName]['srcTab'],ENT_QUOTES,'UTF-8'); ?>" class="form-control input-sm" type="search" onchange="this.form.submit();">
+									<input name="searchFromTable" value="<?php if (isset($this->mySessionVars[$this->App->sessionName]['srcTab']) && $this->mySessionVars[$this->App->sessionName]['srcTab'] != '') {
+									    echo htmlspecialchars((string) $this->mySessionVars[$this->App->sessionName]['srcTab'], ENT_QUOTES, 'UTF-8');
+									} ?>" class="form-control input-sm" type="search" onchange="this.form.submit();">
 								</label>
 							</div>
 						</div>
@@ -65,9 +79,9 @@
 						</thead>
 						<tbody>				
 							<?php if (is_array($this->App->items) && count($this->App->items) > 0): ?>
-								<?php 
-								foreach ($this->App->items AS $key => $value):	
-								?>
+								<?php
+                                foreach ($this->App->items as $key => $value):
+                                    ?>
 									<tr>
 										<?php if ($this->mySessionVars['usr']['root'] === 1): ?>	
 											<td><?php echo $value->id; ?></td>
@@ -76,9 +90,9 @@
 											<?php if ($this->mySessionVars['usr']['root'] === 1): ?>	
 											<span class="ordering"><?php echo $value->ordering; ?></span>
 											<?php endif; ?>							
-											<a class="" href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/<?php echo ($this->App->orderingType == 'ASC' ? 'less' : 'more'); ?>OrderingIfil/<?php echo $value->id; ?>" title="Sposta sù"><i class="fa fa-long-arrow-up"> </i>&nbsp;</a>
+											<a class="" href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/<?php echo($this->App->orderingType == 'ASC' ? 'less' : 'more'); ?>OrderingIfil/<?php echo $value->id; ?>" title="Sposta sù"><i class="fa fa-long-arrow-up"> </i>&nbsp;</a>
 											&nbsp;
-											<a class="" href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/<?php echo ($this->App->orderingType == 'ASC' ? 'more' : 'less'); ?>OrderingIfil/<?php echo $value->id; ?>" title="Sposta giu"><i class="fa fa-long-arrow-down"> </i>&nbsp;</a>
+											<a class="" href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/<?php echo($this->App->orderingType == 'ASC' ? 'more' : 'less'); ?>OrderingIfil/<?php echo $value->id; ?>" title="Sposta giu"><i class="fa fa-long-arrow-down"> </i>&nbsp;</a>
 										</td>										
 										<td><?php echo SanitizeStrings::htmlout($value->title_it); ?></a></td>
 										<td>	
@@ -87,7 +101,7 @@
 											</a>	
 										</td>	
 										<td class="actions">
-											<a class="btn btn-default btn-circle" href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/<?php echo ($value->active == 1 ? 'disactive' : 'active'); ?>Ifil/<?php echo $value->id; ?>" title="<?php echo ($value->active == 1 ? 'Disattiva' : 'Attiva'); ?>"><i class="fa fa-<?php echo ($value->active == 1 ? 'unlock' : 'lock'); ?>"> </i> </a>			 
+											<a class="btn btn-default btn-circle" href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/<?php echo($value->active == 1 ? 'disactive' : 'active'); ?>Ifil/<?php echo $value->id; ?>" title="<?php echo($value->active == 1 ? 'Disattiva' : 'Attiva'); ?>"><i class="fa fa-<?php echo($value->active == 1 ? 'unlock' : 'lock'); ?>"> </i> </a>			 
 											<a class="btn btn-default btn-circle" href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/modifyIfil/<?php echo $value->id; ?>" title="Modifica"><i class="fa fa-edit"> </i> </a>
 											<a onclick="bootbox.confirm();" class="btn btn-default btn-circle confirm" href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/deleteIfil/<?php echo $value->id; ?>" title="Cancella"><i class="fa fa-cut"> </i></a>
 										</td>							
@@ -112,12 +126,14 @@
 						<div class="col-md-6">
 							<div class="dataTables_paginate paging_simple_numbers" id="dataTables_paginate">
 								<ul class="pagination">
-									<li class="paginate_button previous<?php if ($this->App->pagination->page == 1) echo ' disabled'; ?>">
+									<li class="paginate_button previous<?php if ($this->App->pagination->page == 1) {
+									    echo ' disabled';
+									} ?>">
 										<a href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/pageIfil/<?php echo $this->App->pagination->itemPrevious; ?>">Precedente</a>
 									</li>
 									
 									<?php if (is_array($this->App->pagination->pagePrevious)): ?>
-										<?php foreach ($this->App->pagination->pagePrevious AS $key => $value): ?>
+										<?php foreach ($this->App->pagination->pagePrevious as $key => $value): ?>
 											<li><a href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/pageIfil/<?php echo $value; ?>"><?php echo $value; ?></a></li>
 										<?php endforeach; ?>
 									<?php endif; ?>
@@ -125,13 +141,15 @@
 									<li class="active"><a href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/pageIfil/<?php echo $this->App->pagination->page; ?>"><?php echo $this->App->pagination->page; ?></a></li>
 										
 									<?php if (is_array($this->App->pagination->pageNext)): ?>
-										<?php foreach ($this->App->pagination->pageNext AS $key => $value): ?>
+										<?php foreach ($this->App->pagination->pageNext as $key => $value): ?>
 											<li><a href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/pageIfil/<?php echo $value; ?>"><?php echo $value; ?></a></li>
 										<?php endforeach; ?>
 									<?php endif; ?>
 									
 									
-									<li class="paginate_button next <?php if ($this->App->pagination->page >= $this->App->pagination->totalpage) echo ' disabled'; ?>">
+									<li class="paginate_button next <?php if ($this->App->pagination->page >= $this->App->pagination->totalpage) {
+									    echo ' disabled';
+									} ?>">
 										<a href="<?php echo URL_SITE_ADMIN; ?><?php echo Core::$request->action; ?>/pageIfil/<?php echo $this->App->pagination->itemNext; ?>">Prossima</a>
 									</li>
 								</ul>

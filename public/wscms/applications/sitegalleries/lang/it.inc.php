@@ -1,4 +1,3 @@
 <?php
-$_lang['voce'] = 'partner';
 
-?>
+$_lang['voce'] = 'partner';

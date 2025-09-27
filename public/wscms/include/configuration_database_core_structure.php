@@ -3,49 +3,48 @@
 /* RESOURCES */
 $DatabaseTables['resources for item'] = '';
 $DatabaseTablesFields['resources for item'] = [
-	'id'=>['label'=>'ID','required'=>false,'type'=>'autoinc','primary'=>true],
-	'id_owner'=>['label'=>'IDOwner','required'=>true,'searchTable'=>false,'type'=>'int'],
-	'resource_type'=>['label'=>'Type resource','required'=>true,'searchTable'=>false,'type'=>'int'],
-	'filename'=>['label'=>'File','searchTable'=>false,'required'=>true,'type'=>'varchar'],
-	'org_filename'=>['label'=>'Nome Originale','searchTable'=>true,'required'=>false,'type'=>'varchar'],
-	'extension'=>['label'=>'Ext','searchTable'=>false,'required'=>false,'type'=>'varchar'],
-	'code'                                      => [
+    'id' => ['label' => 'ID','required' => false,'type' => 'autoinc','primary' => true],
+    'id_owner' => ['label' => 'IDOwner','required' => true,'searchTable' => false,'type' => 'int'],
+    'resource_type' => ['label' => 'Type resource','required' => true,'searchTable' => false,'type' => 'int'],
+    'filename' => ['label' => 'File','searchTable' => false,'required' => true,'type' => 'varchar'],
+    'org_filename' => ['label' => 'Nome Originale','searchTable' => true,'required' => false,'type' => 'varchar'],
+    'extension' => ['label' => 'Ext','searchTable' => false,'required' => false,'type' => 'varchar'],
+    'code'                                      => [
         'label'                                 => 'Code',
         'searchTable'                           => false,
         'required'                              => false,
         'type'                                  => 'varchar',
         'defValue'                              => '',
     ],
-	'size_file'=>['label'=>'Dimensione','searchTable'=>false,'required'=>false,'type'=>'varchar'],
-	'size_image'                                => ['label'=>'Dimensione','searchTable'=>false,'required'=>false,'type'=>'varchar'],
-	'type'=>['label'=>'Tipo','searchTable'=>true,'required'=>false,'type'=>'varchar'],
-	'ordering'=>['label'=>self::$langVars['ordinamento'],'required'=>false,'type'=>'int|8','validate'=>'int','defValue'=>1],
-	'created'                                   =>  [
-		'label'                                 => Config::$langVars['creazione'],
-		'searchTable'                           => false,
-		'required'                              => false,
-		'type'                                  => 'datatime',
-		'defValue'                              => self::$nowDateTimeIso,
-		'forcedValue'                           => self::$nowDateTimeIso
-	],
-	'active'                                    =>  [
-		'label'                                 => Config::$langVars['attiva'],
-		'required'                              => false,
-		'type'                                  => 'int|1',
-		'defValue'                              => 1,
-		'forcedValue'                           => 1
-	]
+    'size_file' => ['label' => 'Dimensione','searchTable' => false,'required' => false,'type' => 'varchar'],
+    'size_image'                                => ['label' => 'Dimensione','searchTable' => false,'required' => false,'type' => 'varchar'],
+    'type' => ['label' => 'Tipo','searchTable' => true,'required' => false,'type' => 'varchar'],
+    'ordering' => ['label' => self::$langVars['ordinamento'],'required' => false,'type' => 'int|8','validate' => 'int','defValue' => 1],
+    'created'                                   =>  [
+        'label'                                 => Config::$langVars['creazione'],
+        'searchTable'                           => false,
+        'required'                              => false,
+        'type'                                  => 'datatime',
+        'defValue'                              => self::$nowDateTimeIso,
+        'forcedValue'                           => self::$nowDateTimeIso,
+    ],
+    'active'                                    =>  [
+        'label'                                 => Config::$langVars['attiva'],
+        'required'                              => false,
+        'type'                                  => 'int|1',
+        'defValue'                              => 1,
+        'forcedValue'                           => 1,
+    ],
 ];
-foreach(self::$globalSettings['languages'] AS $lang) {
-	$searchTable = true;
-	$required = ($lang == self::$langVars['user'] ? true : false);
-	$DatabaseTablesFields['resources for item']['title_'.$lang] = ['label'=>'Titolo '.$lang,'searchTable'=>$searchTable,'required'=>$required,'type'=>'varchar'];
-	$DatabaseTablesFields['resources for item']['content_'.$lang] = ['label'=>self::$langVars['contenuto'].'  '.$lang,'searchTable'=>true,'required'=>false,
+foreach (self::$globalSettings['languages'] as $lang) {
+    $searchTable = true;
+    $required = ($lang == self::$langVars['user'] ? true : false);
+    $DatabaseTablesFields['resources for item']['title_'.$lang] = ['label' => 'Titolo '.$lang,'searchTable' => $searchTable,'required' => $required,'type' => 'varchar'];
+    $DatabaseTablesFields['resources for item']['content_'.$lang] = ['label' => self::$langVars['contenuto'].'  '.$lang,'searchTable' => true,'required' => false,
         'type'                                  => 'text',
-        'defValue'                              => ''
-    ];	
+        'defValue'                              => '',
+    ];
 }
-
 
 /*
 // settings
@@ -91,7 +90,7 @@ $DatabaseTablesFields['users'] = array(
     ),
     'username'                                          => array(
         'label'                                         => Config::$langVars['nome utente'],
-        'searchTable'                                   => true, 
+        'searchTable'                                   => true,
         'required'                                      => true,
         'type'                                          => 'varchar|255',
         'validate'                                      => 'username',
@@ -124,14 +123,14 @@ $DatabaseTablesFields['users'] = array(
     'location_comuni_id'                                => array(
         'label'                                         => Config::$langVars['comune'],
         'searchTable'                                   => false,
-        'required'                                      => true, 
+        'required'                                      => true,
         'type'                                          => 'int|10',
         'defValue'                                      => 0
     ),
     'comune_alt'                                        => array(
         'label'                                         => Config::$langVars['altro comune'],
         'searchTable'                                   => false,
-        'required'                                      => false, 
+        'required'                                      => false,
         'type'                                          => 'varchar|150'
     ),
     'zip_code'                                          => array(
@@ -163,8 +162,8 @@ $DatabaseTablesFields['users'] = array(
     ),
     'telephone'                                         => array(
         'label'                                         => Config::$langVars['telefono'],
-        'searchTable'                                   => false, 
-        'required'                                      => true, 
+        'searchTable'                                   => false,
+        'required'                                      => true,
         'type'                                          => 'varchar|20',
         'validate'                                      => 'telephonenumber',
         'errorValidateMessage'                          => preg_replace('/%ITEM%/',ucfirst(Config::$langVars['numero di telefono']),Config::$langVars['%ITEM% non valido!'])
@@ -239,25 +238,23 @@ $DatabaseTablesFields['users'] = array(
         'searchTable'                                   => false,
         'type'                                          => 'varchar'
     ),
-	'created'									        => array(
-		'label'									        => Config::$langVars['creazione'],
-		'searchTable'							        => false,
-		'required'								        => false,
-		'type'									        => 'datatime',
-		'defValue'								        => Config::$nowDateTimeIso,
-		'validate'								        => 'datetimeiso',
-		'forcedValue'              				        => self::$nowDateTime
-	),
-	'active'									        => array(
-		'label'									        => Config::$langVars['attiva'],
-		'required'								        => false,
-		'type'									        => 'int|1',
-		'validate'			    				        => 'int',
-		'defValue'								        => '0',
-		'forcedValue'              				        => 1
-	));
+    'created'									        => array(
+        'label'									        => Config::$langVars['creazione'],
+        'searchTable'							        => false,
+        'required'								        => false,
+        'type'									        => 'datatime',
+        'defValue'								        => Config::$nowDateTimeIso,
+        'validate'								        => 'datetimeiso',
+        'forcedValue'              				        => self::$nowDateTime
+    ),
+    'active'									        => array(
+        'label'									        => Config::$langVars['attiva'],
+        'required'								        => false,
+        'type'									        => 'int|1',
+        'validate'			    				        => 'int',
+        'defValue'								        => '0',
+        'forcedValue'              				        => 1
+    ));
 
 
 */
-
-    ?>

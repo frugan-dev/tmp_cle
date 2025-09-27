@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework Siti HTML-PHP-MySQL
  * PHP Version 7
@@ -10,9 +11,9 @@
 
 //Core::setDebugMode(1);
 
-include_once(PATH.$App->pathApplications.Core::$request->action."/lang/".$_lang['user'].".inc.php");
-include_once(PATH.$App->pathApplications.Core::$request->action."/config.inc.php");
-include_once(PATH.$App->pathApplications.Core::$request->action."/classes/class.module.php");
+include_once(PATH.$App->pathApplications.Core::$request->action.'/lang/'.$_lang['user'].'.inc.php');
+include_once(PATH.$App->pathApplications.Core::$request->action.'/config.inc.php');
+include_once(PATH.$App->pathApplications.Core::$request->action.'/classes/class.module.php');
 
 $App->sessionName = Core::$request->action;
 $App->codeVersion = $App->params->codeVersion;
@@ -20,17 +21,18 @@ $App->breadcrumb[] = $App->params->breadcrumb;
 $App->pageTitle = $App->params->pageTitle;
 
 $App->id = intval(Core::$request->param);
-if (isset($_POST['id'])) $App->id = intval($_POST['id']);
+if (isset($_POST['id'])) {
+    $App->id = intval($_POST['id']);
+}
 
-switch(substr((string) Core::$request->method,-4,4)) {	
-	case 'Conf':
-		$Module = new Module(Core::$request->action,$App->params->tables['team']);
-		include_once(PATH.$App->pathApplications.Core::$request->action."/config.php");
-	break;
+switch (substr((string) Core::$request->method, -4, 4)) {
+    case 'Conf':
+        $Module = new Module(Core::$request->action, $App->params->tables['team']);
+        include_once(PATH.$App->pathApplications.Core::$request->action.'/config.php');
+        break;
 
-	default:
-		$Module = new Module(Core::$request->action,$App->params->tables['team']);
-		include_once(PATH.$App->pathApplications.Core::$request->action."/team.php");
-	break;							
-}	
-?>
+    default:
+        $Module = new Module(Core::$request->action, $App->params->tables['team']);
+        include_once(PATH.$App->pathApplications.Core::$request->action.'/team.php');
+        break;
+}

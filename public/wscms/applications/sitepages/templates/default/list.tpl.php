@@ -73,7 +73,7 @@
 								<td>{{ value.type }}</td>
 								<td><small>{{ value.alias }}</small></td>
 								<td>
-									<a title=" <?php echo ($value->menu == 1 ? 'Visibile nel menu' : 'Nascosta dal menu'); ?>" class="btn btn-default btn-circle" href="javascript:void(0);"><i class="far {{ value.menu == 1 ? 'fa-eye' : 'fa-eye-slash' }}"> </i></a>
+									<a title=" <?php echo($value->menu == 1 ? 'Visibile nel menu' : 'Nascosta dal menu'); ?>" class="btn btn-default btn-circle" href="javascript:void(0);"><i class="far {{ value.menu == 1 ? 'fa-eye' : 'fa-eye-slash' }}"> </i></a>
 								</td>		
 
 								<td>

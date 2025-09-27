@@ -111,9 +111,9 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
             $transport->setPassword($accessToken); // Token OAuth2
 
             // Force OAuth2-only authentication when explicitly requested to prevent fallback
-            // to plain/login authenticators during OAuth2 testing. This ensures OAuth2 
+            // to plain/login authenticators during OAuth2 testing. This ensures OAuth2
             // implementation works correctly without silently falling back to other methods
-            // (e.g., Mailpit supports plain/login but not OAuth2, causing authentication 
+            // (e.g., Mailpit supports plain/login but not OAuth2, causing authentication
             // to succeed with wrong method)
             if (($_ENV['MAIL_OAUTH2_FORCE_ONLY'] ?? false)) {
                 // Remove all authenticators except XOAUTH2
@@ -121,7 +121,7 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
                 $property = $reflection->getProperty('authenticators');
 
                 $authenticators = $property->getValue($transport);
-                $xoauth2Only = array_filter($authenticators, fn($auth) => $auth instanceof XOAuth2Authenticator);
+                $xoauth2Only = array_filter($authenticators, fn ($auth) => $auth instanceof XOAuth2Authenticator);
 
                 $property->setValue($transport, array_values($xoauth2Only));
 

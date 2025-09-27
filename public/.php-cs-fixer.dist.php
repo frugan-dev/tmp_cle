@@ -21,7 +21,12 @@ $header = <<<'EOF'
 // directories passed as exclude() argument must be relative to the ones defined with the in() method
 $finder = Finder::create()
     ->in([__DIR__])
-    ->exclude(['uploads', 'var', 'vendor'])
+    ->exclude([
+        'uploads', 
+        'var', 
+        'vendor',
+        'wscms/templates',
+    ])
 ;
 
 $config = new Config()

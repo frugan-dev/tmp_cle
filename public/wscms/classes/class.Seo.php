@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 /**
  * Framework App PHP-MySQL
  * PHP Version 7
@@ -8,10 +9,11 @@
  * classes/class.Subcategories.php v.1.3.0. 11/09/2020
 */
 
-class Seo extends Core {
-	public function __construct() 	{
-		parent::__construct();
-		}
-	
-	}
-?>
+class Seo extends Core
+{
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+}

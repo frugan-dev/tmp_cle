@@ -1,4 +1,5 @@
 <?php
+
 /* home.php v.4.0.0. 22/12/2021 */
 
 $App->moduleData = new stdClass();
@@ -10,9 +11,12 @@ $App->moduleConfig->meta_keywords = '';
 
 $App->moduleData->imageheader = '';
 $App->moduleData->orgImageheader = '';
-if (isset($App->moduleConfig->image_header) && $App->moduleConfig->image_header != '') $App->moduleData->imageheader = $App->moduleConfig->image_header;
-if (isset($App->moduleConfig->org_image_header) && $App->moduleConfig->org_image_header != '') $App->moduleData->orgImageheader = $App->moduleConfig->org_image_header;
-
+if (isset($App->moduleConfig->image_header) && $App->moduleConfig->image_header != '') {
+    $App->moduleData->imageheader = $App->moduleConfig->image_header;
+}
+if (isset($App->moduleConfig->org_image_header) && $App->moduleConfig->org_image_header != '') {
+    $App->moduleData->orgImageheader = $App->moduleConfig->org_image_header;
+}
 
 // preleva le sliders - modulo tbl_slides_home_rev
 
@@ -27,17 +31,17 @@ $layerTemplatedefault = [
 
 ];
 
-Sql::initQuery(Config::$dbTablePrefix.'slides_home_rev',['*'],[],'active = 1',' ordering ASC');
+Sql::initQuery(Config::$dbTablePrefix.'slides_home_rev', ['*'], [], 'active = 1', ' ordering ASC');
 $pdoObject = Sql::getPdoObjRecords();
 $arr = [];
-while ($row = $pdoObject->fetch()) {		
-    $row->li_data  = preg_replace('/%TITLE%/',(string) $row->title,(string) $row->li_data);					
+while ($row = $pdoObject->fetch()) {
+    $row->li_data  = preg_replace('/%TITLE%/', (string) $row->title, (string) $row->li_data);
     $row->layers = [];
-    Sql::initQuery(Config::$dbTablePrefix.'slides_home_rev_layers',['*'],[$row->id],'slide_id = ? AND active = 1',' ordering ASC');
+    Sql::initQuery(Config::$dbTablePrefix.'slides_home_rev_layers', ['*'], [$row->id], 'slide_id = ? AND active = 1', ' ordering ASC');
     $layers = Sql::getRecords();
     $arrL = [];
 
-    $row->li_data = preg_replace('/%SLIDEIMAGE%/',UPLOAD_DIR.'slides-home-rev/'.$row->filename,(string) $row->li_data);	
+    $row->li_data = preg_replace('/%SLIDEIMAGE%/', UPLOAD_DIR.'slides-home-rev/'.$row->filename, (string) $row->li_data);
 
     // ipmosta l'immagine header come prima innagine delle slider
     if ($App->moduleData->imageheader == '') {
@@ -46,97 +50,97 @@ while ($row = $pdoObject->fetch()) {
     }
 
     if (is_array($layers) && is_array($layers) && count($layers) > 0) {
-        foreach ($layers AS $valueL) {	
+        foreach ($layers as $valueL) {
 
-            $valueL->title = MultiLanguage::getLocaleObjectValue($valueL,'title_',Config::$langVars['user'],['htmLawed'=>1,'parse'=>1]);
+            $valueL->title = MultiLanguage::getLocaleObjectValue($valueL, 'title_', Config::$langVars['user'], ['htmLawed' => 1,'parse' => 1]);
 
-            $valueL->content = MultiLanguage::getLocaleObjectValue($valueL,'content_',Config::$langVars['user'],['htmLawed'=>1,'parse'=>1]);
+            $valueL->content = MultiLanguage::getLocaleObjectValue($valueL, 'content_', Config::$langVars['user'], ['htmLawed' => 1,'parse' => 1]);
             $valueL->contentNoP = preg_replace('/<p[^>]*>(.*)<\/p[^>]*>/i', '$1', (string) $valueL->content);
 
-            $valueL->url = MultiLanguage::getLocaleObjectValue($valueL,'url_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]);
-            $valueL->target = MultiLanguage::getLocaleObjectValue($valueL,'target_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]);
-            if($valueL->target == '') $valueL->target = '_blank';
+            $valueL->url = MultiLanguage::getLocaleObjectValue($valueL, 'url_', Config::$langVars['user'], ['htmLawed' => 0,'parse' => 1]);
+            $valueL->target = MultiLanguage::getLocaleObjectValue($valueL, 'target_', Config::$langVars['user'], ['htmLawed' => 0,'parse' => 1]);
+            if ($valueL->target == '') {
+                $valueL->target = '_blank';
+            }
 
             $field = 'template_'.Config::$langVars['user'];
             $valueL->$field = '';
             if ($valueL->$field != '') {
-                $valueL->template = MultiLanguage::getLocaleObjectValue($valueL,'template_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]);
+                $valueL->template = MultiLanguage::getLocaleObjectValue($valueL, 'template_', Config::$langVars['user'], ['htmLawed' => 0,'parse' => 1]);
             } else {
                 $valueL->template = $layerTemplatedefault[Config::$langVars['user']];
             }
 
-            $valueL->template = preg_replace('/%TITLE%/',(string) $valueL->title,$valueL->template);	
-            $valueL->template = preg_replace('/%CONTENT%/',(string) $valueL->contentNoP,(string) $valueL->template);	
-            $valueL->template = preg_replace('/%URL%/',(string) $valueL->url,(string) $valueL->template);
-            $valueL->template = preg_replace('/%TARGET%/',(string) $valueL->target,(string) $valueL->template);   
+            $valueL->template = preg_replace('/%TITLE%/', (string) $valueL->title, $valueL->template);
+            $valueL->template = preg_replace('/%CONTENT%/', (string) $valueL->contentNoP, (string) $valueL->template);
+            $valueL->template = preg_replace('/%URL%/', (string) $valueL->url, (string) $valueL->template);
+            $valueL->template = preg_replace('/%TARGET%/', (string) $valueL->target, (string) $valueL->template);
 
-            // nascond il link 
+            // nascond il link
             // usa la classe '.d-none' di bootstrap 4 per nascondere l'elemento
             if ($valueL->url == '') {
-                $valueL->template = preg_replace('/%URLCLASS%/',' d-none',(string) $valueL->template);
+                $valueL->template = preg_replace('/%URLCLASS%/', ' d-none', (string) $valueL->template);
             } else {
-                $valueL->template = preg_replace('/%URLCLASS%/','',(string) $valueL->template);
+                $valueL->template = preg_replace('/%URLCLASS%/', '', (string) $valueL->template);
             }
 
-            $arrL[] = $valueL;				
+            $arrL[] = $valueL;
         }
-    }			
-    $row->layers = $arrL;						
+    }
+    $row->layers = $arrL;
     $arr[] = $row;
 }
 $App->homeSliders = $arr;
 //ToolsStrings::dump($App->homeSliders);
 
-
 // INFOBOX
 $App->homeinfobox = [];
-Sql::initQuery(DB_TABLE_PREFIX.'homeinfobox',['*'],[],'active = 1',' id ASC');
+Sql::initQuery(DB_TABLE_PREFIX.'homeinfobox', ['*'], [], 'active = 1', ' id ASC');
 $pdoObject = Sql::getPdoObjRecords();
 while ($row = $pdoObject->fetch()) {
 
-    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
-    $row->content = Multilanguage::getLocaleObjectValue($row,'content_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
+    $row->title = Multilanguage::getLocaleObjectValue($row, 'title_', Config::$langVars['user'], ['htmLawed' => 0,'parse' => 1]);
+    $row->content = Multilanguage::getLocaleObjectValue($row, 'content_', Config::$langVars['user'], ['htmLawed' => 0,'parse' => 1]);
 
-    $row->content = preg_replace("/(<\s*\/?\s*\ba\b[^>]*\/?\s*>)/i", "", (string) $row->content);
+    $row->content = preg_replace("/(<\s*\/?\s*\ba\b[^>]*\/?\s*>)/i", '', (string) $row->content);
 
-    $row->url = Multilanguage::getLocaleObjectValue($row,'url_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]);
+    $row->url = Multilanguage::getLocaleObjectValue($row, 'url_', Config::$langVars['user'], ['htmLawed' => 0,'parse' => 1]);
 
-    $target = Multilanguage::getLocaleObjectValue($row,'target_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>0]); 
-    $row->target = ($target != '' ? $target : '_self' );
+    $target = Multilanguage::getLocaleObjectValue($row, 'target_', Config::$langVars['user'], ['htmLawed' => 0,'parse' => 0]);
+    $row->target = ($target != '' ? $target : '_self');
 
     if ($row->url == '') {
-        $row->url = "javascript:void(0);";
+        $row->url = 'javascript:void(0);';
         $row->target = '';
     }
 
     //ToolsStrings::dump($row);
 
-    $App->homeinfobox[] = $row;		
+    $App->homeinfobox[] = $row;
 }
 //ToolsStrings::dump($App->homeinfobox);die();
 
 //PARTNERS
 $App->partners = [];
-Sql::initQuery(DB_TABLE_PREFIX.'partners',['*'],[],'active = 1',' ordering ASC');
+Sql::initQuery(DB_TABLE_PREFIX.'partners', ['*'], [], 'active = 1', ' ordering ASC');
 $pdoObject = Sql::getPdoObjRecords();
 while ($row = $pdoObject->fetch()) {
-    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
-    $row->target = ($row->target != '' ? $row->target : '_self' );
-    $App->partners[] = $row;		
+    $row->title = Multilanguage::getLocaleObjectValue($row, 'title_', Config::$langVars['user'], ['htmLawed' => 0,'parse' => 1]);
+    $row->target = ($row->target != '' ? $row->target : '_self');
+    $App->partners[] = $row;
 }
 //ToolsStrings::dump($App->partners);
 
 // SPONSOR
 $App->sponsor = [];
-Sql::initQuery(DB_TABLE_PREFIX.'sponsor',['*'],[],'active = 1',' ordering ASC');
+Sql::initQuery(DB_TABLE_PREFIX.'sponsor', ['*'], [], 'active = 1', ' ordering ASC');
 $pdoObject = Sql::getPdoObjRecords();
 while ($row = $pdoObject->fetch()) {
-    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
-    $row->target = ($row->target != '' ? $row->target : '_self' );
-    $App->sponsor[] = $row;		
+    $row->title = Multilanguage::getLocaleObjectValue($row, 'title_', Config::$langVars['user'], ['htmLawed' => 0,'parse' => 1]);
+    $row->target = ($row->target != '' ? $row->target : '_self');
+    $App->sponsor[] = $row;
 }
 //ToolsStrings::dump($App->partners);
-
 
 //ToolsStrings::dump(Core::$request);
 
@@ -153,7 +157,7 @@ if (Core::$request->method == 'ncid' && Core::$request->param != '') {
 
 if (!isset($_SESSION['home_news_page'])) {
     $_SESSION['home_news_page'] = 1;
-   //echo '<br>imposta sessione news page';
+    //echo '<br>imposta sessione news page';
 }
 if (Core::$request->method == 'ncpg' && Core::$request->param != '') {
     $_SESSION['home_news_page'] = intval(Core::$request->param);
@@ -163,11 +167,11 @@ if (Core::$request->method == 'ncpg' && Core::$request->param != '') {
 
 // categories news
 $App->news_categories = [];
-Sql::initQuery(DB_TABLE_PREFIX.'news_cat',['*'],[],'active = 1',' ordering ASC');
+Sql::initQuery(DB_TABLE_PREFIX.'news_cat', ['*'], [], 'active = 1', ' ordering ASC');
 $pdoObject = Sql::getPdoObjRecords();
 while ($row = $pdoObject->fetch()) {
-    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],['htmLawed'=>0,'parse'=>1]); 
-    $App->news_categories[] = $row;		
+    $row->title = Multilanguage::getLocaleObjectValue($row, 'title_', Config::$langVars['user'], ['htmLawed' => 0,'parse' => 1]);
+    $App->news_categories[] = $row;
 }
 //ToolsStrings::dump($App->news_categories);
 
@@ -190,20 +194,20 @@ if ($_SESSION['home_news_categories_id'] > 0) {
 }
 Sql::initQuery(Config::$queryParams['tables'],Config::$queryParams['fields'],Config::$queryParams['fieldsVal'],Config::$queryParams['where'],' datatimeins DESC');
 Sql::setPage($_SESSION['home_news_page']);
-Sql::setItemsForPage($itemsForPage);	
-Sql::setResultPaged(true);	
+Sql::setItemsForPage($itemsForPage);
+Sql::setResultPaged(true);
 $pdoObject = Sql::getPdoObjRecords();
 $App->news_pagination = Utilities::getPagination($_SESSION['home_news_page'],Sql::getTotalsItems(),$itemsForPage);
 //ToolsStrings::dump($App->news_pagination); die();
 while ($row = $pdoObject->fetch()) {
-    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
-    $row->summary = Multilanguage::getLocaleObjectValue($row,'summary_',Config::$langVars['user'],array('htmLawed'=>1,'parse'=>1)); 
-    $row->dataformatted = DateFormat::getDateTimeIsoFormatString($row->datatimeins,'%DAY% %STRINGMONTH% %YEAR%',array()); 
+    $row->title = Multilanguage::getLocaleObjectValue($row,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1));
+    $row->summary = Multilanguage::getLocaleObjectValue($row,'summary_',Config::$langVars['user'],array('htmLawed'=>1,'parse'=>1));
+    $row->dataformatted = DateFormat::getDateTimeIsoFormatString($row->datatimeins,'%DAY% %STRINGMONTH% %YEAR%',array());
     // preleva la categoria
     Sql::initQuery(DB_TABLE_PREFIX.'news_cat',array('*'),array($row->id_cat),'id = ?','');
     $foo = Sql::getRecord();
-    $row->category = Multilanguage::getLocaleObjectValue($foo,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1)); 
-    $App->news[] = $row;		
+    $row->category = Multilanguage::getLocaleObjectValue($foo,'title_',Config::$langVars['user'],array('htmLawed'=>0,'parse'=>1));
+    $App->news[] = $row;
 }
 //ToolsStrings::dump($App->news); die();
 */
@@ -211,7 +215,7 @@ while ($row = $pdoObject->fetch()) {
 $App->css[] = '<link rel="stylesheet" href="'.URL_SITE.'templates/'.$App->templateUser.'/css/home.css">';
 $App->jscript[] = '<script src="'.URL_SITE.'templates/'.$App->templateUser.'/js/home.js"></script>';
 
-// SEO 
+// SEO
 
 $App->metaTitlePage = $globalSettings['meta tags page']['title ini'].$App->moduleConfig->meta_title.$globalSettings['meta tags page']['title separator'].$globalSettings['meta tags page']['title end'];
 $App->metaDescriptionPage = $App->moduleConfig->meta_description;
@@ -221,18 +225,18 @@ $App->meta_og_url = URL_SITE.Core::$request->action;
 $App->meta_og_type = 'website';
 $App->meta_og_title = SanitizeStrings::cleanTitleUrl($App->moduleConfig->meta_title);
 $App->meta_og_image = '';
-if ($App->moduleData->imageheader != '') $App->moduleData->imageheader;
+if ($App->moduleData->imageheader != '') {
+    $App->moduleData->imageheader;
+}
 $App->meta_og_description = $App->moduleConfig->meta_description;
-
 
 // BREADCRUMBS
 $App->breadcrumbs->title = '';
 $App->breadcrumbs->items = [];
 
-// messaggi 
-$App->messagesCore =  Utilities::getHTMLMessagesCore(Core::$resultOp,['template'=>$templateMessagesBar]);
+// messaggi
+$App->messagesCore =  Utilities::getHTMLMessagesCore(Core::$resultOp,['template' => $templateMessagesBar]);
 /*
 echo '<br>bb'.$App->moduleData->imageheader;
 echo '<br>aa'.$App->meta_og_image;
 */
-?>

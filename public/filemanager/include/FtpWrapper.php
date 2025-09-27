@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the `nicolab/php-ftp-client` package.
  *
@@ -9,6 +10,7 @@
  *
  * @copyright Nicolas Tallefourtane http://nicolab.net
  */
+
 namespace FtpClient;
 
 /**

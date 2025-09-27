@@ -1,63 +1,71 @@
 <?php
+
 /**
  * Framework Siti PHP-MySQL
  * PHP Version 7
  * @copyright 2021 Websync
- * app/include/configuration.inc.php v.4.0.0. 22/10/2021 
+ * app/include/configuration.inc.php v.4.0.0. 22/10/2021
  */
 
 require_once __DIR__.'/bootstrap.php';
 
 $servermode = 'remote';
-if ($_SERVER['HTTP_HOST'] == '192.168.1.11') $servermode = 'local';
+if ($_SERVER['HTTP_HOST'] == '192.168.1.11') {
+    $servermode = 'local';
+}
 
 /* SERVER */
 $globalSettings['folder site'] = '';
 $globalSettings['folder admin'] = 'wscms/';
 $globalSettings['site host'] = 'cle.unibo.it/';
 if ($servermode == 'local') {
-	$globalSettings['folder site'] = 'websync.framework.sito.400/';
-	$globalSettings['folder admin'] = 'wscms/';
-	$globalSettings['site host'] = '192.168.1.11/';
+    $globalSettings['folder site'] = 'websync.framework.sito.400/';
+    $globalSettings['folder admin'] = 'wscms/';
+    $globalSettings['site host'] = '192.168.1.11/';
 }
 
 $globalSettings['server timezone'] = '';
 $http = 'https://';
-if ($servermode == 'local') $http = 'http://';
-if (isset($_SERVER['HTTPS'])) $http = 'https://';
+if ($servermode == 'local') {
+    $http = 'http://';
+}
+if (isset($_SERVER['HTTPS'])) {
+    $http = 'https://';
+}
 
 /* DATABASE */
 $database = 'local';
-if ($servermode == 'remote') $database = 'remote';
+if ($servermode == 'remote') {
+    $database = 'remote';
+}
 $globalSettings['database'] =  [
-	$database => [
-		'user' => $_ENV['DB_1_USER'],
-		'password' => $_ENV['DB_1_PASS'],
-		'host' => $_ENV['DB_1_HOST'],
-		'name' => $_ENV['DB_1_NAME'],
-		'tableprefix' => $_ENV['DB_1_PREFIX'],
-	],
+    $database => [
+        'user' => $_ENV['DB_1_USER'],
+        'password' => $_ENV['DB_1_PASS'],
+        'host' => $_ENV['DB_1_HOST'],
+        'name' => $_ENV['DB_1_NAME'],
+        'tableprefix' => $_ENV['DB_1_PREFIX'],
+    ],
 ];
 
 /* COOKIES */
 $globalSettings['cookiestecnicidatabase'] = 'websyncframeworksiti400database';
 $globalSettings['cookiestecnici'] = 'websyncframeworksiti400site';
 $globalSettings['cookiesterzeparti'] = 'websyncframeworksiti400thirdyparts';
-if ($servermode == 'local')
-{
-	$globalSettings['cookiestecnicidatabase'] = 'loc'.$globalSettings['cookiestecnicidatabase'];
-	$globalSettings['cookiestecnici'] = 'loc'.$globalSettings['cookiestecnici'];
-	$globalSettings['cookiesterzeparti'] = 'loc'.$globalSettings['cookiesterzeparti'];
-} 
+if ($servermode == 'local') {
+    $globalSettings['cookiestecnicidatabase'] = 'loc'.$globalSettings['cookiestecnicidatabase'];
+    $globalSettings['cookiestecnici'] = 'loc'.$globalSettings['cookiestecnici'];
+    $globalSettings['cookiesterzeparti'] = 'loc'.$globalSettings['cookiesterzeparti'];
+}
 
-/* EMAILS */ 
+/* EMAILS */
 $globalSettings['default email'] = 'programmazione@websync.it';
 $globalSettings['default email label'] = 'Programmazione Websync';
 $globalSettings['send email debug'] = 1;
-$globalSettings['email debug'] = "programmazione@websync.it";
+$globalSettings['email debug'] = 'programmazione@websync.it';
 
 /* send email */
-// use class for mails: 
+// use class for mails:
 // 0 = no class (PHP's native mail() function)
 // 1 = Symfony Mailer class
 // 2 = PHPMailer 6.x class
@@ -74,29 +82,29 @@ $globalSettings['site code key'] = $_ENV['SITE_CODE_KEY'];
 
 /* SITE */
 /* meta for admin */
-$globalSettings['site name'] = "Master CLE Erasmus Mundus";
+$globalSettings['site name'] = 'Master CLE Erasmus Mundus';
 $globalSettings['code version'] = '4.0.0.';
 $globalSettings['site owner'] = 'Websync';
 $globalSettings['copyright'] = '&copy; 2021 Websync';
 
 /* meta for site */
 $globalSettings['meta tags page'] = [
-	'title ini'=>'',
-	'title separator'=>' | ',
-	'title end'=>"Master CLE Erasmus Mundus",
-	'description'=>"",
-	'keyword'=>""
-	];
+    'title ini' => '',
+    'title separator' => ' | ',
+    'title end' => 'Master CLE Erasmus Mundus',
+    'description' => '',
+    'keyword' => '',
+    ];
 
 /* CONFIGURAZIONI GENERALI */
 $globalSettings['mesi'] = ['','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novenbre','Dicembre'];
 $globalSettings['anno creazione'] = '2022';
-$globalSettings['azienda referente'] = "Websync s.r.l.";
-$globalSettings['azienda breve'] = "Websync";
-$globalSettings['azienda slogan'] = "Dipartimento di Lingue Letterature e Culture Moderne";
-$globalSettings['azienda sito'] = "www.websync.it";
-$globalSettings['azienda sito url'] = "https://www.websync.it";
-$globalSettings['azienda indirizzo'] = "Via Cartoleria, 5";
+$globalSettings['azienda referente'] = 'Websync s.r.l.';
+$globalSettings['azienda breve'] = 'Websync';
+$globalSettings['azienda slogan'] = 'Dipartimento di Lingue Letterature e Culture Moderne';
+$globalSettings['azienda sito'] = 'www.websync.it';
+$globalSettings['azienda sito url'] = 'https://www.websync.it';
+$globalSettings['azienda indirizzo'] = 'Via Cartoleria, 5';
 $globalSettings['azienda comune'] = 'Bologna';
 $globalSettings['azienda cap'] = '40124';
 $globalSettings['azienda provincia'] = 'Bologna';
@@ -145,26 +153,25 @@ $globalSettings['session_random_key'] = $_ENV['SESSION_RANDOM_KEY'];
 /* DA NON MODIFICARE */
 
 $globalSettings['requestoption'] = [
-	'coremodules' => ['requestsajax','confirmaccount','register','login','logout','account','password','profile','nopassword','nousername','moduleassociated','error'],
-	'templateuser'=>'default',
-	'defaulttemplate'=>'default',
-	'templatesforusers'=>['default'],
-	'managechangeaction'=>0,
-	'defaultaction'=>'',
-	'othermodules' => ['404','error','customer','search','test']
-	];
+    'coremodules' => ['requestsajax','confirmaccount','register','login','logout','account','password','profile','nopassword','nousername','moduleassociated','error'],
+    'templateuser' => 'default',
+    'defaulttemplate' => 'default',
+    'templatesforusers' => ['default'],
+    'managechangeaction' => 0,
+    'defaultaction' => '',
+    'othermodules' => ['404','error','customer','search','test'],
+    ];
 
 $globalSettings['months'] = ['01' => 'Gennaio','02' => 'Febbraio','03' => 'Marzo','04' => 'Aprile','05' => 'Maggio','06' => 'Giugno','07' => 'Luglio','08' => 'Agosto','09' => 'Settembre','10' => 'Ottobre','11' => 'Novenbre','12' => 'Dicembre'];
-$globalSettings['page-type'] = ['default'=>'Default','label'=>'Etichetta','url'=>'Url','module-link'=>'Link a modulo'];
+$globalSettings['page-type'] = ['default' => 'Default','label' => 'Etichetta','url' => 'Url','module-link' => 'Link a modulo'];
 $globalSettings['url-targets'] = ['_self','_blank'];
 $globalSettings['module sections'] = ['Moduli Core','Moduli Personalizzati','Moduli Vecchi','Impostazioni','Root'];
-$globalSettings['menu-type'] = ['default'=>'Default','label'=>'Etichetta','url'=>'url','module-link'=>'Link a modulo','module-menu'=>'Menu generato da modulo'];
+$globalSettings['menu-type'] = ['default' => 'Default','label' => 'Etichetta','url' => 'url','module-link' => 'Link a modulo','module-menu' => 'Menu generato da modulo'];
 
-	
-define('FOLDER_SITE',$globalSettings['folder site']);
-define('FOLDER_ADMIN',$globalSettings['folder admin']);
-define('SITE_HOST',$globalSettings['site host']);
-define('TIMEZONE',$globalSettings['server timezone']);
+define('FOLDER_SITE', $globalSettings['folder site']);
+define('FOLDER_ADMIN', $globalSettings['folder admin']);
+define('SITE_HOST', $globalSettings['site host']);
+define('TIMEZONE', $globalSettings['server timezone']);
 define('URL_SITE', $http.SITE_HOST.FOLDER_SITE);
 define('URL_SITE_ADMIN', $http.SITE_HOST.FOLDER_SITE.FOLDER_ADMIN);
 define('URL_SITE_APPLICATION', $http.SITE_HOST.FOLDER_SITE.FOLDER_ADMIN.'application/');
@@ -178,28 +185,28 @@ define('PATH_TMP_DIR', PATH_SITE.'var/tmp/');
 define('UPLOAD_DIR', $http.SITE_HOST.FOLDER_SITE.'uploads/');
 define('PATH_UPLOAD_DIR', 'uploads/');
 define('ADMIN_PATH_UPLOAD_DIR', '../'.PATH_UPLOAD_DIR);
-define('DATABASE',$database);
-define('DATABASEUSED',$database);
-define('SESSIONS_TABLE_NAME',$globalSettings['database'][DATABASE]['tableprefix'].'sessions');
+define('DATABASE', $database);
+define('DATABASEUSED', $database);
+define('SESSIONS_TABLE_NAME', $globalSettings['database'][DATABASE]['tableprefix'].'sessions');
 //define('SESSIONS_TIME',86400*10);
-define('SESSIONS_TIME',0);
-define('SESSIONS_GC_TIME',2592000);
-define('SESSIONS_COOKIE_NAME',$globalSettings['cookiestecnicidatabase']);
-define('AD_SESSIONS_COOKIE_NAME','admin_'.$globalSettings['cookiestecnicidatabase']);
-define('DATA_SESSIONS_COOKIE_NAME','data_'.$globalSettings['cookiestecnicidatabase']);
-define('TEMPLATE_DEFAULT',$globalSettings['requestoption']['defaulttemplate']);
-define('SITE_CODE_KEY',$globalSettings['site code key']);
+define('SESSIONS_TIME', 0);
+define('SESSIONS_GC_TIME', 2592000);
+define('SESSIONS_COOKIE_NAME', $globalSettings['cookiestecnicidatabase']);
+define('AD_SESSIONS_COOKIE_NAME', 'admin_'.$globalSettings['cookiestecnicidatabase']);
+define('DATA_SESSIONS_COOKIE_NAME', 'data_'.$globalSettings['cookiestecnicidatabase']);
+define('TEMPLATE_DEFAULT', $globalSettings['requestoption']['defaulttemplate']);
+define('SITE_CODE_KEY', $globalSettings['site code key']);
 define('SITE_NAME', $globalSettings['site name']);
-define('CODE_VERSION',$globalSettings['code version']);
-define('SITE_OWNER',$globalSettings['site owner']);
-define('COPYRIGHT',$globalSettings['copyright']);
+define('CODE_VERSION', $globalSettings['code version']);
+define('SITE_OWNER', $globalSettings['site owner']);
+define('COPYRIGHT', $globalSettings['copyright']);
 
 foreach ([
     PATH_CACHE_DIR,
     PATH_LOG_DIR,
     PATH_TMP_DIR,
 ] as $dir) {
-	if (!is_dir($dir)) {
-	    mkdir($dir, 0755, true);
-	}
+    if (!is_dir($dir)) {
+        mkdir($dir, 0755, true);
+    }
 }

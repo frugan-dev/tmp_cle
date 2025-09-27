@@ -35,7 +35,7 @@ try {
             $_ENV[$key] = null;
         }
     }
-} catch (\Exception $e) {
+} catch (Exception $e) {
     // https://github.com/phpro/grumphp/blob/master/doc/tasks/phpparser.md#no_exit_statements
     exit($e->getMessage());
 }
