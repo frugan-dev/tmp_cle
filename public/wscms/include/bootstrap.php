@@ -81,7 +81,7 @@ if (!function_exists('isDevelop')) {
 if (!function_exists('isStaging')) {
     function isStaging(): bool
     {
-        return 'production' === getEnvironment();
+        return 'staging' === getEnvironment();
     }
 }
 
@@ -99,8 +99,8 @@ if (!function_exists('isCli')) {
     }
 }
 
-if (!function_exists('createDirs')) {
-    function createDirs()
+if (!function_exists('setupFileSystem')) {
+    function setupFileSystem()
     {
         foreach ([
             PATH_CACHE_DIR,
@@ -127,6 +127,6 @@ if (isDebug()) {
     error_reporting(E_ALL);
 }
 
-createDirs();
+setupFileSystem();
 
 Logger::getInstance();

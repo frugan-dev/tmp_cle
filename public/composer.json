@@ -10,6 +10,7 @@
         }
     ],
     "require": {
+        "php": ">=8.4",
         "egulias/email-validator": "^4.0",
         "google/recaptcha": "^1.1",
         "guzzlehttp/guzzle": "^7.10",
