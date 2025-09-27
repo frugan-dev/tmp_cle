@@ -51,12 +51,27 @@ class Mails extends Core
             $transportInstances = [];
             foreach ($transports as $key => $dsn) {
                 try {
-                    $transportInstances[] = self::createTransportWithCustomFactories($dsn);
+                    // Check if it's already a TransportInterface object or a DSN string
+                    if ($dsn instanceof TransportInterface) {
+                        // It's already a transport object, use it directly
+                        $transportInstances[] = $dsn;
+                        Logger::debug('Using existing transport object', [
+                            'key' => $key,
+                            'class' => get_class($dsn),
+                        ]);
+                    } else {
+                        // It's a DSN string, create transport from it
+                        $transportInstances[] = self::createTransportWithCustomFactories($dsn);
+                        Logger::debug('Created transport from DSN', [
+                            'key' => $key,
+                            'dsn' => preg_replace('/:[^:@]*@/', ':***@', $dsn),
+                        ]);
+                    }
                 } catch (Exception $e) {
                     Logger::error('Failed to create transport from DSN', [
                         'exception' => $e,
                         'key' => $key,
-                        'dsn' => preg_replace('/:[^:@]*@/', ':***@', $dsn),
+                        'value_type' => is_object($dsn) ? get_class($dsn) : gettype($dsn),
                     ]);
                     continue;
                 }

@@ -199,8 +199,8 @@ class GraphAPITransport implements TransportInterface
 
         // Also send to Mailpit for visualization
         try {
-            $mailpitHost = $_ENV['MAIL_OAUTH2_SMTP_HOST'] ?? 'mailpit';
-            $mailpitPort = (int)($_ENV['MAIL_OAUTH2_SMTP_PORT'] ?? 1025);
+            $mailpitHost = $_ENV['MAIL_SMTP_HOST'] ?? 'mailpit';
+            $mailpitPort = (int)($_ENV['MAIL_SMTP_PORT'] ?? 1025);
 
             Logger::debug('Sending email to Mailpit for visualization', [
                 'host' => $mailpitHost,
