@@ -110,6 +110,26 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
             $transport->setUsername($dsn->getUser()); // Real email
             $transport->setPassword($accessToken); // Token OAuth2
 
+            if (isDevelop()) {
+                // Remove all authenticators except XOAUTH2
+                $reflection = new ReflectionClass($transport);
+                $property = $reflection->getProperty('authenticators');
+                $property->setAccessible(true);
+
+                $authenticators = $property->getValue($transport);
+                $xoauth2Only = array_filter($authenticators, function ($auth) {
+                    return $auth instanceof XOAuth2Authenticator;
+                });
+
+                $property->setValue($transport, array_values($xoauth2Only));
+
+                Logger::debug('OAuth2 transport configured with built-in authenticator', [
+                    'provider' => $provider,
+                    'username' => $dsn->getUser(),
+                    'authenticator_count' => count($xoauth2Only),
+                ]);
+            }
+
             Logger::debug('OAuth2 token obtained', [
                 'token_length' => strlen($accessToken),
                 'token_preview' => substr($accessToken, 0, 20) . '...',
