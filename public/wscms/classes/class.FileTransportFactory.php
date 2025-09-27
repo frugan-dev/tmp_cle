@@ -44,15 +44,21 @@ class FileTransportFactory extends AbstractTransportFactory
             throw new InvalidArgumentException('File transport requires a valid path in the DSN host or path component.');
         }
 
-        return new FileTransport($path);
+        // Check for continue parameter in query string
+        $continueOnSuccess = false;
+        if ($dsn->getOptions() && isset($dsn->getOptions()['continue'])) {
+            $continueOnSuccess = filter_var($dsn->getOptions()['continue'], FILTER_VALIDATE_BOOLEAN);
+        }
+
+        return new FileTransport($path, $continueOnSuccess);
     }
 
     /**
      * Static factory method for easy instantiation
      */
-    public static function createTransport(string $filePath): FileTransport
+    public static function createTransport(string $filePath, bool $continueOnSuccess = false): FileTransport
     {
-        return new FileTransport($filePath);
+        return new FileTransport($filePath, $continueOnSuccess);
     }
 
     protected function getSupportedSchemes(): array

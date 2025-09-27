@@ -331,11 +331,13 @@ class Mails extends Core
 
                 case 'file':
                     $filePath = $_ENV['MAIL_FILE_PATH'] ?? PATH_TMP_DIR . 'emails';
+                    $continueOnSuccess = ($_ENV['MAIL_FILE_CONTINUE_ON_SUCCESS'] ?? false) === true;
 
                     try {
-                        $transports[$val] = FileTransportFactory::createTransport($filePath);
+                        $transports[$val] = FileTransportFactory::createTransport($filePath, $continueOnSuccess);
                         Logger::debug('File transport created', [
                             'path' => $filePath,
+                            'continue_on_success' => $continueOnSuccess,
                         ]);
                     } catch (Exception $e) {
                         Logger::error('Failed to create file transport', [

@@ -20,10 +20,12 @@ use Symfony\Component\Mime\Email;
 class FileTransport extends AbstractTransport
 {
     private readonly string $filePath;
+    private readonly bool $continueOnSuccess;
 
-    public function __construct(string $filePath)
+    public function __construct(string $filePath, bool $continueOnSuccess = false)
     {
         $this->filePath = rtrim($filePath, '/');
+        $this->continueOnSuccess = $continueOnSuccess;
 
         // Ensure directory exists
         if (!is_dir($this->filePath)) {
@@ -41,7 +43,8 @@ class FileTransport extends AbstractTransport
 
     public function __toString(): string
     {
-        return sprintf('file://%s', $this->filePath);
+        $suffix = $this->continueOnSuccess ? '?continue=1' : '';
+        return sprintf('file://%s%s', $this->filePath, $suffix);
     }
 
     /**
@@ -81,7 +84,14 @@ class FileTransport extends AbstractTransport
                 'to' => implode(', ', array_map(fn ($addr) => $addr->getAddress(), $envelope->getRecipients())),
                 'subject' => $rawMessage instanceof Email ? $rawMessage->getSubject() : 'N/A',
                 'size' => strlen($content),
+                'continue_on_success' => $this->continueOnSuccess,
             ]);
+
+            // If continue is enabled, "fail" to pass to next transport
+            if ($this->continueOnSuccess) {
+                throw new TransportException('File saved successfully, continuing to next transport');
+            }
+
         } catch (Exception $e) {
             // If it's already a TransportException, re-throw as-is
             if ($e instanceof TransportException) {
