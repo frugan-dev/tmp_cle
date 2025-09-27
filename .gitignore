@@ -60,8 +60,8 @@
 !/CHANGELOG.md
 !/LICENSE
 
-.htaccess
-!.htaccess.dist
+!.htaccess
+public/.htaccess
 
 .user*.ini
 !.user*.ini.dist

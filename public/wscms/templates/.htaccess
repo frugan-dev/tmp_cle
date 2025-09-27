@@ -1,0 +1,9 @@
+# Disable Directory Browsing
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+
+	# Disable PHP
+	RewriteRule ^.*\.(?:php[1-7]?|pht|phtml?|phps)\.?$ - [NC,F]
+</IfModule>

@@ -1,0 +1,7 @@
+# Disable Directory Browsing
+Options -Indexes
+
+# Disable PHP
+<If "%{REQUEST_URI} =~ m#^.*\.(?:php[1-7]?|pht|phtml?|phps)\.?$#">
+    Deny from all
+</If>

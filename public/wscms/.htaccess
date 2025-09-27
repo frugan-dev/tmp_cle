@@ -1,0 +1,108 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /wscms/
+
+    # Rewrite www.example.com → example.com
+    #
+    # (1) Set %{ENV:PROTO} variable, to allow rewrites to redirect with the
+    #     appropriate schema automatically (http or https).
+    #
+    # (2) The rule assumes by default that both HTTP and HTTPS environments are
+    #     available for redirection.
+    #     If your SSL certificate could not handle one of the domains used during
+    #     redirection, you should turn the condition on.
+    #
+    #     https://github.com/h5bp/server-configs-apache/issues/52
+
+    # (1)
+    RewriteCond %{HTTPS} =on
+    RewriteRule ^ - [E=PROTO:https]
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^ - [E=PROTO:http]
+
+    # (2)
+    # RewriteCond %{HTTPS} !=on
+
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^ %{ENV:PROTO}://%1%{REQUEST_URI} [R=301,L]
+
+    # Don't compress images
+    SetEnvIfNoCase Request_URI \
+    \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+
+    # The following rule tells Apache that if the requested filename
+    # exists, simply serve it.
+    RewriteCond %{REQUEST_FILENAME} -s [OR]
+    RewriteCond %{REQUEST_FILENAME} -l [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+</IfModule>
+
+## SECURYTY ##
+<Files ~ "^.ht">
+Order allow,deny
+Deny from all
+</Files>
+
+## SECURYTY ##
+RemoveHandler cgi-script .pl .py .cgi
+
+## SECURYTY ##
+AddHandler cgi-script .php .pl .py .jsp .asp .htm .shtml .sh .cgi
+Options -ExecCGI
+
+## XSS PROTECTION HEADER ##
+<IfModule mod_headers.c>
+# Set XSS Protection header
+Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+## XSS PROTECTION HEADER ##
+
+## HIDE WEB SERVER TECHNOLOGY ##
+<IfModule mod_headers.c>
+# Unset Server Signature header
+ServerSignature Off
+# Unset Server Technology header
+Header unset X-Powered-By
+</IfModule>
+## HIDE WEB SERVER TECHNOLOGY ##
+
+## EVITARE HOTLINKING DELLE IMMAGINI ##
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?piaoperaciccarelli.org [NC]
+RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?piaoperaciccarelli.org [NC]
+RewriteRule \.(jpg|jpeg|png|gif)$ http://i.imgur.com/g7ptdBB.png [NC,R,L]
+## EVITARE HOTLINKING DELLE IMMAGINI ##
+
+## SECURYTY ##
+SetOutputFilter DEFLATE
+SetEnvIfNoCase Request_URI "\.(?:gif|jpe?g|png)$" no-gzip
+
+## EXPIRES CACHING ##
+<IfModule mod_expires.c>
+ExpiresActive On
+ExpiresByType image/jpg "access plus 1 year"
+ExpiresByType image/jpeg "access plus 1 year"
+ExpiresByType image/gif "access plus 1 year"
+ExpiresByType image/png "access plus 1 year"
+ExpiresByType text/css "access plus 1 month"
+ExpiresByType text/html "access plus 0 seconds"
+ExpiresByType application/pdf "access plus 1 month"
+ExpiresByType text/x-javascript "access plus 1 month"
+ExpiresByType application/x-shockwave-flash "access plus 1 month"
+ExpiresByType image/x-icon "access plus 1 year"
+ExpiresDefault "access plus 1 month"
+</IfModule>
+## EXPIRES CACHING ##
+
+#Split the friendly URL and compose the real URL
+RewriteRule ^(scripts|classes|assets|css|font-awesome|images|include|js|templates|uploads) - [L]
+
+## REDIRECTS ##
+ErrorDocument 404 /error/404
+## REDIRECTS ##
+
+#engine
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)$ index.php?request=$1 [QSA,L]
