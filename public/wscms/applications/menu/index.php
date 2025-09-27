@@ -122,4 +122,4 @@ switch (substr((string) Core::$request->method, -4, 4)) {
         break;
 }
 
-$App->defaultJavascript = "messages['Devi inserire un contenuto!'] = '".preg_replace('/%ITEM%/',(string) $_lang['contenuto'],(string) $_lang['Devi inserire un %ITEM%!'])."';";
+$App->defaultJavascript = "messages['Devi inserire un contenuto!'] = '".preg_replace('/%ITEM%/', (string) $_lang['contenuto'], (string) $_lang['Devi inserire un %ITEM%!'])."';";

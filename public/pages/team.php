@@ -50,6 +50,11 @@ if (Core::$resultOp->error == 0) {
                 die();
             };
 
+            if (!$App->item || is_bool($App->item)) {
+                ToolsStrings::redirect(URL_SITE.'error/404');
+                die();
+            }
+
             $App->item->content = Multilanguage::getLocaleObjectValue($App->item, 'content_', Config::$langVars['user'], ['htmLawed' => 1,'parse' => 1]);
 
             $App->item->meta_title = $App->item->name;

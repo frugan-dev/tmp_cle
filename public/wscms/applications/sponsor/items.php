@@ -336,7 +336,7 @@ switch ((string)$App->viewMethod) {
         $App->paginationTitle = $_lang['Mostra da %START%  a %END% di %ITEM% elementi'];
         $App->paginationTitle = preg_replace('/%START%/', (string) $App->pagination->firstPartItem, (string) $App->paginationTitle);
         $App->paginationTitle = preg_replace('/%END%/', (string) $App->pagination->lastPartItem, (string) $App->paginationTitle);
-        $App->paginationTitle = preg_replace('/%ITEM%/',(string) $App->pagination->itemsTotal,(string) $App->paginationTitle);
+        $App->paginationTitle = preg_replace('/%ITEM%/', (string) $App->pagination->itemsTotal, (string) $App->paginationTitle);
 
         $App->pageSubTitle = 'lista dei '.$App->labels['item']['items'];
         $App->templateApp = 'listItem.tpl.php';

@@ -331,7 +331,7 @@ switch ((string)$App->viewMethod) {
         $App->paginationTitle = preg_replace('/%END%/', (string) $App->pagination->lastPartItem, (string) $App->paginationTitle);
         $App->paginationTitle = preg_replace('/%ITEM%/', (string) $App->pagination->itemsTotal, (string) $App->paginationTitle);
 
-        $App->pageSubTitle .= preg_replace('/%ITEM%/',(string) Core::$langVars['file'],(string) Core::$langVars['lista dei %ITEM%']);
+        $App->pageSubTitle .= preg_replace('/%ITEM%/', (string) Core::$langVars['file'], (string) Core::$langVars['lista dei %ITEM%']);
         $App->templateApp = 'listIfil.tpl.php';
         $App->jscript[] = '<script src="'.URL_SITE_ADMIN.$App->pathApplications.Core::$request->action.'/templates/'.$App->templateApp.'/js/listIfil.js"></script>';
         break;

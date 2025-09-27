@@ -69,8 +69,8 @@
 						<tbody>				
 							<?php if (is_array($this->App->items) && count($this->App->items) > 0): ?>
 								<?php
-                                foreach ($this->App->items as $key => $value):
-                                    ?>
+								foreach ($this->App->items as $key => $value):
+								    ?>
 									<tr>
 										<?php if ($this->mySessionVars['usr']['root'] === 1): ?>	
 											<td><?php echo $value->id; ?></td>

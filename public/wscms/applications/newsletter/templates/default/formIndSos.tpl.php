@@ -62,7 +62,7 @@
 							<label for="id_catsID" class="col-md-3 control-label">Id Categorie associate</label>
 							<div class="col-md-7">
 							<?php
-                            $itemCats = [];
+							$itemCats = [];
 				    if ($this->App->item->id_cats != '') {
 				        $itemCats = explode(',', (string) $this->App->item->id_cats);
 				    }

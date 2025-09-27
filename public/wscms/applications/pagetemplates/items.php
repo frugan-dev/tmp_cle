@@ -230,7 +230,7 @@ switch ((string)$App->viewMethod) {
         $App->paginationTitle = preg_replace('/%ITEM%/', (string) $App->pagination->itemsTotal, (string) $App->paginationTitle);
 
         $App->jscript[] = '<script src="'.URL_SITE_ADMIN.$App->pathApplications.Core::$request->action.'/templates/'.$App->templateUser.'/js/listItems.js"></script>';
-        $App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['lista %ITEM%'],(string) $_lang['voci']);
+        $App->pageSubTitle = preg_replace('/%ITEM%/', (string) $_lang['lista %ITEM%'], (string) $_lang['voci']);
         $App->templateApp = 'listItems.html';
         break;
 }

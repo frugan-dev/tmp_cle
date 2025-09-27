@@ -269,4 +269,4 @@ class SanitizeStrings extends Core
         return $username;
     }
 
- }
+}

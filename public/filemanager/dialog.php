@@ -994,37 +994,37 @@ if (!empty($bc)) {
         <ul class="grid cs-style-2 <?php echo 'list-view'.$view;?>" id="main-item-container">
         <?php
 
-        foreach ($files as $file_array) {
-            $file = $file_array['file'];
-            if ($file == '.' || (substr($file, 0, 1) == '.' && isset($file_array[ 'extension' ]) && $file_array[ 'extension' ] == fix_strtolower(trans('Type_dir'))) || (isset($file_array['extension']) && $file_array['extension'] != fix_strtolower(trans('Type_dir'))) || ($file == '..' && $subdir == '') || in_array($file, $config['hidden_folders']) || ($filter != '' && $n_files > $config['file_number_limit_js'] && $file != '..' && stripos($file, $filter) === false)) {
-                continue;
-            }
-            $new_name = fix_filename($file, $config);
-            if ($ftp && $file != '..' && $file != $new_name) {
-                //rename
-                rename_folder($config['current_path'].$subdir.$file, $new_name, $ftp, $config);
-                $file = $new_name;
-            }
-            //add in thumbs folder if not exist
-            if ($file != '..') {
-                if (!$ftp && !file_exists($thumbs_path.$file)) {
-                    create_folder(false, $thumbs_path.$file, $ftp, $config);
-                }
-            }
+		foreach ($files as $file_array) {
+		    $file = $file_array['file'];
+		    if ($file == '.' || (substr($file, 0, 1) == '.' && isset($file_array[ 'extension' ]) && $file_array[ 'extension' ] == fix_strtolower(trans('Type_dir'))) || (isset($file_array['extension']) && $file_array['extension'] != fix_strtolower(trans('Type_dir'))) || ($file == '..' && $subdir == '') || in_array($file, $config['hidden_folders']) || ($filter != '' && $n_files > $config['file_number_limit_js'] && $file != '..' && stripos($file, $filter) === false)) {
+		        continue;
+		    }
+		    $new_name = fix_filename($file, $config);
+		    if ($ftp && $file != '..' && $file != $new_name) {
+		        //rename
+		        rename_folder($config['current_path'].$subdir.$file, $new_name, $ftp, $config);
+		        $file = $new_name;
+		    }
+		    //add in thumbs folder if not exist
+		    if ($file != '..') {
+		        if (!$ftp && !file_exists($thumbs_path.$file)) {
+		            create_folder(false, $thumbs_path.$file, $ftp, $config);
+		        }
+		    }
 
-            $class_ext = 3;
-            if ($file == '..' && trim($subdir) != '') {
-                $src = explode('/', $subdir);
-                unset($src[count($src) - 2]);
-                $src = implode('/', $src);
-                if ($src == '') {
-                    $src = '/';
-                }
-            } elseif ($file != '..') {
-                $src = $subdir . $file.'/';
-            }
+		    $class_ext = 3;
+		    if ($file == '..' && trim($subdir) != '') {
+		        $src = explode('/', $subdir);
+		        unset($src[count($src) - 2]);
+		        $src = implode('/', $src);
+		        if ($src == '') {
+		            $src = '/';
+		        }
+		    } elseif ($file != '..') {
+		        $src = $subdir . $file.'/';
+		    }
 
-            ?>
+		    ?>
                 <li data-name="<?php echo $file ?>" class="<?php if ($file == '..') {
                     echo 'back';
                 } else {
@@ -1033,16 +1033,16 @@ if (!empty($bc)) {
                     echo ' style="display:none;"';
                 }?>><?php
                 $file_prevent_rename = false;
-            $file_prevent_delete = false;
-            if (isset($filePermissions[$file])) {
-                $file_prevent_rename = isset($filePermissions[$file]['prevent_rename']) && $filePermissions[$file]['prevent_rename'];
-                $file_prevent_delete = isset($filePermissions[$file]['prevent_delete']) && $filePermissions[$file]['prevent_delete'];
-            }
-            ?><figure data-name="<?php echo $file ?>" data-path="<?php echo $rfm_subfolder.$subdir.$file;?>" class="<?php if ($file == '..') {
-                echo 'back-';
-            }?>directory" data-type="<?php if ($file != '..') {
-                echo 'dir';
-            } ?>">
+		    $file_prevent_delete = false;
+		    if (isset($filePermissions[$file])) {
+		        $file_prevent_rename = isset($filePermissions[$file]['prevent_rename']) && $filePermissions[$file]['prevent_rename'];
+		        $file_prevent_delete = isset($filePermissions[$file]['prevent_delete']) && $filePermissions[$file]['prevent_delete'];
+		    }
+		    ?><figure data-name="<?php echo $file ?>" data-path="<?php echo $rfm_subfolder.$subdir.$file;?>" class="<?php if ($file == '..') {
+		        echo 'back-';
+		    }?>directory" data-type="<?php if ($file != '..') {
+		        echo 'dir';
+		    } ?>">
                 <?php if ($file == '..') { ?>
                     <input type="hidden" class="path" value="<?php echo str_replace('.', '', dirname($rfm_subfolder.$subdir));?>"/>
                     <input type="hidden" class="path_thumb" value="<?php echo dirname($thumbs_path).'/';?>"/>
@@ -1106,7 +1106,7 @@ if (!empty($bc)) {
                 </figure>
             </li>
             <?php
-        }
+		}
 
 		    $files_prevent_duplicate = [];
 		    foreach ($files as $nu => $file_array) {

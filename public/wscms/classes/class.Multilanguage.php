@@ -120,7 +120,7 @@ class Multilanguage extends Core
             if (isset($opz['suffix'])) {
                 $arr['suffix'] = $opz['suffix'];
             }
-            $str = ToolsStrings::getStringFromTotNumberChar($str,$arr);
+            $str = ToolsStrings::getStringFromTotNumberChar($str, $arr);
         }
 
         return $str;

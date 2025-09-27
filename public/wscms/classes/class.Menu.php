@@ -356,10 +356,10 @@ class Menu extends Core
         //$url = preg_replace('/%ALIAS%/',$value->alias,$url);
         $url = preg_replace('/%SEO%/', (string) $title, (string) $url);
         $url = preg_replace('/%SEOCLEAN%/', (string) SanitizeStrings::urlslug($title, ['delimiter' => '-']), (string) $url);
-        $url = preg_replace('/%SEOENCODE%/', urlencode((string) $title),(string) $url);
-        $url = preg_replace('/%TITLE%/', urlencode((string) $title),(string) $url);
-        $url = preg_replace('/%PARENTSTRING%/', urlencode($parentstring),(string) $url);
-        $url = preg_replace('/%PARENTALIAS%/', $parentalias,(string) $url);
+        $url = preg_replace('/%SEOENCODE%/', urlencode((string) $title), (string) $url);
+        $url = preg_replace('/%TITLE%/', urlencode((string) $title), (string) $url);
+        $url = preg_replace('/%PARENTSTRING%/', urlencode($parentstring), (string) $url);
+        $url = preg_replace('/%PARENTALIAS%/', $parentalias, (string) $url);
 
         return $url;
     }

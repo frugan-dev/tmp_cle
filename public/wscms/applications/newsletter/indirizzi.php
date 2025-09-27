@@ -365,7 +365,7 @@ switch ((string)$App->viewMethod) {
         if (Core::$resultOp->error <> 1) {
             $App->items = Sql::getRecords();
         }
-        $App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
+        $App->pagination = Utilities::getPagination($App->page, Sql::getTotalsItems(), $App->itemsForPage);
         $App->pageSubTitle = 'la lista degli '.$App->labels['ind']['items'].' iscritti alla newsletter';
         $App->templateApp = 'listInd.html';
         break;

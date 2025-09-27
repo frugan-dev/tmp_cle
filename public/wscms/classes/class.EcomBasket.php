@@ -261,9 +261,9 @@ class EcomBasket extends Core
     public static function delProductToBasket($id, $opt = [])
     {
         $optDef = [];
-        $opt = array_merge($optDef,$opt);
+        $opt = array_merge($optDef, $opt);
         $obj = new stdClass();
-        Sql::initQuery(DB_TABLE_PREFIX.'ec_basket_products',['*'],[$id,self::$basketId,self::$basketSession],'id = ? AND id_basket = ? AND session_basket = ?','');
+        Sql::initQuery(DB_TABLE_PREFIX.'ec_basket_products', ['*'], [$id,self::$basketId,self::$basketSession], 'id = ? AND id_basket = ? AND session_basket = ?', '');
         Sql::deleteRecord();
     }
 

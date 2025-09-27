@@ -331,7 +331,7 @@ switch ((string)$App->viewMethod) {
         if (Core::$resultOp->error <> 1) {
             $App->items = Sql::getRecords();
         }
-        $App->pagination = Utilities::getPagination($App->page,Sql::getTotalsItems(),$App->itemsForPage);
+        $App->pagination = Utilities::getPagination($App->page, Sql::getTotalsItems(), $App->itemsForPage);
         $App->pageSubTitle = 'lista dei '.$App->labels['item']['items'];
         $App->templateApp = 'listItem.tpl.php';
         break;

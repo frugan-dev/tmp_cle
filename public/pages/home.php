@@ -235,7 +235,7 @@ $App->breadcrumbs->title = '';
 $App->breadcrumbs->items = [];
 
 // messaggi
-$App->messagesCore =  Utilities::getHTMLMessagesCore(Core::$resultOp,['template' => $templateMessagesBar]);
+$App->messagesCore =  Utilities::getHTMLMessagesCore(Core::$resultOp, ['template' => $templateMessagesBar]);
 /*
 echo '<br>bb'.$App->moduleData->imageheader;
 echo '<br>aa'.$App->meta_og_image;

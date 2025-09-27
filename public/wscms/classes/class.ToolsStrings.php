@@ -262,10 +262,10 @@ class ToolsStrings extends Core
     public static function encodeHtmlContent($str, $opz = [])
     {
         $opzDef = ['customtag' => '','customtagvalue' => ''];
-        $opz = array_merge($opzDef,$opz);
+        $opz = array_merge($opzDef, $opz);
         if ($opz['customtag'] != '') {
             if ($opz['customtagvalue'] != '') {
-                $str = preg_replace('/'.$opz['customtag'].'/',(string) $opz['customtagvalue'],(string) $str);
+                $str = preg_replace('/'.$opz['customtag'].'/', (string) $opz['customtagvalue'], (string) $str);
             }
         }
         return $str;

@@ -114,7 +114,7 @@
 									<?php if (is_array($this->appData->subCategories) && count($this->appData->subCategories) > 0): ?>
 										<?php foreach ($this->appData->subCategories as $value): ?>		
 											<?php
-                                            $s = '';
+											$s = '';
 										    foreach ($value->breadcrumbs as $key1 => $value1) {
 										        if ($value1['title_it'] != '') {
 										            $s .= $value1['title_it'].'->';
@@ -227,7 +227,7 @@ foreach ($this->globalSettings['languages'] as $lang):
 							<label for="content_html_<?php echo $lang; ?>_<?php echo $x; ?>ID" class="col-sm-3 control-label">Contenuto HTML <?php echo $x; ?> <?php echo $lang; ?></label>
 							<div class="col-sm-7">
 								<?php
-                                $s = '';
+					            $s = '';
 					    $arr = (array)$this->App->item->pageContents;
 					    if (is_array($arr) && array_key_exists('content_'.$lang.'_'.$x, $arr)) {
 					        $s = $arr['content_'.$lang.'_'.$x];

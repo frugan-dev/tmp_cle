@@ -1209,7 +1209,7 @@ class Sql extends Core
         self::$resultPaged = $resultPaged;
     }
 
-    public static function initQueryBasic($table = '',$fields = '',$fieldsValue = [],$clause = '')
+    public static function initQueryBasic($table = '', $fields = '', $fieldsValue = [], $clause = '')
     {
         self::$table = $table;
         self::$fields = $fields;

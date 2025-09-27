@@ -462,7 +462,7 @@ class Pages extends Core
                 }
                 $fields[] = 'title_'.$opt['langUser'].' AS title';
                 $fieldsValues = [$category->id];
-                Sql::initQuery($tableProd,$fields,$fieldsValues,'id_cat = ? AND active = 1','ordering ASC');
+                Sql::initQuery($tableProd, $fields, $fieldsValues, 'id_cat = ? AND active = 1', 'ordering ASC');
                 $products[$category->id] = Sql::getRecords();
             }
         }

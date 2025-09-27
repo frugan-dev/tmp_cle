@@ -374,6 +374,6 @@ switch ($App->view) {
 
     default:
         $App->urlPrivacyPage = Config::$moduleConfig['url privacy page']->value_it;
-        $App->urlPrivacyPage = preg_replace('/%URLSITE%/',URL_SITE,(string) $App->urlPrivacyPage);
+        $App->urlPrivacyPage = preg_replace('/%URLSITE%/', URL_SITE, (string) $App->urlPrivacyPage);
         break;
 }

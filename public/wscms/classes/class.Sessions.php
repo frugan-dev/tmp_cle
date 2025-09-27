@@ -39,7 +39,7 @@ class my_session
         $cookieHttponly = false;
         if (!isset($_COOKIE[$this->cookie_name])) {
             setcookie($this->cookie_name, (string) $this->my_session_id, ['expires' => $cookie_expire, 'path' => '/', 'domain' => (string) $cookieDomain, 'secure' => $cookieSecure, 'httponly' => $cookieHttponly]);
-            $sql = 'INSERT INTO '.$this->table_name." VALUES('".$this->my_session_id."', '', " .time(). ')';
+            $sql = 'INSERT INTO '.$this->table_name." VALUES('".$this->my_session_id."', '', " .time(). ') ON DUPLICATE KEY UPDATE session_date = VALUES(session_date)';
             $result = $pdoCore->query($sql) or die(sprintf('Errore db linea %d!', __LINE__));
         } else {
             if ($this->session_time > 0) {

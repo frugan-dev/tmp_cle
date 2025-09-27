@@ -322,7 +322,7 @@ switch ((string)$App->viewMethod) {
         $App->paginationTitle = preg_replace('/%END%/', (string) $App->pagination->lastPartItem, (string) $App->paginationTitle);
         $App->paginationTitle = preg_replace('/%ITEM%/', (string) $App->pagination->itemsTotal, (string) $App->paginationTitle);
 
-        $App->pageSubTitle = preg_replace('/%ITEM%/',(string) $_lang['categorie'],(string) $_lang['lista delle %ITEM%']);
+        $App->pageSubTitle = preg_replace('/%ITEM%/', (string) $_lang['categorie'], (string) $_lang['lista delle %ITEM%']);
         $App->templateApp = 'listCategories.html';
         $App->jscript[] = '<script src="'.URL_SITE_ADMIN.$App->pathApplications.Core::$request->action.'/templates/'.$App->templateUser.'/js/listCategories.js"></script>';
         break;
