@@ -55,6 +55,5 @@ cp -a private/docker/php/aliases.dist private/docker/php/aliases
 cp -a private/docker/php/msmtprc.dist private/docker/php/msmtprc
 chmod u=rw,go= private/docker/php/msmtprc
 
-
 #
 rm install.sh

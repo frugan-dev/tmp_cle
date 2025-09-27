@@ -306,6 +306,23 @@ class Mails extends Core
                     // 	$transports[$val] = $val . '://default';
                     // 	break;
 
+                case 'file':
+                    $filePath = $_ENV['MAIL_FILE_PATH'] ?? PATH_TMP_DIR . '/emails';
+
+                    try {
+                        $fileTransport = FileTransportFactory::create($filePath);
+                        $transports['file'] = $fileTransport;
+                        Logger::debug('File transport configured', [
+                            'path' => $filePath,
+                        ]);
+                    } catch (Exception $e) {
+                        Logger::error('Failed to create file transport', [
+                            'exception' => $e,
+                            'path' => $filePath,
+                        ]);
+                    }
+                    break;
+
                 case null:
                     // https://symfony.com/doc/current/mailer.html#disabling-delivery
                     $transports['null'] = 'null://null';

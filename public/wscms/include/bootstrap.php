@@ -2,6 +2,10 @@
 
 require_once dirname(__DIR__, 2).'/vendor/autoload.php';
 
+define('PATH_CACHE_DIR', $_SERVER['DOCUMENT_ROOT'].'/var/cache/');
+define('PATH_LOG_DIR', $_SERVER['DOCUMENT_ROOT'].'/var/log/');
+define('PATH_TMP_DIR', $_SERVER['DOCUMENT_ROOT'].'/var/tmp/');
+
 $suffix = '';
 $env = '.env';
 
@@ -95,6 +99,21 @@ if (!function_exists('isCli')) {
     }
 }
 
+if (!function_exists('createDirs')) {
+    function createDirs()
+    {
+        foreach ([
+            PATH_CACHE_DIR,
+            PATH_LOG_DIR,
+            PATH_TMP_DIR,
+        ] as $dir) {
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+        }
+    }
+}
+
 ini_set('display_errors', isDebug());
 
 Kint::$enabled_mode = isDebug();
@@ -107,5 +126,7 @@ if (isDebug()) {
 } else {
     error_reporting(E_ALL);
 }
+
+createDirs();
 
 Logger::getInstance();

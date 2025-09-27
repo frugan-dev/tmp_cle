@@ -178,9 +178,10 @@ define('URL_SITE_APPLICATION', $http.SITE_HOST.FOLDER_SITE.FOLDER_ADMIN.'applica
 define('PATH_DOCUMENT', $_SERVER['DOCUMENT_ROOT'].'/');
 define('PATH_SITE', $_SERVER['DOCUMENT_ROOT'].'/'.FOLDER_SITE);
 define('PATH_SITE_ADMIN', $_SERVER['DOCUMENT_ROOT'].'/'.FOLDER_SITE.FOLDER_ADMIN);
-define('PATH_CACHE_DIR', PATH_SITE.'var/cache/');
-define('PATH_LOG_DIR', PATH_SITE.'var/log/');
-define('PATH_TMP_DIR', PATH_SITE.'var/tmp/');
+// moved to bootstrap.php (specifically PATH_TMP_DIR) to allow the Logger to use the mail transport 'file'
+//define('PATH_CACHE_DIR', PATH_SITE.'var/cache/');
+//define('PATH_LOG_DIR', PATH_SITE.'var/log/');
+//define('PATH_TMP_DIR', PATH_SITE.'var/tmp/');
 /* upload */
 define('UPLOAD_DIR', $http.SITE_HOST.FOLDER_SITE.'uploads/');
 define('PATH_UPLOAD_DIR', 'uploads/');
@@ -200,13 +201,3 @@ define('SITE_NAME', $globalSettings['site name']);
 define('CODE_VERSION', $globalSettings['code version']);
 define('SITE_OWNER', $globalSettings['site owner']);
 define('COPYRIGHT', $globalSettings['copyright']);
-
-foreach ([
-    PATH_CACHE_DIR,
-    PATH_LOG_DIR,
-    PATH_TMP_DIR,
-] as $dir) {
-    if (!is_dir($dir)) {
-        mkdir($dir, 0755, true);
-    }
-}
