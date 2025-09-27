@@ -146,6 +146,10 @@ class Logger
             ))
             ->to(...array_map('trim', explode(',', (string) $_ENV['MAIL_TO_EMAILS'])));
 
+        // Note: SymfonyMailerHandler will bypass OAuth2 authentication and fallback to 
+        // plain/login authentication if the SMTP server supports these methods (e.g., Mailpit).
+        // This allows error log emails to be sent even when OAuth2 is configured but fails,
+        // ensuring critical error notifications are still delivered in development/testing
         $handler = new SymfonyMailerHandler($mailer, $message, Level::Error);
         $handler->setFormatter(new HtmlFormatter());
 

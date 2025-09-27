@@ -1,6 +1,7 @@
 {
     "name": "websync/framework",
     "description": "Il framework PHP di WebSync",
+    "license": "GPL-3.0-or-later",
     "type": "project",
     "authors": [
         {
@@ -8,31 +9,9 @@
             "email": "info@websync.it"
         }
     ],
-    "license": "GPL-3.0-or-later",
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "php-http/discovery": true,
-            "tbachert/spi": true
-        }
-    },
-    "repositories": [
-      {
-        "type": "package",
-        "package": {
-          "name": "shuttle/export",
-          "version": "dev-master",
-          "source": {
-            "url": "https://github.com/2createStudio/shuttle-export.git",
-            "type": "git",
-            "reference": "master"
-          }
-        }
-      }
-    ],
     "require": {
         "egulias/email-validator": "^4.0",
-        "google/recaptcha": "~1.1",
+        "google/recaptcha": "^1.1",
         "guzzlehttp/guzzle": "^7.10",
         "htmlawed/htmlawed": "^1.2",
         "kint-php/kint": "^6.0",
@@ -49,23 +28,46 @@
         "vlucas/phpdotenv": "^5.5"
     },
     "require-dev": {
+        "ergebnis/composer-normalize": "^2.48",
         "friendsofphp/php-cs-fixer": "^3.88",
         "marcocesarato/amwscan": "^0.14.0",
         "rector/rector": "2.1.7"
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "shuttle/export",
+                "version": "dev-master",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/2createStudio/shuttle-export.git",
+                    "reference": "master"
+                }
+            }
+        }
+    ],
     "autoload": {
         "classmap": [
             "./wscms/interfaces/",
             "./wscms/classes/"
         ]
     },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "php-http/discovery": true,
+            "tbachert/spi": true
+        },
+        "sort-packages": true
+    },
     "scripts": {
         "post-install-cmd": "@post-cmd",
         "post-update-cmd": "@post-cmd",
-        "post-cmd": "rm -f vendor/mos/cimage/webroot/img_config.php || true",
         "amwscan": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/marcocesarato/amwscan/dist/scanner -- --report --ignore-paths=\"/vendor\" --path-logs=\"./var/log/scanner.log\" --path-report=\"./var/tmp/scanner-report.html\" .",
         "lint": "@lint:fix --dry-run",
         "lint:fix": "./vendor/bin/php-cs-fixer fix --diff",
+        "post-cmd": "rm -f vendor/mos/cimage/webroot/img_config.php || true",
         "rector": "@rector:fix --dry-run",
         "rector:fix": "@php -d max_execution_time=0 -d memory_limit=-1 -f ./vendor/bin/rector -- process --ansi --clear-cache"
     }

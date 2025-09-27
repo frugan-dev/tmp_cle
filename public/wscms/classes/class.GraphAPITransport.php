@@ -110,7 +110,7 @@ class GraphAPITransport implements TransportInterface
 
     public function __toString(): string
     {
-        // Use a valid DSN format with recognized scheme like in the gist example
+        // Use a valid DSN format with recognized scheme
         return $this->mockEnabled ? 'smtp://graph-api-mock' : 'smtp://graph-api-live';
     }
 
@@ -130,6 +130,8 @@ class GraphAPITransport implements TransportInterface
      */
     private function sendEmailViaMockGraphAPI(Email $message): void
     {
+        // Even though it is not used here in the mock, but only in production,
+        // let's call it anyway to test its functioning
         $graphMessage = $this->convertEmailToGraphMessage($message);
 
         // Prepare the request for wiremock (simulate Graph API sendMail    endpoint)
@@ -185,7 +187,7 @@ class GraphAPITransport implements TransportInterface
 
         } catch (RequestException $e) {
             Logger::warning('Mock Graph API call failed', [
-                'exception' => $e->getMessage(),
+                'exception' => $e,
                 'endpoint' => $endpoint,
             ]);
 
@@ -227,7 +229,7 @@ class GraphAPITransport implements TransportInterface
 
         } catch (Exception $e) {
             Logger::warning('Failed to send email to Mailpit', [
-                'exception' => $e->getMessage(),
+                'exception' => $e,
             ]);
             // Don't throw - this is just for visualization, not critical
         }

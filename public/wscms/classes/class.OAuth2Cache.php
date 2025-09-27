@@ -43,8 +43,8 @@ class OAuth2Cache
 
         } catch (Exception $e) {
             Logger::error('Failed to cache OAuth2 token', [
+                'exception' => $e,
                 'provider' => $provider,
-                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -140,7 +140,7 @@ class OAuth2Cache
 
             // Basic stats - FilesystemAdapter doesn't provide detailed stats
             return [
-                'adapter' => get_class($cache),
+                'adapter' => $cache::class,
                 'namespace' => 'oauth2_tokens',
                 'directory' => (defined('PATH_CACHE_DIR') ? PATH_CACHE_DIR : sys_get_temp_dir()) . '/oauth2',
             ];

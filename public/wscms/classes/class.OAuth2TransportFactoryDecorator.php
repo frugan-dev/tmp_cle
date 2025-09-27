@@ -19,12 +19,12 @@ use Symfony\Component\Mailer\Transport\Smtp\Auth\XOAuth2Authenticator;
 
 class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
 {
-    private EsmtpTransportFactory $innerFactory;
+    private readonly EsmtpTransportFactory $innerFactory;
 
     public function __construct(
-        EventDispatcherInterface $dispatcher = null,
-        HttpClientInterface $httpClient = null,
-        LoggerInterface $logger = null
+        ?EventDispatcherInterface $dispatcher = null,
+        ?HttpClientInterface $httpClient = null,
+        ?LoggerInterface $logger = null
     ) {
         $this->innerFactory = new EsmtpTransportFactory($dispatcher, $httpClient, $logger);
     }
@@ -110,16 +110,18 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
             $transport->setUsername($dsn->getUser()); // Real email
             $transport->setPassword($accessToken); // Token OAuth2
 
-            if (isDevelop()) {
+            // Force OAuth2-only authentication when explicitly requested to prevent fallback
+            // to plain/login authenticators during OAuth2 testing. This ensures OAuth2 
+            // implementation works correctly without silently falling back to other methods
+            // (e.g., Mailpit supports plain/login but not OAuth2, causing authentication 
+            // to succeed with wrong method)
+            if (($_ENV['MAIL_OAUTH2_FORCE_ONLY'] ?? false)) {
                 // Remove all authenticators except XOAUTH2
                 $reflection = new ReflectionClass($transport);
                 $property = $reflection->getProperty('authenticators');
-                $property->setAccessible(true);
 
                 $authenticators = $property->getValue($transport);
-                $xoauth2Only = array_filter($authenticators, function ($auth) {
-                    return $auth instanceof XOAuth2Authenticator;
-                });
+                $xoauth2Only = array_filter($authenticators, fn($auth) => $auth instanceof XOAuth2Authenticator);
 
                 $property->setValue($transport, array_values($xoauth2Only));
 
@@ -131,13 +133,13 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
             }
 
             Logger::debug('OAuth2 token obtained', [
-                'token_length' => strlen($accessToken),
-                'token_preview' => substr($accessToken, 0, 20) . '...',
+                'token_length' => strlen((string) $accessToken),
+                'token_preview' => substr((string) $accessToken, 0, 20) . '...',
             ]);
 
         } catch (Exception $e) {
             Logger::error('Failed to configure OAuth2 transport', [
-                'error' => $e->getMessage(),
+                'exception' => $e,
                 'provider' => $dsn->getOption('oauth2_provider'),
                 'host' => $dsn->getHost(),
             ]);

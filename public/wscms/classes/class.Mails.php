@@ -36,7 +36,34 @@ class Mails extends Core
     }
 
     /**
-     * Send email using Symfony Mailer
+     * Send email using Symfony Mailer with OAuth2 support
+     * 
+     * Email sending process overview:
+     * 1. Transport Creation Phase:
+     *    - buildTransports() creates available transport DSNs (SMTP OAuth2, Graph API, etc.)
+     *    - OAuth2TransportFactoryDecorator handles OAuth2 scheme conversion and authentication
+     *    - Office365TokenProvider obtains access tokens for Microsoft OAuth2
+     * 
+     * 2. SMTP OAuth2 Flow:
+     *    - OAuth2TransportFactoryDecorator converts oauth2:// DSN to smtp://
+     *    - Configures EsmtpTransport with OAuth2 access token as password
+     *    - XOAuth2Authenticator handles SASL XOAUTH2 authentication with SMTP server
+     *    - In development: forces OAuth2-only to prevent plain/login fallback
+     * 
+     * 3. Graph API Flow:
+     *    - GraphAPITransport uses Microsoft Graph API instead of SMTP
+     *    - Sends emails via REST API calls to https://graph.microsoft.com/v1.0/me/sendMail
+     *    - Handles attachments and complex email structures through API
+     * 
+     * 4. Transport Selection:
+     *    - Failover/roundrobin techniques handle multiple transport fallback
+     *    - Logger uses same transport system but may fallback to plain auth for error emails
+     * 
+     * Classes involved:
+     * - OAuth2TransportFactoryDecorator: OAuth2 SMTP transport factory
+     * - Office365TokenProvider: OAuth2 token management  
+     * - GraphAPITransport: Graph API email transport
+     * - XOAuth2Authenticator: SMTP OAuth2 SASL authentication
      */
     public static function sendMailSymfony($address, $subject, $content, $text_content, $opt)
     {
@@ -57,21 +84,21 @@ class Mails extends Core
                         $transportInstances[] = $dsn;
                         Logger::debug('Using existing transport object', [
                             'key' => $key,
-                            'class' => get_class($dsn),
+                            'class' => $dsn::class,
                         ]);
                     } else {
                         // It's a DSN string, create transport from it
                         $transportInstances[] = self::createTransportWithCustomFactories($dsn);
                         Logger::debug('Created transport from DSN', [
                             'key' => $key,
-                            'dsn' => preg_replace('/:[^:@]*@/', ':***@', $dsn),
+                            'dsn' => preg_replace('/:[^:@]*@/', ':***@', (string) $dsn),
                         ]);
                     }
                 } catch (Exception $e) {
                     Logger::error('Failed to create transport from DSN', [
                         'exception' => $e,
                         'key' => $key,
-                        'value_type' => is_object($dsn) ? get_class($dsn) : gettype($dsn),
+                        'value_type' => get_debug_type($dsn),
                     ]);
                     continue;
                 }
@@ -160,10 +187,10 @@ class Mails extends Core
 
             return true;
 
-        } catch (Exception $exception) {
+        } catch (Exception $e) {
             Core::$resultOp->error = 1;
             Logger::error('Failed to send email via Symfony Mailer', [
-                'exception' => $exception,
+                'exception' => $e,
                 'to' => $address,
                 'subject' => $subject,
             ]);
@@ -195,9 +222,9 @@ class Mails extends Core
                             $dsn = self::createOAuth2SMTPTransport();
                             $transports['oauth2-smtp'] = $dsn;
                             Logger::debug('OAuth2 SMTP transport DSN created');
-                        } catch (Exception $exception) {
+                        } catch (Exception $e) {
                             Logger::error('Failed to create OAuth2 SMTP transport DSN', [
-                                'exception' => $exception,
+                                'exception' => $e,
                             ]);
                         }
                     } else {
@@ -215,9 +242,9 @@ class Mails extends Core
                             } else {
                                 Logger::warning('OAuth2 Graph API transport configuration invalid');
                             }
-                        } catch (Exception $exception) {
+                        } catch (Exception $e) {
                             Logger::error('Failed to create OAuth2 Graph API transport', [
-                                'exception' => $exception,
+                                'exception' => $e,
                             ]);
                         }
                     } else {
@@ -247,7 +274,7 @@ class Mails extends Core
                     ] as $item) {
                         if (isset($_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_' . mb_strtoupper($item, 'UTF-8')])) {
                             $transports[$val] .= '&' . $item . '=' .
-                                rawurlencode($_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_' . mb_strtoupper($item, 'UTF-8')]);
+                                rawurlencode((string) $_ENV['MAIL_' . mb_strtoupper($val, 'UTF-8') . '_' . mb_strtoupper($item, 'UTF-8')]);
                         }
                     }
                     break;
@@ -578,7 +605,7 @@ class Mails extends Core
         }
 
         // Build SMTP DSN with OAuth2 provider parameter (instead of oauth2:// scheme)
-        $dsn = 'smtp://' . rawurlencode($username) . ':@' . $host . ':' . $port;
+        $dsn = 'smtp://' . rawurlencode((string) $username) . ':@' . $host . ':' . $port;
 
         // Add OAuth2 provider parameter to signal OAuth2 usage
         $dsn .= '?oauth2_provider=microsoft';
