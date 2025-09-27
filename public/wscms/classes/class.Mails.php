@@ -637,9 +637,16 @@ class Mails extends Core
     {
         $provider = $_ENV['MAIL_OAUTH2_PROVIDER'] ?? throw new Exception('MAIL_OAUTH2_PROVIDER must be configured for OAuth2 SMTP transport');
 
-        // Currently only Microsoft Office365 is supported for OAuth2 SMTP
-        if ($provider !== 'microsoft-office365') {
-            throw new Exception("OAuth2 provider '{$provider}' is not supported for SMTP. Currently only 'microsoft-office365' is supported.");
+        // Supported providers for OAuth2 SMTP
+        $supportedProviders = [
+            'microsoft-office365',
+            // Future providers can be added here:
+            // 'google',
+            // 'amazon-ses',
+        ];
+
+        if (!in_array($provider, $supportedProviders)) {
+            throw new Exception("OAuth2 provider '{$provider}' is not supported for SMTP. Supported providers: " . implode(', ', $supportedProviders));
         }
 
         $host = $_ENV['MAIL_OAUTH2_SMTP_HOST'] ?? $_ENV['MAIL_SMTP_HOST'] ?? throw new Exception('MAIL_OAUTH2_SMTP_HOST or MAIL_SMTP_HOST must be configured');
