@@ -21,6 +21,7 @@ use Microsoft\Graph\Generated\Models\EmailAddress;
 use Microsoft\Graph\Generated\Models\ItemBody;
 use Microsoft\Graph\Generated\Models\BodyType;
 use Microsoft\Graph\Generated\Models\FileAttachment;
+use Microsoft\Graph\Generated\Users\Item\SendMail\SendMailPostRequestBody;
 use Microsoft\Kiota\Authentication\Oauth\ClientCredentialContext;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
@@ -75,27 +76,48 @@ class GraphAPITransport implements TransportInterface
             } else {
                 // Real mode - use actual Graph API
                 $graphClient = $this->getGraphClient();
+
+                // Check permissions before attempting to send
+                $this->validateGraphAPIPermissions($graphClient);
+
                 $graphMessage = $this->convertEmailToGraphMessage($message);
 
-                // Send email using Graph API
+                // Create the request body object
+                $requestBody = new SendMailPostRequestBody();
+                $requestBody->setMessage($graphMessage);
+
+                // If userId == mailbox, it's likely an application mailbox without standard folders
+                $isApplicationMailbox = ($this->userId === $this->mailbox);
+                $requestBody->setSaveToSentItems(!$isApplicationMailbox);
+
+                // Send email using Graph API with proper request body object
                 if ($this->mailbox !== $this->userId) {
                     // Send as shared mailbox
-                    $graphClient->users()->byUserId($this->mailbox)->sendMail()->post([
-                        'message' => $graphMessage,
-                        'saveToSentItems' => true,
+                    Logger::debug('Sending as shared mailbox', [
+                        'user_id' => $this->userId,
+                        'mailbox' => $this->mailbox,
                     ]);
+
+                    $graphClient->users()->byUserId($this->mailbox)->sendMail()->post($requestBody);
                 } else {
-                    // Send as user
-                    $graphClient->users()->byUserId($this->userId)->sendMail()->post([
-                        'message' => $graphMessage,
-                        'saveToSentItems' => true,
+                    // Send as user/application account
+                    Logger::debug('Sending as user/application account', [
+                        'user_id' => $this->userId,
                     ]);
+
+                    $graphClient->users()->byUserId($this->userId)->sendMail()->post($requestBody);
+                }
+
+                // Only validate sent items for shared mailbox scenarios (when userId != mailbox)
+                if ($this->userId !== $this->mailbox) {
+                    $this->validateEmailSent($graphClient);
                 }
             }
 
             Logger::debug('Email sent successfully via Graph API Transport', [
                 'to' => $this->getRecipientsString($message->getTo()),
                 'subject' => $message->getSubject(),
+                'user_id' => $this->userId,
                 'mailbox' => $this->mailbox,
                 'mock_mode' => $this->mockEnabled,
             ]);
@@ -110,6 +132,7 @@ class GraphAPITransport implements TransportInterface
                 'exception' => $e,
                 'to' => $this->getRecipientsString($message->getTo()),
                 'subject' => $message->getSubject(),
+                'user_id' => $this->userId,
                 'mailbox' => $this->mailbox,
                 'mock_mode' => $this->mockEnabled,
             ]);
@@ -133,6 +156,99 @@ class GraphAPITransport implements TransportInterface
                !empty($this->clientId) &&
                !empty($this->clientSecret) &&
                !empty($this->userId);
+    }
+
+    /**
+     * Validate Graph API permissions - adapted for application vs shared mailbox scenarios
+     */
+    private function validateGraphAPIPermissions(GraphServiceClient $graphClient): void
+    {
+        try {
+            // Always verify the authenticated user (userId) has basic Graph API access
+            $user = $graphClient->users()->byUserId($this->userId)->get();
+
+            // Check if the response is valid (not a rejected promise or null)
+            if (!$user || !is_object($user) || $user instanceof RejectedPromise) {
+                throw new RuntimeException('Graph API: Authentication failed or insufficient permissions for user: ' . $this->userId);
+            }
+
+            // Additional check for valid user object methods
+            if (!method_exists($user, 'getDisplayName')) {
+                throw new RuntimeException('Graph API: Invalid user object returned - authentication may have failed');
+            }
+
+            if ($this->mailbox === $this->userId) {
+                // Application mailbox scenario: same account for auth and sending
+                // Just verify basic access, don't test mail folders as they might not exist
+                Logger::debug('Graph API application mailbox validated', [
+                    'user_id' => $this->userId,
+                    'display_name' => $user->getDisplayName(),
+                ]);
+            } else {
+                // Shared mailbox scenario: different accounts for auth and sending
+                // Verify full mail access permissions
+                if (!$user->getMail()) {
+                    throw new RuntimeException('Graph API: Authenticated user has no mail - insufficient permissions');
+                }
+
+                // Test access to the shared mailbox
+                $mailboxUser = $graphClient->users()->byUserId($this->mailbox)->get();
+
+                // Check mailbox user response validity
+                if (!$mailboxUser || !is_object($mailboxUser) || $mailboxUser instanceof RejectedPromise) {
+                    throw new RuntimeException('Graph API: Unable to access shared mailbox - insufficient permissions for ' . $this->mailbox);
+                }
+
+                if (!method_exists($mailboxUser, 'getDisplayName')) {
+                    throw new RuntimeException('Graph API: Invalid mailbox user object returned - access may have failed');
+                }
+
+                // Test mail folder access for the shared mailbox
+                $sharedMailFolders = $graphClient->users()->byUserId($this->mailbox)->mailFolders()->get();
+
+                if (!$sharedMailFolders || $sharedMailFolders instanceof RejectedPromise) {
+                    throw new RuntimeException('Graph API: Unable to access shared mailbox folders - insufficient Send As permissions for ' . $this->mailbox);
+                }
+
+                Logger::debug('Graph API shared mailbox validated', [
+                    'user_id' => $this->userId,
+                    'mailbox' => $this->mailbox,
+                    'auth_user_mail' => $user->getMail(),
+                    'mailbox_display_name' => $mailboxUser->getDisplayName(),
+                ]);
+            }
+
+        } catch (Exception $e) {
+            throw new RuntimeException('Graph API: Permission validation failed - ' . $e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * Additional validation after sending - only for shared mailbox scenarios
+     */
+    private function validateEmailSent(GraphServiceClient $graphClient): void
+    {
+        try {
+            // This method is only called when userId !== mailbox (shared mailbox scenario)
+            // We check the mailbox where the email was actually sent from
+            $checkMailbox = $this->mailbox;
+
+            // Try to access sent items to verify the system is working
+            $sentItems = $graphClient->users()->byUserId($checkMailbox)->mailFolders()->byMailFolderId('sentitems')->get();
+
+            if (!$sentItems) {
+                throw new RuntimeException('Graph API: Unable to access sent items folder - email delivery uncertain');
+            }
+
+            Logger::debug('Graph API post-send validation passed', [
+                'checked_mailbox' => $checkMailbox,
+                'scenario' => 'shared_mailbox',
+            ]);
+
+        } catch (Exception $e) {
+            // Throw exception to trigger failover - email might not have been sent
+            throw new RuntimeException('Graph API: Post-send validation failed - ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
