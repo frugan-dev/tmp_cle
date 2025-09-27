@@ -15,6 +15,7 @@ use Symfony\Component\Mailer\Transport\TransportInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\Mailer\Transport\Smtp\Auth\XOAuth2Authenticator;
 
 class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
 {
@@ -94,31 +95,24 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
 
             Logger::debug('Configuring OAuth2 transport', [
                 'provider' => $provider,
+                'username' => $dsn->getUser(),
                 'host' => $dsn->getHost(),
                 'port' => $dsn->getPort(),
                 'scheme' => $dsn->getScheme(),
             ]);
 
-            // Create token provider and authenticator
+            // Get OAuth2 token
             $tokenProvider = Office365TokenProvider::createFromEnv();
-            $authenticator = new OAuth2Authenticator($tokenProvider);
+            $tokenData = $tokenProvider->getAccessToken();
+            $accessToken = $tokenData['access_token'];
 
-            // Add OAuth2 authenticator to transport
-            $transport->addAuthenticator($authenticator);
+            // Configure transport for built-in XOAuth2Authenticator
+            $transport->setUsername($dsn->getUser()); // Real email
+            $transport->setPassword($accessToken); // Token OAuth2
 
-            $transport->setUsername('oauth2:microsoft');
-
-            // Set placeholder password - will be replaced by authenticator
-            $transport->setPassword('oauth2_token_placeholder');
-
-            // Configura il transport per richiedere sempre autenticazione
-            if (method_exists($transport, 'setAuthMode')) {
-                $transport->setAuthMode('login');
-            }
-
-            Logger::debug('OAuth2 transport configured successfully', [
-                'provider' => $provider,
-                'username' => $dsn->getUser(),
+            Logger::debug('OAuth2 token obtained', [
+                'token_length' => strlen($accessToken),
+                'token_preview' => substr($accessToken, 0, 20) . '...',
             ]);
 
         } catch (Exception $e) {
