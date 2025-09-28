@@ -197,6 +197,8 @@ if ($renderTpl == true && $App->templateApp != '') {
         'MySessionVars' => $_MY_SESSION_VARS,
         'Session'   => $_SESSION,
         'GlobalSettings' => $globalSettings,
+        'isDevelop' => isDevelop(),
+        'isProduction' => isProduction(),
     ];
 
     $loader = new FilesystemLoader($pathtemplateBase);
