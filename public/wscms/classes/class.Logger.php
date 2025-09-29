@@ -102,8 +102,8 @@ class Logger
             $handler = new RotatingFileHandler(
                 PATH_LOG_DIR . '/app.log',
                 100,
-                // IMPORTANT: don't use Debug in production!!!
-                Level::Info
+                // IMPORTANT: don't use level Debug in production HTTP!!!
+                isCli() ? Level::Debug : Level::Info
             );
         }
 

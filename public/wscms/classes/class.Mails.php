@@ -519,6 +519,11 @@ class Mails extends Core
             $mail->send();
             Core::$resultOp->error = 0;
 
+            Logger::info('Email sent successfully', [
+                'to' => $address,
+                'subject' => $subject,
+            ]);
+
         } catch (PHPMailerException $exception) {
             Core::$resultOp->error = 1;
             Logger::error($exception->getMessage(), [
@@ -569,6 +574,11 @@ class Mails extends Core
             ]);
         } else {
             Core::$resultOp->error = 0;
+
+            Logger::info('Email sent successfully', [
+                'to' => $address,
+                'subject' => $subject,
+            ]);
         }
     }
 

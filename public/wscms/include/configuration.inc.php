@@ -10,7 +10,7 @@
 require_once __DIR__.'/bootstrap.php';
 
 $servermode = 'remote';
-if ($_SERVER['HTTP_HOST'] == '192.168.1.11') {
+if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === '192.168.1.11') {
     $servermode = 'local';
 }
 
@@ -18,7 +18,7 @@ if ($_SERVER['HTTP_HOST'] == '192.168.1.11') {
 $globalSettings['folder site'] = '';
 $globalSettings['folder admin'] = 'wscms/';
 $globalSettings['site host'] = 'cle.unibo.it/';
-if ($servermode == 'local') {
+if ($servermode === 'local') {
     $globalSettings['folder site'] = 'websync.framework.sito.400/';
     $globalSettings['folder admin'] = 'wscms/';
     $globalSettings['site host'] = '192.168.1.11/';

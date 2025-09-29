@@ -158,7 +158,7 @@ class FailoverEmailHandler extends AbstractProcessingHandler
                 ->from(new Address($_ENV['MAIL_FROM_EMAIL'], $_ENV['MAIL_FROM_NAME']))
                 ->subject(sprintf(
                     _('Error reporting from %1$s - %2$s'),
-                    $_SERVER['HTTP_HOST'],
+                    $_SERVER['HTTP_HOST'] ?? 'unknown',
                     getEnvironment()
                 ))
                 ->to(...array_map('trim', explode(',', (string) $_ENV['MAIL_TO_EMAILS'])));
