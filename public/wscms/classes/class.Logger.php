@@ -98,9 +98,7 @@ class Logger
     {
         if (isDevelop() || isCli()) {
             $handler = new ErrorLogHandler(level: Level::Debug);
-        }
-
-        if (isProduction()) {
+        } else {
             $handler = new RotatingFileHandler(
                 PATH_LOG_DIR . '/app.log',
                 100,
