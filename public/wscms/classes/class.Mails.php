@@ -690,6 +690,12 @@ class Mails extends Core
         // Add OAuth2 provider parameter
         $dsn .= '?oauth2_provider=' . urlencode((string) $provider);
 
+        // Optimize connection timeouts
+        $dsn .= '&stream_timeout=5';           // Reduce stream timeout from 30s default
+        $dsn .= '&ping_threshold=1';           // Ping after 1 email (keep alive)
+        $dsn .= '&restart_threshold=10';       // Restart after 10 emails
+        $dsn .= '&restart_threshold_sleep=0';  // No sleep on restart
+
         Logger::debug('OAuth2 SMTP DSN configured', [
             'host' => $host,
             'port' => $port,

@@ -110,25 +110,37 @@ class OAuth2TransportFactoryDecorator implements TransportFactoryInterface
             $transport->setUsername($dsn->getUser()); // Real email
             $transport->setPassword($accessToken); // Token OAuth2
 
-            // Force OAuth2-only authentication when explicitly requested to prevent fallback
-            // to plain/login authenticators during OAuth2 testing. This ensures OAuth2
-            // implementation works correctly without silently falling back to other methods
-            // (e.g., Mailpit supports plain/login but not OAuth2, causing authentication
-            // to succeed with wrong method)
+            // Force OAuth2-only authentication by removing all non-XOAUTH2 authenticators.
+            //
+            // PRODUCTION USE CASE:
+            // When disabled, Symfony's EsmtpTransport tries authenticators in this order:
+            // 1. CRAM-MD5 -> 2. LOGIN -> 3. PLAIN -> 4. XOAUTH2
+            // Each failed attempt against production SMTP servers (e.g., Microsoft Office365) that
+            // don't support those methods causes a ~3 seconds timeout before trying the next one.
+            // This results in ~10 seconds of latency before XOAUTH2 is attempted. Enabling this
+            // keeps only XOAUTH2, making authentication immediate.
+            //
+            // DEVELOPMENT USE CASE:
+            // Required to enforce OAuth2 with mock servers. This ensures OAuth2 implementation
+            // works correctly without silently falling back to other methods (e.g., Mailpit
+            // supports PLAIN/LOGIN but not OAuth2, causing authentication to succeed with wrong
+            // method).
             if (($_ENV['MAIL_OAUTH2_FORCE_ONLY'] ?? false)) {
-                // Remove all authenticators except XOAUTH2
-                $reflection = new ReflectionClass($transport);
-                $property = $reflection->getProperty('authenticators');
+                // method #1 - Remove all authenticators except XOAUTH2
+                //$reflection = new ReflectionClass($transport);
+                //$property = $reflection->getProperty('authenticators');
+                //
+                //$authenticators = $property->getValue($transport);
+                //$xoauth2Only = array_filter($authenticators, fn ($auth) => $auth instanceof XOAuth2Authenticator);
+                //
+                //$property->setValue($transport, array_values($xoauth2Only));
 
-                $authenticators = $property->getValue($transport);
-                $xoauth2Only = array_filter($authenticators, fn ($auth) => $auth instanceof XOAuth2Authenticator);
+                // method #2 - Set only XOAUTH2 directly
+                $transport->setAuthenticators([new XOAuth2Authenticator()]);
 
-                $property->setValue($transport, array_values($xoauth2Only));
-
-                Logger::debug('OAuth2 transport configured with built-in authenticator', [
+                Logger::debug('OAuth2 transport configured with XOAUTH2-only authenticator', [
                     'provider' => $provider,
                     'username' => $dsn->getUser(),
-                    'authenticator_count' => count($xoauth2Only),
                 ]);
             }
 
