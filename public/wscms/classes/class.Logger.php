@@ -96,14 +96,16 @@ class Logger
      */
     private static function addFileHandler(): void
     {
-        if (isDevelop()) {
+        if (isDevelop() || isCli()) {
             $handler = new ErrorLogHandler(level: Level::Debug);
-        } else {
+        }
+
+        if (isProduction()) {
             $handler = new RotatingFileHandler(
                 PATH_LOG_DIR . '/app.log',
                 100,
-                // IMPORTANT: don't use level Debug in production HTTP!!!
-                isCli() ? Level::Debug : Level::Info
+                // IMPORTANT: don't use level Debug in production!!!
+                Level::Info
             );
         }
 
