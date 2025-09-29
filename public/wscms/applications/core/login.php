@@ -75,6 +75,12 @@ switch (Core::$request->method) {
                             $my_session->my_session_register('idUser', $idUser);
                             $_MY_SESSION_VARS = [];
                             $_MY_SESSION_VARS = $my_session->my_session_read();
+
+                            Logger::notice('User login successful', [
+                                'user_id' => $idUser,
+                                'username' => $username,
+                            ]);
+
                             ToolsStrings::redirect(URL_SITE_ADMIN.'home');
                             die();
                         } else {

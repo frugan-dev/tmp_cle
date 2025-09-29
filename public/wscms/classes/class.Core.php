@@ -48,6 +48,7 @@ class Core extends Config
             self::$request->param = ($parts[2] ?? '');
             self::$request->params = [];
         } else {
+            $parts = [];
             self::$request->action = Core::$globalSettings['requestoption']['defaultaction'];
             self::$request->param_alias = Core::$globalSettings['requestoption']['defaultaction'];
         }

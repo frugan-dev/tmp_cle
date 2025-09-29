@@ -199,6 +199,7 @@ if ($renderTpl == true && $App->templateApp != '') {
         'GlobalSettings' => $globalSettings,
         'isDevelop' => isDevelop(),
         'isProduction' => isProduction(),
+        'GOOGLE_ANALYTICS_CODE' => $_ENV['GOOGLE_ANALYTICS_CODE'] ?? '',
     ];
 
     $loader = new FilesystemLoader($pathtemplateBase);

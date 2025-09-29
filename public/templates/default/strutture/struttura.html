@@ -105,16 +105,16 @@
     {% endif %}
 
 	
-	 {% if isProduction and App.cookiesThirdyParts == true %}
+	 {% if isProduction and GOOGLE_ANALYTICS_CODE and App.cookiesThirdyParts == true %}
 	
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-3B72NZG53S"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id={{ GOOGLE_ANALYTICS_CODE|e }}"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
 	  function gtag(){dataLayer.push(arguments);}
 	  gtag('js', new Date());
 
-	  gtag('config', 'G-3B72NZG53S');
+	  gtag('config', '{{ GOOGLE_ANALYTICS_CODE|e }}');
 	</script> 	
 	{% endif %}
     

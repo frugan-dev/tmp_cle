@@ -228,7 +228,7 @@ class SanitizeStrings extends Core
         ];
 
         // Make custom replacements
-        $str = preg_replace(array_keys($options['replacements']), (string) $options['replacements'], $str);
+        $str = preg_replace(array_keys($options['replacements']), array_values($options['replacements']), $str);
 
         // Transliterate characters to ASCII
         if ($options['transliterate']) {

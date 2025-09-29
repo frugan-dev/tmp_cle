@@ -105,10 +105,12 @@
                             </small>
                         </div>
                           
+                        {#
                         <div class="form-group">
                             <div class="g-recaptcha" data-sitekey="{{ GlobalSettings['google recaptcha key'] }}"></div>
                             <input type="hidden" class="hiddenRecaptcha required" name="hiddenRecaptcha" id="hiddenRecaptcha">
                         </div>
+                        #}
 
                         <div class="form-group">
                             <input 
@@ -127,6 +129,7 @@
                             <br>
                         </div>
 
+                        <input type="hidden" name="recaptcha_response" id="recaptchaResponse">
                         <button type="submit" class="btn btn-primary">{{ LangVars['invia']|capitalize }}</button>
                     </div>
                 </form>

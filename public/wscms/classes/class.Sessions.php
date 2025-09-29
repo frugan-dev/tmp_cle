@@ -57,7 +57,7 @@ class my_session
         $result = $pdoCore->query($sql) or die(sprintf('Errore db linea %d!', __LINE__));
         if ($pdoCore->query('SELECT FOUND_ROWS()')->fetchColumn() > 0) {
             $row = $result->fetch(PDO::FETCH_ASSOC);
-            $_MY_SESSION = unserialize($row['session_vars']);
+            $_MY_SESSION = unserialize($row['session_vars']) ?: [];
             $_MY_SESSION[$name] = $value;
             Sql::initQuery($this->table_name, ['session_vars'], [serialize($_MY_SESSION),$this->my_session_id], 'sessid = ?');
             Sql::updateRecord();
@@ -76,7 +76,7 @@ class my_session
         $result = $pdoCore->query($sql) or die(sprintf('Errore db linea %d!', __LINE__));
         if ($pdoCore->query('SELECT FOUND_ROWS()')->fetchColumn() > 0) {
             $row = $result->fetch(PDO::FETCH_ASSOC);
-            $_MY_SESSION = unserialize($row['session_vars']);
+            $_MY_SESSION = unserialize($row['session_vars']) ?: [];
             unset($_MY_SESSION[$name]);
             $sql_a = 'UPDATE '.$this->table_name." SET session_vars = '" . serialize($_MY_SESSION) . "' WHERE sessid = '{$this->my_session_id}'";
             $result_a = $pdoCore->query($sql_a) or die(sprintf('Errore db linea %d!', __LINE__));
@@ -96,7 +96,7 @@ class my_session
         if ($pdoCore->query('SELECT FOUND_ROWS()')->fetchColumn() > 0) {
             $row = $result->fetch(PDO::FETCH_ASSOC);
             $row['session_vars'] = stripslashes((string) $row['session_vars']);
-            $session_vars = unserialize($row['session_vars']);
+            $session_vars = unserialize($row['session_vars']) ?: [];
             return (isset($key) && $key) ? $session_vars[$key] : $session_vars;
         }
     }

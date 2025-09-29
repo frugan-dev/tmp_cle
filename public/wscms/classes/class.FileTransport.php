@@ -20,12 +20,10 @@ use Symfony\Component\Mime\Email;
 class FileTransport extends AbstractTransport
 {
     private readonly string $filePath;
-    private readonly bool $continueOnSuccess;
 
-    public function __construct(string $filePath, bool $continueOnSuccess = false)
+    public function __construct(string $filePath, private readonly bool $continueOnSuccess = false)
     {
         $this->filePath = rtrim($filePath, '/');
-        $this->continueOnSuccess = $continueOnSuccess;
 
         // Ensure directory exists
         if (!is_dir($this->filePath)) {

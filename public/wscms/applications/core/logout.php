@@ -5,6 +5,14 @@
 
 /* Istanziamo l'oggetto */
 $my_session = new my_session(SESSIONS_TIME, SESSIONS_GC_TIME, AD_SESSIONS_COOKIE_NAME);
+
+$_MY_SESSION_VARS = $my_session->my_session_read();
+if (isset($_MY_SESSION_VARS['idUser'])) {
+    Logger::notice('User logout', [
+        'user_id' => $_MY_SESSION_VARS['idUser'],
+    ]);
+}
+
 /* Richiamiamo il metodo che distrugge la sessione */
 $my_session->my_session_destroy();
 /* Richiamiamo il metodo che pulire la tabella */

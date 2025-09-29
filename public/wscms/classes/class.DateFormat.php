@@ -226,7 +226,7 @@ class DateFormat extends Core
         $dt = self::$year.'-'.self::$month.'-'.self::$day;
         $date = DateTime::createFromFormat('Y-m-d', $dt);
         $errors = DateTime::getLastErrors();
-        if ($errors['error_count'] > 0 && $errors['warning_count']) {
+        if (!is_countable($errors) || $errors['error_count'] > 0 || $errors['warning_count'] > 0) {
             return 'n.d.';
         } else {
             $d = intval($date->format('N'));

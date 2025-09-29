@@ -21,6 +21,9 @@ class Office365TokenProvider
 
     private readonly bool $mockEnabled;
 
+    private readonly string $oauthUrl;
+    private readonly string $cacheKey;
+
     public function __construct(
         private readonly string $tenantId,
         private readonly string $clientId,

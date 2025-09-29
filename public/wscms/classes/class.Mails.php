@@ -22,8 +22,27 @@ class Mails extends Core
 {
     public static function sendEmail($address, $subject, $content, $text_content, $opt)
     {
-        $optDef = ['sendDebug' => 0,'sendDebugEmail' => '','fromEmail' => 'n.d','fromLabel' => 'n.d','attachments' => ''];
+        $optDef = ['sendDebug' => 0,'sendDebugEmail' => '','fromEmail' => '','fromLabel' => '','attachments' => ''];
         $opt = array_merge($optDef, $opt);
+
+        // Validate main recipient address
+        $address = self::validateAndCleanEmail($address);
+
+        // Validate email addresses in options
+        $emailOptions = [
+            'sendDebugEmail',
+            'fromEmail',
+            'from email',
+            'send copy email',
+            'replyTo',
+            'addBCC',
+        ];
+
+        foreach ($emailOptions as $optionKey) {
+            if (isset($opt[$optionKey]) && !empty($opt[$optionKey])) {
+                $opt[$optionKey] = self::validateAndCleanEmail($opt[$optionKey]);
+            }
+        }
 
         match (self::$globalSettings['use send mail class']) {
             // Symfony Mailer (new default)
@@ -74,7 +93,7 @@ class Mails extends Core
      */
     public static function sendMailSymfony($address, $subject, $content, $text_content, $opt)
     {
-        $optDef = ['replyTo' => [],'addBCC' => [],'sendDebug' => 0,'sendDebugEmail' => '','fromEmail' => 'n.d','fromLabel' => 'n.d','attachments' => ''];
+        $optDef = ['replyTo' => [],'addBCC' => [],'sendDebug' => 0,'sendDebugEmail' => '','fromEmail' => '','fromLabel' => '','attachments' => ''];
         $opt = array_merge($optDef, $opt);
 
         try {
@@ -86,8 +105,8 @@ class Mails extends Core
             $email = new Email();
 
             // Set sender
-            $fromEmail = $opt['fromEmail'] !== 'n.d' ? $opt['fromEmail'] : ($_ENV['MAIL_FROM_EMAIL'] ?? '');
-            $fromLabel = $opt['fromLabel'] !== 'n.d' ? $opt['fromLabel'] : ($_ENV['MAIL_FROM_NAME'] ?? '');
+            $fromEmail = $opt['fromEmail'] ?: $_ENV['MAIL_FROM_EMAIL'] ?? '';
+            $fromLabel = $opt['fromLabel'] ?: $_ENV['MAIL_FROM_NAME'] ?? '';
 
             if (!empty($fromEmail)) {
                 $email->from(new Address($fromEmail, $fromLabel));
@@ -415,7 +434,7 @@ class Mails extends Core
      */
     public static function sendMailPHPMAILER($address, $subject, $content, $text_content, $opt)
     {
-        $optDef = ['replyTo' => [],'addBCC' => [],'sendDebug' => 0,'sendDebugEmail' => '','fromEmail' => 'n.d','fromLabel' => 'n.d','attachments' => ''];
+        $optDef = ['replyTo' => [],'addBCC' => [],'sendDebug' => 0,'sendDebugEmail' => '','fromEmail' => '','fromLabel' => '','attachments' => ''];
         $opt = array_merge($optDef, $opt);
 
         try {
@@ -513,7 +532,7 @@ class Mails extends Core
      */
     public static function sendMailPHP($address, $subject, $content, $text_content, $opt)
     {
-        $optDef = ['sendDebug' => 0,'sendDebugEmail' => '','fromEmail' => 'n.d','fromLabel' => 'n.d','attachments' => ''];
+        $optDef = ['sendDebug' => 0,'sendDebugEmail' => '','fromEmail' => '','fromLabel' => '','attachments' => ''];
         $opt = array_merge($optDef, $opt);
 
         $mail_boundary = '=_NextPart_' . md5(uniqid(time()));
@@ -670,5 +689,73 @@ class Mails extends Core
         ]);
 
         return $dsn;
+    }
+
+    /**
+     * Validate and clean email addresses
+     * @param mixed $email - Single email string or array of emails
+     * @param string $fallbackEmail - Fallback email to use if validation fails
+     * @return mixed - Cleaned email(s) or fallback
+     */
+    private static function validateAndCleanEmail($email, $fallbackEmail = null)
+    {
+        // Set fallback email if not provided
+        if (empty($fallbackEmail)) {
+            $envEmail = $_ENV['MAIL_FROM_EMAIL'] ?? 'noreply@example.com';
+            // Handle comma-separated values in MAIL_FROM_EMAIL
+            if (str_contains((string) $envEmail, ',')) {
+                $emails = array_map('trim', explode(',', (string) $envEmail));
+                $fallbackEmail = $emails[0]; // Use first valid email
+            } else {
+                $fallbackEmail = $envEmail;
+            }
+        }
+
+        // Handle single email string
+        if (is_string($email)) {
+            if (!Form::validateEmail($email, false)) {
+                Logger::warning('Invalid email address replaced with fallback', [
+                    'original' => $email,
+                    'fallback' => $fallbackEmail,
+                ]);
+                return $fallbackEmail;
+            }
+            return $email;
+        }
+
+        // Handle array of emails
+        if (is_array($email)) {
+            $cleanedEmails = [];
+            foreach ($email as $key => $value) {
+                if (is_string($key)) {
+                    // Format: ['email@domain.com' => 'Name']
+                    if (Form::validateEmail($key, false)) {
+                        $cleanedEmails[$key] = $value;
+                    } else {
+                        Logger::warning('Invalid email key in array replaced with fallback', [
+                            'original_key' => $key,
+                            'original_value' => $value,
+                            'fallback' => $fallbackEmail,
+                        ]);
+                        $cleanedEmails[$fallbackEmail] = $value;
+                    }
+                } else {
+                    // Format: ['email@domain.com', 'another@domain.com']
+                    if (is_string($value) && Form::validateEmail($value, false)) {
+                        $cleanedEmails[] = $value;
+                    } else {
+                        Logger::warning('Invalid email value in array replaced with fallback', [
+                            'original_value' => $value,
+                            'fallback' => $fallbackEmail,
+                        ]);
+                        $cleanedEmails[] = $fallbackEmail;
+                    }
+                }
+            }
+            return empty($cleanedEmails) ? [$fallbackEmail] : $cleanedEmails;
+        }
+
+        // Fallback for any other type
+        return $fallbackEmail;
     }
 }

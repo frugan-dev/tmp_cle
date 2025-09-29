@@ -156,7 +156,7 @@ if (Core::$resultOp->error == 0) {
 
             //ToolsStrings::dump($_POST);
 
-            if (!isset($_POST['g-recaptcha-response'])) {
+            /*if (!isset($_POST['g-recaptcha-response'])) {
                 $result = [
                     'error' => 1,
                     'message' => 'aaaa'.Config::$langVars['Sei stato identificato come robot!'],
@@ -178,7 +178,23 @@ if (Core::$resultOp->error == 0) {
                 //die();
                 $_SESSION['message'] = '1|1111'.Config::$langVars['Sei stato identificato come robot!'];
                 ToolsStrings::redirect(URL_SITE.Core::$request->action.'#systemMessageID');
+            }*/
+
+            // controllo recaptcha
+            if (!isset($_POST['recaptcha_response'])) {
+                echo json_encode(['error' => 1,'message' => 'Recacptcha mancante! Il sistema ti ha identificato come robot!']);
+                die();
+            } else {
+                $captcha = $_POST['recaptcha_response'];
+                $secret = $globalSettings['google recaptcha secret'];
+                $json = json_decode(file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='. $secret . '&response=' .   $captcha), true);
+
+                if (!$json['success']) {
+                    echo json_encode(['error' => 1,'message' => 'Recacptcha! Il sistema ti ha identificato come robot!']);
+                    die();
+                }
             }
+            // controllo recaptcha
 
             // controllo POST
             $fields = [
@@ -355,7 +371,12 @@ if (Core::$resultOp->error == 0) {
             }
             $App->meta_og_description = $App->moduleConfig->meta_description;
 
-            $App->jscript[] = '<script src="https://www.google.com/recaptcha/api.js"></script>';
+            $App->jscriptCodeTop = "
+		    let recaptchakey = '".Config::$globalSettings['google recaptcha key']."';
+		    ";
+
+            $App->jscript[] = '<script src="https://www.google.com/recaptcha/api.js?render='.Config::$globalSettings['google recaptcha key'].'"></script>';
+            $App->jscript[] = '<script src="'.URL_SITE.'templates/'.$App->templateUser.'/js/contacts.js"></script>';
             $App->view = '';
             break;
     }
